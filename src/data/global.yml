@@ -1,0 +1,9 @@
+nav:
+  -
+    link: 'index.html'
+    page: 'index'
+    text: Home
+  -
+    link: 'charts.html'
+    page: 'charts'
+    text: Charts

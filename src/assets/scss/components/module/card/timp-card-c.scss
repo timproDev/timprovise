@@ -1,0 +1,199 @@
+// determine what is theme
+// use as many settings variables as you can
+
+//////////////////////
+/// BLOCK__ELEMENT ///
+//////////////////////
+
+.timp-card-c {
+  .timp-card-c--container {
+    @include breakpoint(small down) {
+      text-align: center;
+    }
+  }
+  // label
+	.timp-card-c--label {
+    width:100%;
+    display:block;
+    border-bottom:1px dotted $medium-gray;
+    padding:$space-stack-xs;
+    margin:$space-stack-l;
+  }
+  // image
+	.timp-card-c--image-container {
+    display:none;
+    @include breakpoint(small down) {
+      margin:$space-stack-l;
+    }
+  }
+	.timp-card-c--image {
+    width:100%;
+    border-radius: 220px;
+    border: 20px solid #f7f7f7;
+  }
+  // body
+	.timp-card-c--body-container {
+    position: relative;
+    z-index: 10;
+  }
+	.timp-card-c--title {
+    @include space-stack(m);
+    line-height:1;
+  }
+	.timp-card-c--description {
+    @include space-stack(l);
+    @include breakpoint(small down) {
+      @include space-stack(xl);
+    }
+  }
+  .timp-card-c--button-container {
+    @include space-stack(l);
+  }
+  // button
+	.timp-card-c--button {
+    // display:none;
+    float: left;
+    clear:both;
+    display:block;
+    color:$lynch;
+    text-decoration: none;
+    border-bottom:1px dotted transparent;
+    @include space-stack(s);
+    @include transition-mixin(border 250ms);
+    @include breakpoint(small down) {
+      float: none;
+    }
+  }
+  // meta
+	.timp-card-c--metadata	{
+  }
+}
+
+//////////////
+/// STATE ////
+//////////////
+
+// is clickable
+// has image
+// image top
+
+.timp-card-c {
+    .timp-card-c--container {
+      // @include transition-mixin(box-shadow 200ms, border 200ms);
+      // box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.0);
+      &:hover {
+          // box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.35);
+          // border: 1px solid transparent;
+          // cursor: pointer;
+      }
+    }
+    // label
+    .timp-card-c--label-container {}
+    .timp-card-c--label {}
+    // image
+    .timp-card-c--image-container {}
+    .timp-card-c--image {}
+    // body
+    .timp-card-c--body-container {}
+    .timp-card-c--title {}
+    .timp-card-c--description {}
+    // button
+    .timp-card-c--button {
+      &:hover {
+        border-bottom:1px dotted $lynch;
+      }
+    }
+    // meta
+    .timp-card-c--metadata	{}
+
+
+  // show image
+  &.show-image {
+    .timp-card-c--container {
+      position: relative;
+    }
+    // label
+    .timp-card-c--label-container {
+      position:absolute;
+      padding:0;
+    }
+    .timp-card-c--label {}
+    // image
+    .timp-card-c--image-container {
+      display: block;
+    }
+    .timp-card-c--image {}
+    // body
+    .timp-card-c--body-container {}
+    .timp-card-c--title {}
+    .timp-card-c--description {}
+    // button
+    .timp-card-c--button {}
+    // meta
+    .timp-card-c--metadata	{}
+  }
+
+
+
+
+
+  // show labels
+  &.show-labels {
+    .timp-card-c--container {}
+    // label
+    .timp-card-c--label-container {}
+    .timp-card-c--label {}
+    // image
+    .timp-card-c--image-container {}
+    .timp-card-c--image {}
+    // body
+    .timp-card-c--body-container {}
+    .timp-card-c--title {}
+    .timp-card-c--description {}
+    // button
+    .timp-card-c--button {}
+    // meta
+    .timp-card-c--metadata	{}
+  }
+}
+
+//////////////
+/// THEME ////
+//////////////
+
+.timp-card-c {
+  &.modification-class {
+    .timp-card-c--container {}
+    // label
+    .timp-card-c--label-container {}
+    .timp-card-c--label {}
+    // image
+    .timp-card-c--image-container {}
+    .timp-card-c--image {}
+    // body
+    .timp-card-c--body-container {}
+    .timp-card-c--title {}
+    .timp-card-c--description {}
+    // button
+    .timp-card-c--button {}
+    // meta
+    .timp-card-c--metadata	{}
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////IE10+ specific styles go here //////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+// NOTES: @extend is not supported within {media} ////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {}
+
+////////////////////////
+/// IE MEDIA QUERIES ///
+////////////////////////
+
+@media only screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    @media only screen and (max-width: 1024px) and (min-width: 641px) {}
+    @media only screen and (max-width: 640px) {}
+}
