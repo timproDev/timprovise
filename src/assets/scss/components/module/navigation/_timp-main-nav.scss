@@ -1,0 +1,157 @@
+.tp-main-nav {
+  background-color:$secondary-color;
+  padding-top:1rem;
+  padding-bottom:1rem;
+  @extend .clearfix;
+
+  .tp-home-logo {
+    float: left;
+    display: block;
+    font-family: $font-family-two;
+    font-size: $global-font-size-l;
+    text-transform:none;
+    color: scale-color($white, $lightness: 0%);
+    padding: .25rem;
+    margin:0 1.5rem;
+    &:after {
+      display: none;
+    }
+    &:hover {
+      background-color: scale-color($secondary-color, $lightness: 0%);
+      color: scale-color($white, $lightness: 0%);
+    }
+  }
+  .tp-main-nav--list {
+    float: right;
+    margin:0 1.5rem;
+  }
+  .tp-main-nav--list-item {
+    display: inline-block;
+  }
+  .tp-main-nav--list-anchor {
+    font-size: $global-font-size-m;
+    display: inline-block;
+    vertical-align: middle;
+    padding: .45rem .5rem;
+    background-color: scale-color($secondary-color, $lightness: 0%);
+    color: scale-color($white, $lightness: -20%);
+    position: relative;
+    z-index:2;
+    overflow: hidden;
+
+    &:after {
+      content: '';
+    	position: absolute;
+    	z-index: -1;
+    	width: 100%;
+    	height: 5px;
+    	bottom: -10px;
+    	left: 0;
+    	background: $bar-color;
+      @include transition-mixin(bottom $trans-speed);
+    }
+    @include transition-mixin(color $trans-speed);
+    &:hover, &.active {
+      color: scale-color($white, $lightness: 0%);
+      &:after {
+      	bottom: 0;
+      }
+    }
+  }
+}
+
+
+
+.tp-secondary-nav {
+  background-color: $bar-color;
+  .tp-secondary-nav--list {
+    margin:0;
+    text-align: center;
+  }
+  .tp-secondary-nav--list-item {
+    display: inline-block;
+    margin:0 .5rem;
+  }
+  .tp-secondary-nav--list-anchor {
+    font-size: $global-font-size-s;
+    display: inline-block;
+    vertical-align: middle;
+    padding: .5rem .5rem .5rem 1.5rem;
+    color: scale-color($secondary-color, $lightness: 50%);
+    &:hover {
+      color: scale-color($secondary-color, $lightness: 0%);
+    }
+    background-repeat: no-repeat;
+    background-position:0 -20px;
+    @include transition-mixin(color $trans-speed, background-position $trans-speed);
+    &.twitter-icon {
+      background-image:url('/assets/img/icons/social/twitter.svg');
+      background-size:16px 16px;
+      &:hover {
+        background-position:0 11px;
+      }
+    }
+    &.mixcloud-icon {
+      background-image:url('/assets/img/icons/social/mixcloud.svg');
+      background-size:20px 20px;
+      &:hover {
+        background-position:0 8px;
+      }
+    }
+    &.soundcloud-icon {
+      background-image:url('/assets/img/icons/social/soundcloud.svg');
+      background-size:20px 20px;
+      &:hover {
+        background-position:0 8px;
+      }
+    }
+    &.linkedin-icon {
+      background-image:url('/assets/img/icons/social/linkedin.svg');
+      background-size:16px 16px;
+      &:hover {
+        background-position:0 10px;
+      }
+    }
+    &.blog-icon {
+      background-image:url('/assets/img/icons/social/blog.svg');
+      background-size:20px 20px;
+      &:hover {
+        background-position:0 7px;
+      }
+    }
+    &.dribbble-icon {
+      background-image:url('/assets/img/icons/social/dribbble.svg');
+      background-size:16px 16px;
+      &:hover {
+        background-position:0 10px;
+      }
+    }
+    &.d3-icon {
+      background-image:url('/assets/img/icons/social/d3.svg');
+      background-size:16px 16px;
+      &:hover {
+        background-position:0 10px;
+      }
+    }
+  }
+}
+
+// .tp-icon-list-nav {
+//   .tp-icon-list-nav--list {
+//     text-align: left;
+//     margin:0;
+//   }
+//   .tp-icon-list-nav--list-item {
+//     display: inline-block;
+//     vertical-align: middle;
+//     height:40px;
+//   }
+//   .tp-icon-list-nav--list-anchor {
+//     padding: $space-xs $space-s;
+//     font-size: $global-font-size-s;
+//     position: relative;
+//     display: block;
+//   }
+// }
+//
+// .tp-icon-text {}

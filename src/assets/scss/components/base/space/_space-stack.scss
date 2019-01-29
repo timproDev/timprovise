@@ -1,0 +1,143 @@
+// inset
+@mixin space-stack($size) {
+
+  @if $size == 'xxxs' {
+    margin:0 0 $space-xxxs 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-xxxs * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-xxxs * .75 0;
+    }
+
+  }
+
+  @if $size == 'xxs' {
+    margin:0 0 $space-xxs 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-xxs * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-xxs * .5 0;
+    }
+
+  }
+
+  @if $size == 'xs' {
+    margin:0 0 $space-xs 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-xs * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-xs * .5 0;
+    }
+
+  }
+
+  @else if $size == 's' {
+    margin:0 0 $space-s 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-s * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-s * .5 0;
+    }
+
+  }
+  @else if $size == 'm' {
+    margin:0 0 $space-m 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-m * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-m * .5 0;
+    }
+
+  }
+  @else if $size == 'l' {
+    margin:0 0 $space-l 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-l * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-l * .5 0;
+    }
+
+  }
+  @else if $size == 'xl' {
+    margin:0 0 $space-xl 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-xl * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-xl * .5 0;
+    }
+
+  }
+  @else if $size == 'xxl' {
+    margin:0 0 $space-xxl 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-xxl * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-xxl * .5 0;
+    }
+
+  }
+  @else if $size == 'xxxl' {
+    margin:0 0 $space-xxxl 0;
+
+    @include breakpoint(medium only) {
+      margin:0 0 $space-xxxl * .75 0;
+    }
+
+    @include breakpoint(small only) {
+      margin:0 0 $space-xxxl * .5 0;
+    }
+
+  }
+}
+
+.space-stack-xxxs {
+  @include space-stack(xxxs);
+}
+.space-stack-xxs {
+  @include space-stack(xxs);
+}
+.space-stack-xs {
+  @include space-stack(xs);
+}
+.space-stack-s {
+  @include space-stack(s);
+}
+.space-stack-m {
+  @include space-stack(m);
+}
+.space-stack-l {
+  @include space-stack(l);
+}
+.space-stack-xl {
+  @include space-stack(xl);
+}
+.space-stack-xxl {
+  @include space-stack(xxl);
+}
+.space-stack-xxxl {
+  @include space-stack(xxxl);
+}

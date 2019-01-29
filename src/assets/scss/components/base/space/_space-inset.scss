@@ -1,0 +1,289 @@
+// inset
+@mixin space-inset($size) {
+
+  @if $size == 'xxxs' {
+    padding:$space-xxxs;
+
+    @include breakpoint(medium only) {
+      padding:$space-xxxs * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-xxxs * .75;
+    }
+
+  }
+
+  @if $size == 'xxs' {
+    padding:$space-xxs;
+
+    @include breakpoint(medium only) {
+      padding:$space-xxs * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-xxs * .5;
+    }
+
+  }
+
+  @if $size == 'xs' {
+    padding:$space-xs;
+
+    @include breakpoint(medium only) {
+      padding:$space-xs * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-xs * .5;
+    }
+
+  }
+
+  @else if $size == 's' {
+    padding:$space-s;
+
+    @include breakpoint(medium only) {
+      padding:$space-s * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-s * .5;
+    }
+
+  }
+  @else if $size == 'm' {
+    padding:$space-m;
+
+    @include breakpoint(medium only) {
+      padding:$space-m * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-m * .5;
+    }
+
+  }
+  @else if $size == 'l' {
+    padding:$space-l;
+
+    @include breakpoint(medium only) {
+      padding:$space-l * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-l * .5;
+    }
+
+  }
+  @else if $size == 'xl' {
+    padding:$space-xl;
+
+    @include breakpoint(medium only) {
+      padding:$space-xl * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-xl * .5;
+    }
+
+  }
+  @else if $size == 'xxl' {
+    padding:$space-xxl;
+
+    @include breakpoint(medium only) {
+      padding:$space-xxl * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-xxl * .5;
+    }
+
+  }
+  @else if $size == 'xxxl' {
+    padding:$space-xxxl;
+
+    @include breakpoint(medium only) {
+      padding:$space-xxxl * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:$space-xxxl * .5;
+    }
+
+  }
+}
+
+.space-inset-xxxs {
+  @include space-inset(xxxs);
+}
+.space-inset-xxs {
+  @include space-inset(xxs);
+}
+.space-inset-xs {
+  @include space-inset(xs);
+}
+.space-inset-s {
+  @include space-inset(s);
+}
+.space-inset-m {
+  @include space-inset(m);
+}
+.space-inset-l {
+  @include space-inset(l);
+}
+.space-inset-xl {
+  @include space-inset(xl);
+}
+.space-inset-xxl {
+  @include space-inset(xxl);
+}
+.space-inset-xxxl {
+  @include space-inset(xxxl);
+}
+
+
+
+// inset horizontal
+@mixin space-inset-horiz($size) {
+
+  @if $size == 'xxxs' {
+    padding:0 $space-xxxs 0 $space-xxxs;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-xxxs * .75 0 $space-xxxs * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-xxxs * .75 0 $space-xxxs * .75;
+    }
+
+  }
+
+  @if $size == 'xxs' {
+    padding:0 $space-xxs 0 $space-xxs;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-xxs * .75 0 $space-xxs * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-xxs * .5 0 $space-xxs * .5;
+    }
+
+  }
+
+  @if $size == 'xs' {
+    padding:0 $space-xs 0 $space-xs;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-xs * .75 0 $space-xs * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-xs * .5 0 $space-xs * .5;
+    }
+
+  }
+
+  @else if $size == 's' {
+    padding:0 $space-s 0 $space-s;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-s * .75 0 $space-s * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-s * .5 0 $space-s * .5;
+    }
+
+  }
+  @else if $size == 'm' {
+    padding:0 $space-m 0 $space-m;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-m * .75 0 $space-m * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-m * .5 0 $space-m * .5;
+    }
+
+  }
+  @else if $size == 'l' {
+    padding:0 $space-l 0 $space-l;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-l * .75 0 $space-l * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-l * .5 0 $space-l * .5;
+    }
+
+  }
+  @else if $size == 'xl' {
+    padding:0 $space-xl 0 $space-xl;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-xl * .75 0 $space-xl * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-xl * .5 0 $space-xl * .5;
+    }
+
+  }
+  @else if $size == 'xxl' {
+    padding:0 $space-xxl 0 $space-xxl;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-xxl * .75 0 $space-xxl * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-xxl * .5 0 $space-xxl * .5;
+    }
+
+  }
+  @else if $size == 'xxxl' {
+    padding:0 $space-xxxl 0 $space-xxxl;
+
+    @include breakpoint(medium only) {
+      padding:0 $space-xxxl * .75 0 $space-xxxl * .75;
+    }
+
+    @include breakpoint(small only) {
+      padding:0 $space-xxxl * .5 0 $space-xxxl * .5;
+    }
+
+  }
+}
+
+.space-inset-horiz-xxxs {
+  @include space-inset-horiz(xxxs);
+}
+.space-inset-horiz-xxs {
+  @include space-inset-horiz(xxs);
+}
+.space-inset-horiz-xs {
+  @include space-inset-horiz(xs);
+}
+.space-inset-horiz-s {
+  @include space-inset-horiz(s);
+}
+.space-inset-horiz-m {
+  @include space-inset-horiz(m);
+}
+.space-inset-horiz-l {
+  @include space-inset-horiz(l);
+}
+.space-inset-horiz-xl {
+  @include space-inset-horiz(xl);
+}
+.space-inset-horiz-xxl {
+  @include space-inset-horiz(xxl);
+}
+.space-inset-horiz-xxxl {
+  @include space-inset-horiz(xxxl);
+}

@@ -1,0 +1,29 @@
+.timp-contentcard {
+  &.v-basic {
+    // container
+    .timp-contentcard--container {}
+    // header
+    .timp-contentcard--header {}
+    .timp-contentcard--header-text {}
+    // label
+    .timp-contentcard--label-container {}
+    .timp-contentcard--label {}
+    // image
+    .timp-contentcard--image-container {}
+    .timp-contentcard--image {
+      &.timp-icon {}
+    }
+    // body
+    .timp-contentcard--body-container {}
+    // title
+    .timp-contentcard--title {}
+    // description
+    .timp-contentcard--description {}
+    // button
+    .timp-contentcard--button-container {}
+    // footer
+    .timp-contentcard--footer	{}
+    // meta
+    .timp-contentcard--metadata	{}
+  }
+}

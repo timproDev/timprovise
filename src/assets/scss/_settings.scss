@@ -82,9 +82,13 @@ $global-font-size-xxl: $global-font-size * 4;
 $global-lineheight: 1.25;
 $global-lineheight-large: $global-lineheight / 1.15;
 $global-lineheight-small: $global-lineheight * 1.15;
+$global-lineheight-l: $global-lineheight * 1.15;
+$global-lineheight-m: 1;
+$global-lineheight-s: $global-lineheight / 1.15;
+$global-lineheight-xs: $global-lineheight / 2;
 $foundation-palette: (
-  primary: #cccccc,
-  secondary: #aeaeae,
+  primary: #616161,
+  secondary: #253445,
   success: #bfbfbf,
   warning: #dfdfdf,
   alert: #cc4b37,
@@ -132,6 +136,13 @@ $space-stack-m: 0 0 1rem 0;
 $space-stack-l: 0 0 (1rem * 2) 0;
 $space-stack-xl: 0 0 (1rem * 4) 0;
 $space-stack-xxl: 0 0 (1rem * 12) 0;
+$space-inline-default: 0 1rem 0 0;
+$space-inline-xs:0 (1rem * .25) 0 0;
+$space-inline-s: 0 (1rem * .5) 0 0;
+$space-inline-m: 0 1rem 0 0;
+$space-inline-l: 0 (1rem * 2) 0 0;
+$space-inline-xl: 0 (1rem * 4) 0 0;
+$space-inline-xxl: 0 (1rem * 12) 0 0;
 $space-default: 1rem;
 $space-xs: 1rem * .25;
 $space-s: 1rem * .5;
@@ -139,6 +150,18 @@ $space-m: 1rem;
 $space-l: 1rem * 2;
 $space-xl: 1rem * 4;
 $space-xxl: 1rem * 12;
+
+// fibonacci: 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610
+$space-default: 1rem;
+$space-xxxs: 1px;
+$space-xxs: 2px;
+$space-xs: 4px;
+$space-s: 1rem * .5;
+$space-m: 1rem;
+$space-l: 3rem;
+$space-xl: 5rem;
+$space-xxl: 8rem;
+$space-xxxl: 13rem;
 
 // 2. Breakpoints
 // --------------
@@ -906,3 +929,16 @@ $grid-padding-gutters: $grid-margin-gutters;
 $grid-container-padding: $grid-padding-gutters;
 $grid-container-max: $global-width;
 $xy-block-grid-max: 8;
+
+
+$font-family-two: 'Oleo Script', cursive;
+$trans-speed: 300ms;
+$bar-color:#f7f7f7;
+.clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+$secondary-color-dark:#15202c;

@@ -1,9 +1,13 @@
 nav:
   -
-    link: 'index.html'
-    page: 'index'
-    text: Home
+    link: 'data-visualization.html'
+    page: 'data-visualization'
+    text: Data Visualization
   -
-    link: 'charts.html'
-    page: 'charts'
-    text: Charts
+    link: 'music.html'
+    page: 'music'
+    text: Music
+  -
+    link: 'sketches.html'
+    page: 'sketches'
+    text: Sketches
