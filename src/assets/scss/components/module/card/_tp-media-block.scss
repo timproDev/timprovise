@@ -1,12 +1,8 @@
-// determine what is theme
-// use as many settings variables as you can
-
 //////////////////////
 /// BLOCK__ELEMENT ///
 //////////////////////
-$media-image-size: 300px;
-.media-block {
-  .media-block--container {
+.tp-media-block {
+  .tp-media-block--container {
       text-align: center;
       margin-top:$space-xxl;
       border:1px solid #ececec;
@@ -14,7 +10,7 @@ $media-image-size: 300px;
       border-radius:3px;
   }
   // label
-	.media-block--label {
+	.tp-media-block--label {
     width:100%;
     display:block;
     border-bottom:1px dotted $medium-gray;
@@ -22,51 +18,51 @@ $media-image-size: 300px;
     margin:$space-stack-l;
   }
   // image
-	.media-block--image-container {
+	.tp-media-block--image-container {
     @include breakpoint(small down) {
       margin:$space-stack-l;
     }
     margin: 0 auto;
-    width:$media-image-size;
-    height:$media-image-size;
+    width:$media-block-image-size;
+    height:$media-block-image-size;
     margin: 0 auto;
     border-radius: 220px;
     border: 20px solid #f7f7f7;
     overflow: hidden;
   }
-	.media-block--image {
+	.tp-media-block--image {
     width: 100%;
     display: block;
     margin:-21.875% 0;
   }
   // body
-	.media-block--body-container {
+	.tp-media-block--body-container {
     position: relative;
     z-index: 10;
   }
-	.media-block--title {
+	.tp-media-block--title {
     @include space-stack(m);
     line-height:1;
     font-size: $global-font-size-xl;
     color:$secondary-color;
   }
-	.media-block--description {
+	.tp-media-block--description {
     @include space-stack(l);
     @include breakpoint(small down) {
       @include space-stack(xl);
     }
   }
-  .media-block--cta {
+  .tp-media-block--cta {
     margin-bottom:0;
     padding:$space-m $space-l;
     border-radius:3px;
     border:1px solid #ececec;
   }
-  .media-block--button-container {
+  .tp-media-block--button-container {
     @include space-stack(l);
   }
   // button
-	.media-block--button {
+	.tp-media-block--button {
     // display:none;
     display:block;
     color:$lynch;
@@ -79,7 +75,7 @@ $media-image-size: 300px;
     }
   }
   // meta
-	.media-block--metadata	{
+	.tp-media-block--metadata	{
   }
 }
 
@@ -91,11 +87,26 @@ $media-image-size: 300px;
 // has image
 // image top
 
-.media-block {
-    .media-block--container {
+.tp-media-block {
+    .tp-media-block--container {
+      position: relative;
+      &:after {
+        content:'';
+        display: block;
+        width:30px;
+        height:30px;
+        left:0;
+        right:0;
+        margin:0 auto;
+        position: absolute;
+        opacity:0;
+        bottom:0px;
+        background-image: url('/assets/img/icons/open-new-white.svg');
+        @include transition-mixin(opacity $trans-speed, bottom $trans-speed);
+      }
       @include transition-mixin(box-shadow $trans-speed, border $trans-speed, background-color $trans-speed);
       box-shadow: 0px 2px 20px -4px rgba(0,0,0,0.0);
-      .media-block--image, .media-block--image-container, .media-block--title, .media-block--description {
+      .tp-media-block--image, .tp-media-block--image-container, .tp-media-block--title, .tp-media-block--description {
         @include transition-mixin(margin $trans-speed, border-color $trans-speed, color $trans-speed);
       }
       &:hover {
@@ -103,19 +114,23 @@ $media-image-size: 300px;
           border: 1px solid transparent;
           cursor: pointer;
           background-color:$secondary-color;
+          &:after {
+            bottom:25px;
+            opacity:1;
+          }
           // image
-          .media-block--image-container {
+          .tp-media-block--image-container {
             border-color:$secondary-color-dark;
           }
-          .media-block--image {
+          .tp-media-block--image {
             margin:-28.875% 0;
           }
           // body
-          .media-block--body-container {}
-          .media-block--title {
+          .tp-media-block--body-container {}
+          .tp-media-block--title {
             color:$white;
           }
-          .media-block--description {
+          .tp-media-block--description {
             color:$white;
           }
           // button
@@ -125,28 +140,28 @@ $media-image-size: 300px;
 
   // show image
   &.show-image {
-    .media-block--container {
+    .tp-media-block--container {
       position: relative;
     }
     // label
-    .media-block--label-container {
+    .tp-media-block--label-container {
       position:absolute;
       padding:0;
     }
-    .media-block--label {}
+    .tp-media-block--label {}
     // image
-    .media-block--image-container {
+    .tp-media-block--image-container {
       display: block;
     }
-    .media-block--image {}
+    .tp-media-block--image {}
     // body
-    .media-block--body-container {}
-    .media-block--title {}
-    .media-block--description {}
+    .tp-media-block--body-container {}
+    .tp-media-block--title {}
+    .tp-media-block--description {}
     // button
-    .media-block--button {}
+    .tp-media-block--button {}
     // meta
-    .media-block--metadata	{}
+    .tp-media-block--metadata	{}
   }
 
 
@@ -155,21 +170,21 @@ $media-image-size: 300px;
 
   // show labels
   &.show-labels {
-    .media-block--container {}
+    .tp-media-block--container {}
     // label
-    .media-block--label-container {}
-    .media-block--label {}
+    .tp-media-block--label-container {}
+    .tp-media-block--label {}
     // image
-    .media-block--image-container {}
-    .media-block--image {}
+    .tp-media-block--image-container {}
+    .tp-media-block--image {}
     // body
-    .media-block--body-container {}
-    .media-block--title {}
-    .media-block--description {}
+    .tp-media-block--body-container {}
+    .tp-media-block--title {}
+    .tp-media-block--description {}
     // button
-    .media-block--button {}
+    .tp-media-block--button {}
     // meta
-    .media-block--metadata	{}
+    .tp-media-block--metadata	{}
   }
 }
 
@@ -177,23 +192,23 @@ $media-image-size: 300px;
 /// THEME ////
 //////////////
 
-.media-block {
+.tp-media-block {
   &.modification-class {
-    .media-block--container {}
+    .tp-media-block--container {}
     // label
-    .media-block--label-container {}
-    .media-block--label {}
+    .tp-media-block--label-container {}
+    .tp-media-block--label {}
     // image
-    .media-block--image-container {}
-    .media-block--image {}
+    .tp-media-block--image-container {}
+    .tp-media-block--image {}
     // body
-    .media-block--body-container {}
-    .media-block--title {}
-    .media-block--description {}
+    .tp-media-block--body-container {}
+    .tp-media-block--title {}
+    .tp-media-block--description {}
     // button
-    .media-block--button {}
+    .tp-media-block--button {}
     // meta
-    .media-block--metadata	{}
+    .tp-media-block--metadata	{}
   }
 }
 

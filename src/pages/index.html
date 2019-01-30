@@ -1,26 +1,32 @@
 ---
 layout: index
-meta-title: Tim Schletter
-title: Hi, I'm Tim Schletter
-description: Timprovise is a portmanteau for my appreciation for improvisation and the creative process. I am a designer, composer, developer, lyricist, omnivert and all around creative kind of fellow. I am curious by nature and love learning how things are done. As you can see in this picture, I am learning how a hat works.
-img-src: assets/img/tim-hat.jpg
+meta-title: Tim Schletter | All around creative kind of fellow
 ---
 
 <div class="grid-container">
   <div class="grid-x">
-    <div class="cell large-4 large-offset-4 medium-4 small-6">
-      <div class="content-block">
-        <div class="content-block--container">
-          <div class="content-block--image-container">
-            <img class="content-block--image" src="{{root}}{{img-src}}">
-          </div>
-          <div class="space-stack-xl"></div>
-          <div class="content-block--body-container">
-            <h1 class="content-block--title">{{title}}</h1>
-            <p class="content-block--description">{{description}}</p>
-          </div>
-        </div>
-      </div>
+    <div class="cell large-4 large-offset-4 medium-6 medium-offset-3 small-8 small-offset-2">
+      {{> tp-page-header
+        title="Hi, I'm Tim Schletter"
+        description="Timprovise is a portmanteau for my appreciation for improvisation and the creative process. I am a designer, composer, developer, lyricist, omnivert and all around creative kind of fellow. I am curious by nature and love learning how things are done. As you can see in this picture, I am learning how a hat works."
+        img-src="assets/img/tim-hat.jpg"
+      }}
+    </div>
+  </div>
+</div>
+
+<div class="tp-audio-block">
+  <div class="tp-audio-block--container">
+    <div class="tp-audio-block--image-container">
+      <img class="tp-audio-block--image" src="{{root}}assets/img/callout/ireland.jpg">
+    </div>
+    <div class="tp-audio-block--body-container">
+      <span class="tp-audio-block--label">New Music</span>
+      <h1 class="tp-audio-block--title">Linger & Lurk</h1>
+      <p class="tp-audio-block--description">Check out my latest composition 'Linger and Lurk' on Soundcloud. This song falls in the ilk of such songs as Stevie Wonder's <a href="https://www.youtube.com/watch?v=6gkqGCnK-nw" target="_blank">Creepin'</a> as it is about the haunting visits for people from your past via dreams. Stylistically this song is inspired by <a target="_blank" href="https://www.youtube.com/watch?v=MNYTYS_gnMY">any of the many wonderful</a> tunes by Kenny Rankin.</p>
+    </div>
+    <div class="tp-audio-block--embed-container">
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/545479413&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
     </div>
   </div>
 </div>

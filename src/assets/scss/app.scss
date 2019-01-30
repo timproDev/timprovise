@@ -78,8 +78,10 @@
         'components/base/space/space-stack',
         'components/base/space';
 
-@import 'components/module/card/content-block',
-        'components/module/card/media-block',
+@import 'components/module/card/tp-page-header',
+        'components/module/card/tp-media-block',
+        'components/module/card/tp-callout-block',
+        'components/module/card/tp-audio-block',
         'components/module/navigation/timp-main-nav';
 
 // custom components

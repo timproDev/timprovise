@@ -1,26 +1,16 @@
 ---
 layout: index
-title: Data Visualization
-description: I've been playing around with D3 for the past 2 or so years. Spreadsheets can be terrible to read but with data visualization they can be outstanding fuel for visual communication. Click on bl.ovks above to see more of my D3 experimentation.
-meta-title: Tim Schletter
-img-src: assets/img/data-visualization/pg-img-data-visualization-map.jpg
+meta-title: Tim Schletter| Data Visualization
 ---
 
 <div class="grid-container">
   <div class="grid-x">
-    <div class="cell large-4 large-offset-4 medium-4 small-6">
-      <div class="content-block">
-        <div class="content-block--container">
-          <div class="content-block--image-container">
-            <img class="content-block--image" src="{{root}}{{img-src}}">
-          </div>
-          <div class="space-stack-xl"></div>
-          <div class="content-block--body-container">
-            <h1 class="content-block--title">{{title}}</h1>
-            <p class="content-block--description">{{description}}</p>
-          </div>
-        </div>
-      </div>
+    <div class="cell large-4 large-offset-4 medium-6 medium-offset-3 small-8 small-offset-2">
+      {{> tp-page-header
+        title="Data Visualization"
+        description="I've been playing around with D3 for the past 2 or so years. Spreadsheets can be terrible to read but with data visualization they can be outstanding fuel for visual communication. Click on bl.ovks above to see more of my D3 experimentation."
+        img-src="assets/img/data-visualization/pg-img-data-visualization-map.jpg"
+      }}
     </div>
   </div>
 </div>
@@ -28,12 +18,20 @@ img-src: assets/img/data-visualization/pg-img-data-visualization-map.jpg
 <div class="grid-container">
   <div class="grid-x">
     <div class="cell large-6 large-offset-3 medium-10 small-6">
-        {{> content-card
+        {{> tp-media-block
           url="https://www.marsh.com/us/campaigns/captive-report-2018.html"
           image-path="assets/img/data-visualization/captives-scorecard-full.jpg"
           description="Marsh's Captives business teams requested an interactive mode of communicating complex data in a quick and digestible way. This scorecar is a combo mini dashboard and infographic. Click to see it live."
           title="Captives Scorecard"
         }}
+    </div>
+  </div>
+</div>
+
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="cell large-4 large-offset-4 medium-4 small-6" style="text-align:center; padding-top:9rem;">
+      <p><i>More to come, I promise</i></<p>
     </div>
   </div>
 </div>

@@ -1,0 +1,79 @@
+//////////////////////
+/// BLOCK__ELEMENT ///
+//////////////////////
+
+.tp-callout-block {
+  // @extend .clearfix;
+  .tp-callout-block--container {
+    background-color:$secondary-color;
+    position: relative;
+    overflow:hidden;
+    text-align: center;
+    padding:$space-xxxl 0;
+    margin:$space-xl 0;
+  }
+  // image
+	.tp-callout-block--image-container {
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    margin:0 auto;
+    z-index:1;
+  }
+	.tp-callout-block--image {
+    width:100%;
+  }
+  // body
+	.tp-callout-block--body-container {
+    z-index:2;
+    position: relative;
+    width:30%;
+    margin:0 auto;
+  }
+  // label
+  .tp-callout-block--label {}
+	.tp-callout-block--title {
+    font-size: $global-font-size-xxl;
+  }
+	.tp-callout-block--description {}
+  // button
+  .tp-callout-block--button-container {
+    z-index:2;
+    position: relative;
+  }
+	.tp-callout-block--button {
+    display:inline-block;
+    padding:1rem 2rem;
+    border-radius:3px;
+    border:1px solid $secondary-color;
+    background-color:transparent;
+    @include transition-mixin(background-color $trans-speed, border-color $trans-speed);
+    &:hover {
+      border-color:transparent;
+      background-color:$white;
+    }
+  }
+}
+
+//////////////
+/// STATE ////
+//////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////IE10+ specific styles go here //////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+// NOTES: @extend is not supported within {media} ////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {}
+
+////////////////////////
+/// IE MEDIA QUERIES ///
+////////////////////////
+
+@media only screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    @media only screen and (max-width: 1024px) and (min-width: 641px) {}
+    @media only screen and (max-width: 640px) {}
+}

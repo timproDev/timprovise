@@ -930,6 +930,8 @@ $grid-container-padding: $grid-padding-gutters;
 $grid-container-max: $global-width;
 $xy-block-grid-max: 8;
 
+// 57. Parking Lot for custom settings
+// -----------------------------------
 
 $font-family-two: 'Oleo Script', cursive;
 $trans-speed: 300ms;
@@ -942,3 +944,4 @@ $bar-color:#f7f7f7;
   }
 }
 $secondary-color-dark:#15202c;
+$media-block-image-size: 300px;

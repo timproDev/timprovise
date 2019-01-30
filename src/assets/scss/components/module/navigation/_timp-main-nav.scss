@@ -64,19 +64,27 @@
 
 .tp-secondary-nav {
   background-color: $bar-color;
+  @include breakpoint(medium down) {
+    // position: fixed;
+    // bottom:0;
+    // left:0;
+    // z-index: 100;
+    // width:100%;
+  }
   .tp-secondary-nav--list {
-    margin:0;
-    text-align: center;
+    margin:0 1.5rem 0 0;
+    text-align: right;
   }
   .tp-secondary-nav--list-item {
     display: inline-block;
-    margin:0 .5rem;
+    margin:0;
   }
   .tp-secondary-nav--list-anchor {
-    font-size: $global-font-size-s;
+    font-size: $global-font-size-m;
+    font-family: $font-family-two;
     display: inline-block;
     vertical-align: middle;
-    padding: .5rem .5rem .5rem 1.5rem;
+    padding: .5rem .5rem .5rem 1.35rem;
     color: scale-color($secondary-color, $lightness: 50%);
     &:hover {
       color: scale-color($secondary-color, $lightness: 0%);
@@ -95,14 +103,14 @@
       background-image:url('/assets/img/icons/social/mixcloud.svg');
       background-size:20px 20px;
       &:hover {
-        background-position:0 8px;
+        background-position:0 9px;
       }
     }
     &.soundcloud-icon {
       background-image:url('/assets/img/icons/social/soundcloud.svg');
       background-size:20px 20px;
       &:hover {
-        background-position:0 8px;
+        background-position:0 10px;
       }
     }
     &.linkedin-icon {
@@ -132,6 +140,69 @@
       &:hover {
         background-position:0 10px;
       }
+    }
+  }
+}
+
+
+
+
+
+@include breakpoint(medium down) {
+  .tp-main-nav {
+    text-align: center;
+    padding-bottom:$space-m * 2;
+    .tp-home-logo {
+      margin:0 auto;
+      float: none;
+      display: inline-block;
+      font-size: $global-font-size-xl;
+      &:after {}
+      &:hover {}
+    }
+    .tp-main-nav--list {
+      float: none;
+      width:100%;
+      clear: both;
+      margin:0;
+    }
+    .tp-main-nav--list-item {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+    .tp-main-nav--list-anchor {
+      &:after {}
+      &:hover, &.active {
+        &:after {}
+      }
+    }
+  }
+}
+
+
+@include breakpoint(medium down) {
+  .tp-secondary-nav {
+    .tp-secondary-nav--list {
+      text-align: center;
+    }
+    .tp-secondary-nav--list-item {
+      margin:0;
+    }
+    .tp-secondary-nav--list-anchor {
+    }
+  }
+}
+
+@include breakpoint(small down) {
+  .tp-secondary-nav {
+    display: none;
+    .tp-secondary-nav--list {
+    }
+    .tp-secondary-nav--list-item {
+      width:100%;
+    }
+    .tp-secondary-nav--list-anchor {
+
     }
   }
 }

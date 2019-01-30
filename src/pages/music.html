@@ -1,26 +1,40 @@
 ---
 layout: index
-title: Music
-description: Music has been a part of my life ever since my mom placed speakers on her tummy and played Baker Street by Gerry Rafferty. I still play the tenor saxophone bought by my grandfather from a shop in Manhattan back in 1993. Nowadays I can call myself a mutli-instrumentalist, arranger, composer and performer working across industries such as broadcast TV, mobile game development, indepenednt video and film production. I continue to explore, write and record in Brooklyn.
-meta-title: Tim Schletter
-img-src: assets/img/music-accordion.jpg
+meta-title: Tim Schletter | Music
 ---
 
 <div class="grid-container">
   <div class="grid-x">
-    <div class="cell large-4 large-offset-4 medium-4 small-6">
-      <div class="content-block">
-        <div class="content-block--container">
-          <div class="content-block--image-container">
-            <img class="content-block--image" src="{{root}}{{img-src}}">
-          </div>
-          <div class="space-stack-xl"></div>
-          <div class="content-block--body-container">
-            <h1 class="content-block--title">{{title}}</h1>
-            <p class="content-block--description">{{description}}</p>
-          </div>
-        </div>
-      </div>
+    <div class="cell large-4 large-offset-4 medium-6 medium-offset-3 small-8 small-offset-2">
+      {{> tp-page-header
+        title="Music"
+        description="Music has been a part of my life ever since my mom placed speakers on her tummy and played Baker Street by Gerry Rafferty. I still play the tenor saxophone bought by my grandfather from a shop in Manhattan back in 1993. Nowadays I can call myself a mutli-instrumentalist, arranger, composer and performer working across industries such as broadcast TV, mobile game development, indepenednt video and film production. I continue to explore, write and record in Brooklyn."
+        img-src="assets/img/music-accordion.jpg"
+      }}
+    </div>
+  </div>
+</div>
+
+<div class="tp-audio-block">
+  <div class="tp-audio-block--container">
+    <div class="tp-audio-block--image-container">
+      <img class="tp-audio-block--image" src="{{root}}assets/img/callout/ireland.jpg">
+    </div>
+    <div class="tp-audio-block--body-container">
+      <span class="tp-audio-block--label">New Music</span>
+      <h1 class="tp-audio-block--title">Linger & Lurk</h1>
+      <p class="tp-audio-block--description">Check out my latest composition 'Linger and Lurk' on Soundcloud. This song falls in the ilk of such songs as Stevie Wonder's <a href="https://www.youtube.com/watch?v=6gkqGCnK-nw" target="_blank">Creepin'</a> as it is about the haunting visits for people from your past via dreams. Stylistically this song is inspired by <a target="_blank" href="https://www.youtube.com/watch?v=MNYTYS_gnMY">any of the many wonderful</a> tunes by Kenny Rankin.</p>
+    </div>
+    <div class="tp-audio-block--embed-container">
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/545479413&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="cell large-4 large-offset-4 medium-4 small-6" style="text-align:center; padding-top:9rem;">
+      <p><i>More to come, I promise</i></<p>
     </div>
   </div>
 </div>

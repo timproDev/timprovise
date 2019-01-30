@@ -1,16 +1,13 @@
-// determine what is theme
-// use as many settings variables as you can
-
 //////////////////////
 /// BLOCK__ELEMENT ///
 //////////////////////
 
-.content-block {
-  .content-block--container {
+.tp-page-header {
+  .tp-page-header--container {
       text-align: center;
   }
   // label
-	.content-block--label {
+	.tp-page-header--label {
     width:100%;
     display:block;
     border-bottom:1px dotted $medium-gray;
@@ -18,23 +15,23 @@
     margin:$space-stack-l;
   }
   // image
-	.content-block--image-container {
+	.tp-page-header--image-container {
     @include breakpoint(small down) {
       margin:$space-stack-l;
     }
     margin: 0 auto;
   }
-	.content-block--image {
+	.tp-page-header--image {
     width:100%;
     border-radius: 220px;
     border: 20px solid #f7f7f7;
   }
   // body
-	.content-block--body-container {
+	.tp-page-header--body-container {
     position: relative;
     z-index: 10;
   }
-	.content-block--title {
+	.tp-page-header--title {
     @include space-stack(m);
     line-height:1;
     font-family: $font-family-two;
@@ -42,17 +39,17 @@
     font-size: $global-font-size-xxl * .75;
     color:$secondary-color;
   }
-	.content-block--description {
+	.tp-page-header--description {
     @include space-stack(l);
     @include breakpoint(small down) {
       @include space-stack(xl);
     }
   }
-  .content-block--button-container {
+  .tp-page-header--button-container {
     @include space-stack(l);
   }
   // button
-	.content-block--button {
+	.tp-page-header--button {
     // display:none;
     float: left;
     clear:both;
@@ -67,7 +64,7 @@
     }
   }
   // meta
-	.content-block--metadata	{
+	.tp-page-header--metadata	{
   }
 }
 
@@ -79,8 +76,8 @@
 // has image
 // image top
 
-.content-block {
-    .content-block--container {
+.tp-page-header {
+    .tp-page-header--container {
       // @include transition-mixin(box-shadow 200ms, border 200ms);
       // box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.0);
       &:hover {
@@ -90,49 +87,49 @@
       }
     }
     // label
-    .content-block--label-container {}
-    .content-block--label {}
+    .tp-page-header--label-container {}
+    .tp-page-header--label {}
     // image
-    .content-block--image-container {}
-    .content-block--image {}
+    .tp-page-header--image-container {}
+    .tp-page-header--image {}
     // body
-    .content-block--body-container {}
-    .content-block--title {}
-    .content-block--description {}
+    .tp-page-header--body-container {}
+    .tp-page-header--title {}
+    .tp-page-header--description {}
     // button
-    .content-block--button {
+    .tp-page-header--button {
       &:hover {
         border-bottom:1px dotted $lynch;
       }
     }
     // meta
-    .content-block--metadata	{}
+    .tp-page-header--metadata	{}
 
 
   // show image
   &.show-image {
-    .content-block--container {
+    .tp-page-header--container {
       position: relative;
     }
     // label
-    .content-block--label-container {
+    .tp-page-header--label-container {
       position:absolute;
       padding:0;
     }
-    .content-block--label {}
+    .tp-page-header--label {}
     // image
-    .content-block--image-container {
+    .tp-page-header--image-container {
       display: block;
     }
-    .content-block--image {}
+    .tp-page-header--image {}
     // body
-    .content-block--body-container {}
-    .content-block--title {}
-    .content-block--description {}
+    .tp-page-header--body-container {}
+    .tp-page-header--title {}
+    .tp-page-header--description {}
     // button
-    .content-block--button {}
+    .tp-page-header--button {}
     // meta
-    .content-block--metadata	{}
+    .tp-page-header--metadata	{}
   }
 
 
@@ -141,21 +138,21 @@
 
   // show labels
   &.show-labels {
-    .content-block--container {}
+    .tp-page-header--container {}
     // label
-    .content-block--label-container {}
-    .content-block--label {}
+    .tp-page-header--label-container {}
+    .tp-page-header--label {}
     // image
-    .content-block--image-container {}
-    .content-block--image {}
+    .tp-page-header--image-container {}
+    .tp-page-header--image {}
     // body
-    .content-block--body-container {}
-    .content-block--title {}
-    .content-block--description {}
+    .tp-page-header--body-container {}
+    .tp-page-header--title {}
+    .tp-page-header--description {}
     // button
-    .content-block--button {}
+    .tp-page-header--button {}
     // meta
-    .content-block--metadata	{}
+    .tp-page-header--metadata	{}
   }
 }
 
@@ -163,23 +160,23 @@
 /// THEME ////
 //////////////
 
-.content-block {
+.tp-page-header {
   &.modification-class {
-    .content-block--container {}
+    .tp-page-header--container {}
     // label
-    .content-block--label-container {}
-    .content-block--label {}
+    .tp-page-header--label-container {}
+    .tp-page-header--label {}
     // image
-    .content-block--image-container {}
-    .content-block--image {}
+    .tp-page-header--image-container {}
+    .tp-page-header--image {}
     // body
-    .content-block--body-container {}
-    .content-block--title {}
-    .content-block--description {}
+    .tp-page-header--body-container {}
+    .tp-page-header--title {}
+    .tp-page-header--description {}
     // button
-    .content-block--button {}
+    .tp-page-header--button {}
     // meta
-    .content-block--metadata	{}
+    .tp-page-header--metadata	{}
   }
 }
 

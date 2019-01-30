@@ -1,0 +1,114 @@
+//////////////////////
+/// BLOCK__ELEMENT ///
+//////////////////////
+
+.tp-audio-block {
+  // @extend .clearfix;
+  .tp-audio-block--container {
+    background-color:$secondary-color;
+    position: relative;
+    overflow:hidden;
+    text-align: center;
+    padding:$space-xxxl 0;
+    margin:$space-xl 0;
+    @include breakpoint(small down) {
+      padding:$space-xl 0;
+    }
+    @include breakpoint(medium) {
+      padding:$space-xxl 0;
+    }
+    @include breakpoint(large up) {
+      padding:$space-xxxl 0;
+    }
+  }
+  // image
+	.tp-audio-block--image-container {
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    margin:0 auto;
+    z-index:1;
+  }
+	.tp-audio-block--image {
+    width:100%;
+    opacity: .25;
+  }
+  // body
+	.tp-audio-block--body-container {
+    z-index:2;
+    position: relative;
+    margin:0 auto;
+    color: $white;
+    @include breakpoint(small down) {
+      width:80%;
+    }
+    @include breakpoint(medium) {
+      width:60%;
+    }
+    @include breakpoint(large up) {
+      width:40%;
+    }
+  }
+  // label
+  .tp-audio-block--label {
+
+  }
+	.tp-audio-block--title {
+    font-size: $global-font-size-xxl;
+    font-family: $font-family-two;
+  }
+	.tp-audio-block--description {
+    a {
+      color:$white;
+      font-weight: bold;
+      line-height:1;
+      text-shadow:0 1px 3px transparent;
+      border-bottom:1px solid transparent;
+      display:inline-block;
+      margin:0;
+      padding:0;
+      @include transition-mixin(border $trans-speed);
+      &:hover {
+        border-bottom:1px solid $white;
+      }
+    }
+  }
+  .tp-audio-block--embed-container {
+    z-index:2;
+    position: relative;
+    margin:0 auto;
+    padding-top:$space-m;
+    @include breakpoint(small down) {
+      width:80%;
+    }
+    @include breakpoint(medium) {
+      width:60%;
+    }
+    @include breakpoint(large up) {
+      width:30%;
+    }
+  }
+}
+
+//////////////
+/// STATE ////
+//////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////IE10+ specific styles go here //////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+// NOTES: @extend is not supported within {media} ////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {}
+
+////////////////////////
+/// IE MEDIA QUERIES ///
+////////////////////////
+
+@media only screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    @media only screen and (max-width: 1024px) and (min-width: 641px) {}
+    @media only screen and (max-width: 640px) {}
+}
