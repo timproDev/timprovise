@@ -9,20 +9,21 @@
     bottom:-50%;
     left:0;
     right:0;
-    padding:1rem 8px;
+    padding:4px 8px;
+    font-size:80%;
     opacity:.95;
     line-height:1.5;
     box-shadow:0 1px 8px -2px $secondary-color;
     background-color:$white;
     color:$secondary-color;
-    width:60%;
+    max-width:35%;
     margin:0 auto;
     text-align: center;
     @include transition-mixin(bottom $trans-speed);
   }
   &:hover {
     .tp-image--caption {
-      bottom:10%;
+      bottom:5%;
     }
   }
 }

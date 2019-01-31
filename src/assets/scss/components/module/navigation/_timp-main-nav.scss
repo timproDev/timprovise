@@ -2,6 +2,10 @@
   background-color:$secondary-color;
   padding-top:1rem;
   padding-bottom:1rem;
+  position: fixed;
+  top:0;
+  width:100%;
+  z-index:1000;
   @extend .clearfix;
 
   .tp-home-logo {
@@ -27,9 +31,11 @@
   }
   .tp-main-nav--list-item {
     display: inline-block;
+    margin-left:1.25rem;
   }
   .tp-main-nav--list-anchor {
-    font-size: $global-font-size-m;
+    font-family: $font-family-two;
+    font-size: $global-font-size-l;
     display: inline-block;
     vertical-align: middle;
     padding: .45rem .5rem;
@@ -63,13 +69,17 @@
 
 
 .tp-secondary-nav {
-  background-color: $bar-color;
-  @include breakpoint(medium down) {
-    // position: fixed;
-    // bottom:0;
-    // left:0;
-    // z-index: 100;
-    // width:100%;
+  position: fixed;
+  top:82px;
+  width:100%;
+  z-index:1000;
+  background-color: $secondary-color-dark;
+  @include transition-mixin(background-color $trans-speed);
+  &:hover {
+    background-color:$bar-color;
+    .tp-secondary-nav--list-anchor {
+      color: scale-color($secondary-color, $lightness: 25%);
+    }
   }
   .tp-secondary-nav--list {
     margin:0 1.5rem 0 0;
@@ -80,11 +90,11 @@
     margin:0;
   }
   .tp-secondary-nav--list-anchor {
-    font-size: $global-font-size-m;
-    font-family: $font-family-two;
+    font-size: $global-font-size-m * .85;
+    // font-family: $font-family-two;
     display: inline-block;
     vertical-align: middle;
-    padding: .5rem .5rem .5rem 1.35rem;
+    padding: .5rem .5rem .5rem 1.45rem;
     color: scale-color($secondary-color, $lightness: 50%);
     &:hover {
       color: scale-color($secondary-color, $lightness: 0%);
@@ -103,15 +113,17 @@
     &.mixcloud-icon {
       background-image:url('/assets/img/icons/social/mixcloud.svg');
       background-size:20px 20px;
+      background-position:0px -20px;
       &:hover {
-        background-position:0 9px;
+        background-position:0 8px;
       }
     }
     &.soundcloud-icon {
       background-image:url('/assets/img/icons/social/soundcloud.svg');
       background-size:20px 20px;
+      background-position:0px -20px;
       &:hover {
-        background-position:0 10px;
+        background-position:0 8px;
       }
     }
     &.linkedin-icon {
@@ -119,7 +131,7 @@
       background-size:16px 16px;
       background-position:2px -20px;
       &:hover {
-        background-position:2px 10px;
+        background-position:2px 9px;
       }
     }
     &.blog-icon {
@@ -127,7 +139,7 @@
       background-size:20px 20px;
       background-position:2px -20px;
       &:hover {
-        background-position:2px 8px;
+        background-position:2px 7px;
       }
     }
     &.dribbble-icon {
@@ -135,7 +147,7 @@
       background-size:16px 16px;
       background-position:3px -20px;
       &:hover {
-        background-position:3px 10px;
+        background-position:3px 9px;
       }
     }
     &.d3-icon {
@@ -143,7 +155,7 @@
       background-size:16px 16px;
       background-position:3px -20px;
       &:hover {
-        background-position:3px 10px;
+        background-position:3px 9px;
       }
     }
   }
