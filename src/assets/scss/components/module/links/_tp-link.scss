@@ -1,0 +1,21 @@
+.tp-link {
+  margin:$space-xxl;
+  font-family: $font-family-two;
+  padding:.5rem 0;
+  display: inline-block;
+  font-size: 1.15rem;
+  line-height: 1;
+  border-bottom:1px solid $secondary-color;
+  &:after {
+    content: '>';
+    display: inline-block;
+    background-color: $secondary-color;;
+    margin-left: .5rem;
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+  }
+}
