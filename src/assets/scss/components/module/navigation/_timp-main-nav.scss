@@ -1,30 +1,84 @@
+.tp-masthead {
+  background-color:$secondary-color;
+  height:auto;
+  @include breakpoint(medium down) {
+    height:40px;
+    text-align: center;
+    z-index:10;
+    position: relative;
+  }
+  .active {
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.tp-home-logo {
+  float: left;
+  font-family: $font-family-two;
+  font-size: $global-font-size-l * 1.15;
+  text-transform:none;
+  color: scale-color($white, $lightness: 0%);
+  padding:1.25rem 0 0 1.5rem;
+  @include transition-mixin(color $trans-speed-rapid);
+  @include breakpoint(medium down) {
+    font-size: $global-font-size-l * .85;
+    padding:.25rem;
+    margin:0 auto;
+    float: none;
+    display: inline-block;
+  }
+  &:after {
+    display: none;
+  }
+  &:hover {
+    color:$white;
+  }
+}
+
+.mobile-brgr {
+  position: absolute;
+  right:5px;
+  top:0px;
+  z-index:200;
+  .mobile-brgr--button {
+    text-indent:-9999px;
+    overflow: hidden;
+    display:block;
+    width:40px;
+    height:40px;
+    border:1px solid $secondary-color;;
+    background-image:url('/assets/img/icons/brgr-white.svg');
+    background-repeat: no-repeat;
+    background-position:8px;
+    background-size:20px;
+  }
+}
+.mobile-more {
+  position: absolute;
+  left:5px;
+  top:0px;
+  z-index:200;
+  .mobile-more--button {
+    text-indent:-9999px;
+    overflow: hidden;
+    display:block;
+    width:40px;
+    height:40px;
+    border:1px solid $secondary-color;;
+    background-image:url('/assets/img/icons/more-white.svg');
+    background-repeat: no-repeat;
+    background-position:8px;
+    background-size:20px;
+  }
+}
+
 .tp-main-nav {
   background-color:$secondary-color;
   padding-top:1rem;
   padding-bottom:1rem;
-  position: fixed;
-  top:0;
-  width:100%;
-  z-index:1000;
   @extend .clearfix;
 
-  .tp-home-logo {
-    float: left;
-    display: block;
-    font-family: $font-family-two;
-    font-size: $global-font-size-l;
-    text-transform:none;
-    color: scale-color($white, $lightness: 0%);
-    padding: .25rem;
-    margin:0 1.5rem;
-    &:after {
-      display: none;
-    }
-    &:hover {
-      background-color: scale-color($secondary-color, $lightness: 0%);
-      color: scale-color($white, $lightness: 0%);
-    }
-  }
   .tp-main-nav--list {
     float: right;
     margin:0 1.5rem;
@@ -39,8 +93,7 @@
     display: inline-block;
     vertical-align: middle;
     padding: .45rem .5rem;
-    background-color: scale-color($secondary-color, $lightness: 0%);
-    color: scale-color($white, $lightness: -20%);
+    color: scale-color($white, $lightness: 0%);
     position: relative;
     z-index:2;
     overflow: hidden;
@@ -54,11 +107,10 @@
     	bottom: -10px;
     	left: 0;
     	background: $bar-color;
-      @include transition-mixin(bottom $trans-speed);
+      @include transition-mixin(bottom $trans-speed-rapid);
     }
     @include transition-mixin(color $trans-speed);
     &:hover, &.active {
-      color: scale-color($white, $lightness: 0%);
       &:after {
       	bottom: 0;
       }
@@ -69,10 +121,7 @@
 
 
 .tp-secondary-nav {
-  position: fixed;
-  top:82px;
   width:100%;
-  z-index:1000;
   background-color: $secondary-color-dark;
   @include transition-mixin(background-color $trans-speed);
   &:hover {
@@ -91,7 +140,6 @@
   }
   .tp-secondary-nav--list-anchor {
     font-size: $global-font-size-m * .85;
-    // font-family: $font-family-two;
     display: inline-block;
     vertical-align: middle;
     padding: .5rem .5rem .5rem 1.45rem;
@@ -101,7 +149,7 @@
     }
     background-repeat: no-repeat;
     background-position:0 -20px;
-    @include transition-mixin(color $trans-speed, background-position $trans-speed);
+    @include transition-mixin(color $trans-speed, background-position $trans-speed-rapid);
     &.twitter-icon {
       background-image:url('/assets/img/icons/social/twitter.svg');
       background-size:16px 16px;
@@ -168,7 +216,8 @@
 @include breakpoint(medium down) {
   .tp-main-nav {
     text-align: center;
-    padding-bottom:$space-m * 2;
+    background-color:$secondary-color-dark;
+    padding-bottom:1.25rem;
     .tp-home-logo {
       margin:0 auto;
       float: none;
@@ -201,26 +250,30 @@
   .tp-secondary-nav {
     .tp-secondary-nav--list {
       text-align: center;
-    }
-    .tp-secondary-nav--list-item {
+      padding-bottom:.25rem;
       margin:0;
     }
+    .tp-secondary-nav--list-item {
+      display: block;
+      width: 100%;
+      &:first-of-type {
+        .tp-secondary-nav--list-anchor {
+          border-top:none;
+        }
+      }
+    }
     .tp-secondary-nav--list-anchor {
+      padding: .5rem 1.45rem .5rem 1.45rem;
+      border-top:1px solid scale-color($secondary-color, $lightness:5%);
     }
   }
 }
 
 @include breakpoint(small down) {
   .tp-secondary-nav {
-    display: none;
-    .tp-secondary-nav--list {
-    }
-    .tp-secondary-nav--list-item {
-      width:100%;
-    }
-    .tp-secondary-nav--list-anchor {
-
-    }
+    .tp-secondary-nav--list {}
+    .tp-secondary-nav--list-item {}
+    .tp-secondary-nav--list-anchor {}
   }
 }
 
@@ -243,3 +296,10 @@
 // }
 //
 // .tp-icon-text {}
+
+
+
+.seconday-nav--js-icon {
+  display: block;
+  background-color: red;
+}

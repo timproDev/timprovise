@@ -89,6 +89,7 @@ $global-lineheight-xs: $global-lineheight / 2;
 $foundation-palette: (
   primary: #616161,
   secondary: #253445,
+  // secondary: salmon,
   success: #bfbfbf,
   warning: #dfdfdf,
   alert: #cc4b37,
@@ -934,8 +935,14 @@ $xy-block-grid-max: 8;
 // -----------------------------------
 
 $font-family-two: 'Oleo Script', cursive;
-$trans-speed: 300ms;
+$trans-speed: 450ms;
+$trans-speed-rapid: 250ms;
 $bar-color:#f7f7f7;
+$complimentary-color: #992d46;
+$secondary-color-dark:scale-color($secondary-color, $lightness: -25%);
+$media-block-image-size: 200px;
+
+
 .clearfix {
   &:after {
     content: "";
@@ -943,5 +950,29 @@ $bar-color:#f7f7f7;
     clear: both;
   }
 }
-$secondary-color-dark:#15202c;
-$media-block-image-size: 240px;
+.background-color {
+  &.secondary {
+    background-color:$secondary-color;
+    span, a, li, p, h1, h2, h3 ,h4, h5 {
+      color:$white !important;
+    }
+  }
+  &.grey-light {
+    background-color:#f3f3f3;
+  }
+  &.secondary-dark {
+    background-color:$secondary-color-dark;
+    span, a, li, p, h1, h2, h3 ,h4, h5 {
+      color:$white !important;
+    }
+  }
+  &.complimentary {
+    background-color:$complimentary-color;
+    span, a, li, p, h1, h2, h3 ,h4, h5 {
+      color:$white !important;
+    }
+  }
+}
+.tp-border-bottom {
+  border-bottom: 20px solid $bar-color;
+}

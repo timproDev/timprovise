@@ -1,34 +1,44 @@
-<header  class="tp-main-nav">
-	<a class="tp-home-logo" href="index.html">Timprovise</a>
-	<ul class="tp-main-nav--list">
-		{{#each global.nav}}
-	  <li class="tp-main-nav--list-item">
-			<a class="tp-main-nav--list-anchor {{#ifpage page}}active{{/ifpage}}" href="{{link}}">{{text}}</a></li>
-	  {{/each}}
-	</ul>
-</header>
-<div class="tp-secondary-nav">
-	<ul class="tp-secondary-nav--list">
-		<li class="tp-secondary-nav--list-item">
-			<a target="_blank" href="//www.linkedin.com/in/schletter" class="tp-secondary-nav--list-anchor linkedin-icon">linkedin</a>
-		</li>
-		<li class="tp-secondary-nav--list-item">
-			<a target="_blank" href="//bl.ocks.org/timproDev" class="tp-secondary-nav--list-anchor d3-icon">bl.ocks</a>
-		</li>
-		<li class="tp-secondary-nav--list-item">
-			<a target="_blank" href="//dribbble.com/timprovise" class="tp-secondary-nav--list-anchor dribbble-icon">dribbble</a>
-		</li>
-		<li class="tp-secondary-nav--list-item">
-			<a target="_blank" href="//timprodev.github.io/" class="tp-secondary-nav--list-anchor blog-icon">my blog</a>
-		</li>
-		<li class="tp-secondary-nav--list-item">
-			<a target="_blank" href="//twitter.com/MomAndDadsSon" class="tp-secondary-nav--list-anchor twitter-icon">twitter</a>
-		</li>
-		<li class="tp-secondary-nav--list-item">
-			<a target="_blank" href="//www.mixcloud.com/timprovise/uploads/" class="tp-secondary-nav--list-anchor mixcloud-icon">mixcloud</a>
-		</li>
-		<li class="tp-secondary-nav--list-item">
-			<a target="_blank" href="//soundcloud.com/timschletter" class="tp-secondary-nav--list-anchor soundcloud-icon">soundcloud</a>
-		</li>
+<div class="tp-masthead">
+	<a class="tp-home-logo {{#ifpage 'index'}}active{{/ifpage}}" href="index.html">Timprovise</a>
+	<div class="title-bar mobile-brgr" data-responsive-toggle="tpMainNav" data-hide-for="large">
+		<button class="mobile-brgr--button" data-toggle="tpMainNav" type="button">Click!</button>
+	</div>
+	<div class="title-bar mobile-more" data-responsive-toggle="tpSecondaryNav" data-hide-for="large">
+		<button class="mobile-more--button" data-toggle="tpSecondaryNav" type="button">2nd!</button>
+	</div>
+	<div class="tp-main-nav" id="tpMainNav">
+		<ul class="tp-main-nav--list">
+			{{#each global.nav}}
+		  <li class="tp-main-nav--list-item">
+				<a class="tp-main-nav--list-anchor {{#ifpage page}}active{{/ifpage}}" href="{{link}}">{{text}}</a></li>
+		  {{/each}}
 		</ul>
+	</div>
+	<!-- <div class="tp-secondary-nav" id="secondary-nav"> -->
+	<div class="tp-secondary-nav" id="tpSecondaryNav">
+		<ul class="tp-secondary-nav--list">
+			<li class="tp-secondary-nav--list-item">
+				<a target="_blank" href="//www.linkedin.com/in/schletter" class="tp-secondary-nav--list-anchor linkedin-icon">linkedin</a>
+			</li>
+			<li class="tp-secondary-nav--list-item">
+				<a target="_blank" href="//bl.ocks.org/timproDev" class="tp-secondary-nav--list-anchor d3-icon">bl.ocks</a>
+			</li>
+			<li class="tp-secondary-nav--list-item">
+				<a target="_blank" href="//dribbble.com/timprovise" class="tp-secondary-nav--list-anchor dribbble-icon">dribbble</a>
+			</li>
+			<li class="tp-secondary-nav--list-item">
+				<a target="_blank" href="//timprodev.github.io/" class="tp-secondary-nav--list-anchor blog-icon">my blog</a>
+			</li>
+			<li class="tp-secondary-nav--list-item">
+				<a target="_blank" href="//twitter.com/MomAndDadsSon" class="tp-secondary-nav--list-anchor twitter-icon">twitter</a>
+			</li>
+			<li class="tp-secondary-nav--list-item">
+				<a target="_blank" href="//www.mixcloud.com/timprovise/uploads/" class="tp-secondary-nav--list-anchor mixcloud-icon">mixcloud</a>
+			</li>
+			<li class="tp-secondary-nav--list-item">
+				<a target="_blank" href="//soundcloud.com/timschletter" class="tp-secondary-nav--list-anchor soundcloud-icon">soundcloud</a>
+			</li>
+			</ul>
+	</div>
+
 </div>

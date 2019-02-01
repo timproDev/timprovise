@@ -16,6 +16,7 @@
   }
   // image
 	.tp-page-header--image-container {
+    max-width:400px;
     @include breakpoint(small down) {
       margin:$space-stack-l;
     }
@@ -38,6 +39,9 @@
     font-weight: bold;
     font-size: $global-font-size-xxl * .75;
     color:$secondary-color;
+    @include breakpoint(small down) {
+      font-size: $global-font-size-xl;
+    }
   }
 	.tp-page-header--description {
     @include space-stack(l);

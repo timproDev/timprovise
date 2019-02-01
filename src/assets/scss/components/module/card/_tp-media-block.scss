@@ -4,8 +4,6 @@
 .tp-media-block {
   .tp-media-block--container {
       text-align: center;
-      // margin-top:$space-xxl;
-      // border:1px solid #ececec;
       padding: $space-l;
       border-radius:3px;
   }
@@ -19,15 +17,12 @@
   }
   // image
 	.tp-media-block--image-container {
-    @include breakpoint(small down) {
-      margin:$space-stack-l;
-    }
     margin: 0 auto;
     width:$media-block-image-size;
     height:$media-block-image-size;
     margin: 0 auto;
     border-radius: 220px;
-    border: 20px solid #f7f7f7;
+    border: 20px solid $bar-color;
     overflow: hidden;
     @include transition-mixin(transform $trans-speed);
   }
@@ -43,7 +38,7 @@
 	.tp-media-block--title {
     @include space-stack(m);
     line-height:1;
-    font-size: $global-font-size-xl;
+    font-size: $global-font-size-l * 1.25;
     color:$secondary-color;
   }
 	.tp-media-block--description {
@@ -139,7 +134,7 @@
         opacity:0;
         bottom:0;
         background-image: url('/assets/img/icons/open-new-white.svg');
-        @include transition-mixin(opacity $trans-speed, bottom $trans-speed);
+        @include transition-mixin(opacity $trans-speed, bottom $trans-speed-rapid);
       }
       &:hover {
         &:after {
