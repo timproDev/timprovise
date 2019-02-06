@@ -36,7 +36,7 @@
     @include space-stack(m);
     line-height:1;
     font-family: $font-family-two;
-    font-weight: bold;
+    font-weight: normal;
     font-size: $global-font-size-xxl * .75;
     color:$secondary-color;
     @include breakpoint(small down) {
@@ -108,56 +108,6 @@
     }
     // meta
     .tp-page-header--metadata	{}
-
-
-  // show image
-  &.show-image {
-    .tp-page-header--container {
-      position: relative;
-    }
-    // label
-    .tp-page-header--label-container {
-      position:absolute;
-      padding:0;
-    }
-    .tp-page-header--label {}
-    // image
-    .tp-page-header--image-container {
-      display: block;
-    }
-    .tp-page-header--image {}
-    // body
-    .tp-page-header--body-container {}
-    .tp-page-header--title {}
-    .tp-page-header--description {}
-    // button
-    .tp-page-header--button {}
-    // meta
-    .tp-page-header--metadata	{}
-  }
-
-
-
-
-
-  // show labels
-  &.show-labels {
-    .tp-page-header--container {}
-    // label
-    .tp-page-header--label-container {}
-    .tp-page-header--label {}
-    // image
-    .tp-page-header--image-container {}
-    .tp-page-header--image {}
-    // body
-    .tp-page-header--body-container {}
-    .tp-page-header--title {}
-    .tp-page-header--description {}
-    // button
-    .tp-page-header--button {}
-    // meta
-    .tp-page-header--metadata	{}
-  }
 }
 
 //////////////
@@ -165,7 +115,7 @@
 //////////////
 
 .tp-page-header {
-  &.modification-class {
+  &.home-hero {
     .tp-page-header--container {}
     // label
     .tp-page-header--label-container {}
@@ -175,7 +125,12 @@
     .tp-page-header--image {}
     // body
     .tp-page-header--body-container {}
-    .tp-page-header--title {}
+    .tp-page-header--title {
+      font-size: 5rem;
+      @include breakpoint(medium down) {
+        font-size: 3rem;
+      }
+    }
     .tp-page-header--description {}
     // button
     .tp-page-header--button {}

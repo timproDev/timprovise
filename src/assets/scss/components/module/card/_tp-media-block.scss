@@ -6,6 +6,7 @@
       text-align: center;
       padding: $space-l;
       border-radius:3px;
+      height:auto;
   }
   // label
 	.tp-media-block--label {
@@ -38,7 +39,8 @@
 	.tp-media-block--title {
     @include space-stack(m);
     line-height:1;
-    font-size: $global-font-size-l * 1.25;
+    font-family: $font-family-two;
+    font-size: $global-font-size-l * 1.5;
     color:$secondary-color;
   }
 	.tp-media-block--description {

@@ -934,14 +934,25 @@ $xy-block-grid-max: 8;
 // 57. Parking Lot for custom settings
 // -----------------------------------
 
-$font-family-two: 'Oleo Script', cursive;
+$font-v-6:'Love Ya Like A Sister', cursive;
+$font-v-5:'Bungee', cursive;
+$font-v-4:'Megrim', cursive;
+$font-v-3:'Bungee Outline', cursive;
+$font-v-2:'Sedgwick Ave Display', cursive;
+$font-v-1: 'Staatliches', cursive;
+$font-v-0:'Sanchez', serif;
+$font-family-one: $font-v-0;
+// $font-family-two: 'Oleo Script', cursive;
+$font-family-two: $font-v-2;
+// font-family: 'Love Ya Like A Sister', cursive;
+
 $trans-speed: 450ms;
 $trans-speed-rapid: 250ms;
 $bar-color:#f7f7f7;
 $complimentary-color: #992d46;
 $secondary-color-dark:scale-color($secondary-color, $lightness: -25%);
 $media-block-image-size: 200px;
-
+$music-color:#7c3556;
 
 .clearfix {
   &:after {
@@ -968,6 +979,12 @@ $media-block-image-size: 200px;
   }
   &.complimentary {
     background-color:$complimentary-color;
+    span, a, li, p, h1, h2, h3 ,h4, h5 {
+      color:$white !important;
+    }
+  }
+  &.music-color {
+    background-color:$music-color;
     span, a, li, p, h1, h2, h3 ,h4, h5 {
       color:$white !important;
     }

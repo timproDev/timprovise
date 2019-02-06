@@ -20,6 +20,9 @@
     margin:0 auto;
     text-align: center;
     @include transition-mixin(bottom $trans-speed);
+    @include breakpoint(medium down) {
+      bottom:5%;
+    }
   }
   &:hover {
     .tp-image--caption {

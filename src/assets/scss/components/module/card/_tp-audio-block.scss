@@ -10,7 +10,20 @@
     overflow:hidden;
     text-align: center;
     padding:$space-xxxl 0;
-    margin:$space-xl 0;
+    margin:0;
+    &.tp-bg-image {
+      &:after {
+        content: "";
+        background-image: url('/assets/img/callout/ireland.jpg');
+        background-size: cover;
+        opacity: 0.25;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        position: absolute;
+      }
+    }
     @include breakpoint(small down) {
       padding:$space-xl 0;
     }
@@ -23,16 +36,17 @@
   }
   // image
 	.tp-audio-block--image-container {
-    position: absolute;
-    top:0;
-    left:0;
-    right:0;
-    margin:0 auto;
-    z-index:1;
+    // position: absolute;
+    // top:0;
+    // left:0;
+    // right:0;
+    // margin:0 auto;
+    // z-index:1;
+    display: none;
   }
 	.tp-audio-block--image {
-    width:100%;
-    opacity: .25;
+    // width:100%;
+    // opacity: .25;
   }
   // body
 	.tp-audio-block--body-container {
@@ -131,6 +145,13 @@
       // color: $white;
       color:$secondary-color;
       padding:$space-l;
+      @include breakpoint(medium down) {
+        width:100%;
+        float: none;
+        text-align: center;
+        padding-bottom: 0;
+        padding:0;
+      }
     }
     // label
     .tp-audio-block--label {
@@ -163,6 +184,11 @@
       float: right;
       width:50%;
       padding:$space-l $space-l $space-l 0;
+      @include breakpoint(medium down) {
+        width:100%;
+        float: none;
+        padding:0;
+      }
     }
   }
 }
