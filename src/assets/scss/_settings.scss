@@ -933,6 +933,12 @@ $xy-block-grid-max: 8;
 
 // 57. Parking Lot for custom settings
 // -----------------------------------
+$font-v-12: 'Raleway', sans-serif;
+$font-v-11: 'Questrial', sans-serif;
+$font-v-10: 'Play', sans-serif;
+$font-v-9: 'Playfair Display', serif;
+$font-v-8: 'Gilda Display', serif;
+$font-v-7: 'Racing Sans One', cursive;
 
 $font-v-6:'Love Ya Like A Sister', cursive;
 $font-v-5:'Bungee', cursive;
@@ -941,10 +947,10 @@ $font-v-3:'Bungee Outline', cursive;
 $font-v-2:'Sedgwick Ave Display', cursive;
 $font-v-1: 'Staatliches', cursive;
 $font-v-0:'Sanchez', serif;
-$font-family-one: $font-v-0;
-// $font-family-two: 'Oleo Script', cursive;
-$font-family-two: $font-v-2;
-// font-family: 'Love Ya Like A Sister', cursive;
+
+$font-family-one: $font-v-12;
+// $font-family-one: $font-v-8;
+$font-family-two: $font-v-9;
 
 $trans-speed: 450ms;
 $trans-speed-rapid: 250ms;
