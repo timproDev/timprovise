@@ -1,5 +1,4 @@
 .tp-masthead {
-  background-color:$secondary-color;
   height:auto;
   @include breakpoint(medium down) {
     height:40px;
@@ -12,15 +11,15 @@
     pointer-events: none;
   }
 }
-
 .tp-home-logo {
   float: left;
   font-family: $font-family-two;
-  font-size: $global-font-size-l * 1.15;
+  font-size: $global-font-size-l * 1.25;
   text-transform:none;
-  color: scale-color($white, $lightness: 0%);
-  padding:1.25rem 0 0 1.5rem;
-  @include transition-mixin(color $trans-speed-rapid);
+  color: $secondary-color;
+  padding:.45rem 0 0 0;
+  margin-left:1rem;
+  position: relative;
   @include breakpoint(medium down) {
     font-size: $global-font-size-l * .85;
     padding:.25rem;
@@ -28,11 +27,8 @@
     float: none;
     display: inline-block;
   }
-  &:after {
-    display: none;
-  }
   &:hover {
-    color:$white;
+    color:inherit;
   }
 }
 
@@ -72,9 +68,6 @@
 }
 
 .tp-main-nav {
-  background-color:$secondary-color;
-  padding-top:1rem;
-  padding-bottom:1rem;
   @extend .clearfix;
 
   .tp-main-nav--list {
@@ -88,30 +81,29 @@
   }
   .tp-main-nav--list-anchor {
     font-family: $font-family-two;
-    font-size: $global-font-size-l;
+    font-size: $global-font-size-l * 1.25;
     display: inline-block;
     vertical-align: middle;
-    padding: .45rem 0rem;
-    color: scale-color($white, $lightness: 0%);
+    padding: .45rem 0rem .25rem 0;
+    color: $secondary-color;
     position: relative;
     z-index:2;
     overflow: hidden;
-
     &:after {
       content: '';
     	position: absolute;
     	z-index: -1;
-    	width: 100%;
+    	width: 0;
     	height: 3px;
-    	bottom: -10px;
-    	left: 0;
-    	background: $bar-color;
-      @include transition-mixin(bottom $trans-speed-rapid);
+    	bottom: 0px;
+    	left: 50%;
+    	background: $secondary-color;
+      @include transition-mixin(left $trans-speed-rapid, width $trans-speed-rapid);
     }
-    @include transition-mixin(color $trans-speed);
     &:hover, &.active {
       &:after {
-      	bottom: 0;
+      	width:100%;
+        left:0;
       }
     }
   }
@@ -142,7 +134,7 @@
     display: inline-block;
     vertical-align: middle;
     padding: .5rem .5rem .5rem 1.45rem;
-    color: scale-color($secondary-color, $lightness: 50%);
+    color: scale-color($secondary-color, $lightness: 80%);
     &:hover {
       color: scale-color($secondary-color, $lightness: 0%);
     }

@@ -77,12 +77,11 @@
       color:$white;
       font-weight: bold;
       line-height:1;
-      text-shadow:0 1px 3px transparent;
       border-bottom:1px solid transparent;
       display:inline-block;
       margin:0;
       padding:0;
-      @include transition-mixin(border $trans-speed);
+      @include transition-mixin(border $trans-speed-rapid);
       &:hover {
         border-bottom:1px solid $white;
       }
@@ -162,20 +161,6 @@
       font-family: $font-family-two;
     }
     .tp-audio-block--description {
-      a {
-        color:$secondary-color;
-        font-weight: bold;
-        line-height:1;
-        text-shadow:0 1px 3px transparent;
-        border-bottom:1px solid transparent;
-        display:inline-block;
-        margin:0;
-        padding:0;
-        @include transition-mixin(border $trans-speed);
-        &:hover {
-          border-bottom:1px solid $secondary-color;
-        }
-      }
     }
     .tp-audio-block--embed-container {
       z-index:2;

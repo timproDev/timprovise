@@ -33,6 +33,9 @@
     z-index: 10;
   }
 	.tp-page-header--title {
+    span {
+      font-family: $font-family-two;
+    }
     @include space-stack(m);
     line-height:1;
     font-family: $font-family-two;
@@ -126,7 +129,7 @@
     // body
     .tp-page-header--body-container {}
     .tp-page-header--title {
-      font-size: 5rem;
+      font-size: 4rem;
       @include breakpoint(medium down) {
         font-size: 3rem;
       }

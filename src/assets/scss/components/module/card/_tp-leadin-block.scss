@@ -1,15 +1,15 @@
 //////////////////////
 /// BLOCK__ELEMENT ///
 //////////////////////
-.tp-media-block {
-  .tp-media-block--container {
+.tp-leadin-block {
+  .tp-leadin-block--container {
       text-align: center;
       padding: $space-l;
       border-radius:3px;
       height:auto;
   }
   // label
-	.tp-media-block--label {
+	.tp-leadin-block--label {
     width:100%;
     display:block;
     border-bottom:1px dotted $medium-gray;
@@ -17,7 +17,7 @@
     margin:$space-stack-l;
   }
   // image
-	.tp-media-block--image-container {
+	.tp-leadin-block--image-container {
     margin: 0 auto;
     width:$media-block-image-size;
     height:$media-block-image-size;
@@ -27,39 +27,39 @@
     overflow: hidden;
     @include transition-mixin(transform $trans-speed);
   }
-	.tp-media-block--image {
+	.tp-leadin-block--image {
     width: 100%;
     display: block;
   }
   // body
-	.tp-media-block--body-container {
+	.tp-leadin-block--body-container {
     position: relative;
     z-index: 10;
   }
-	.tp-media-block--title {
+	.tp-leadin-block--title {
     @include space-stack(m);
     line-height:1;
     font-family: $font-family-two;
-    font-size: $global-font-size-l * 1.5;
+    font-size: $global-font-size-l * 1.25;
     color:$secondary-color;
   }
-	.tp-media-block--description {
+	.tp-leadin-block--description {
     @include space-stack(l);
     @include breakpoint(small down) {
       @include space-stack(xl);
     }
   }
-  .tp-media-block--cta {
+  .tp-leadin-block--cta {
     margin-bottom:0;
     padding:$space-m $space-l;
     border-radius:3px;
     border:1px solid #ececec;
   }
-  .tp-media-block--button-container {
+  .tp-leadin-block--button-container {
     @include space-stack(l);
   }
   // button
-	.tp-media-block--button {
+	.tp-leadin-block--button {
     // display:none;
     display:block;
     color:$lynch;
@@ -72,7 +72,7 @@
     }
   }
   // meta
-	.tp-media-block--metadata	{
+	.tp-leadin-block--metadata	{
   }
 }
 
@@ -81,16 +81,16 @@
 //////////////
 
 
-.tp-media-block {
-    .tp-media-block--container {
+.tp-leadin-block {
+    .tp-leadin-block--container {
       position: relative;
 
       @include transition-mixin(box-shadow $trans-speed, border $trans-speed, background-color $trans-speed);
       box-shadow: 0px 2px 20px -4px rgba(0,0,0,0.0);
-      .tp-media-block--image,
-      .tp-media-block--image-container,
-      .tp-media-block--title,
-      .tp-media-block--description {
+      .tp-leadin-block--image,
+      .tp-leadin-block--image-container,
+      .tp-leadin-block--title,
+      .tp-leadin-block--description {
         @include transition-mixin(margin $trans-speed, border-color $trans-speed, color $trans-speed);
       }
       &:hover {
@@ -98,17 +98,17 @@
         cursor: pointer;
         background-color:$secondary-color;
         // image
-        .tp-media-block--image-container {
+        .tp-leadin-block--image-container {
           border-color:$secondary-color-dark;
         }
-        .tp-media-block--image {
+        .tp-leadin-block--image {
         }
         // body
-        .tp-media-block--body-container {}
-        .tp-media-block--title {
+        .tp-leadin-block--body-container {}
+        .tp-leadin-block--title {
           color:$white;
         }
-        .tp-media-block--description {
+        .tp-leadin-block--description {
           color:$white;
         }
         // button
@@ -121,9 +121,9 @@
 /// THEME NEW WINDOW ////
 /////////////////////////
 
-.tp-media-block {
-  &.tp-media-block_new-window {
-    .tp-media-block--container {
+.tp-leadin-block {
+  &.tp-leadin-block_new-window {
+    .tp-leadin-block--container {
       &:after {
         content:'';
         display: block;
@@ -146,19 +146,19 @@
       }
     }
     // label
-    .tp-media-block--label-container {}
-    .tp-media-block--label {}
+    .tp-leadin-block--label-container {}
+    .tp-leadin-block--label {}
     // image
-    .tp-media-block--image-container {}
-    .tp-media-block--image {}
+    .tp-leadin-block--image-container {}
+    .tp-leadin-block--image {}
     // body
-    .tp-media-block--body-container {}
-    .tp-media-block--title {}
-    .tp-media-block--description {}
+    .tp-leadin-block--body-container {}
+    .tp-leadin-block--title {}
+    .tp-leadin-block--description {}
     // button
-    .tp-media-block--button {}
+    .tp-leadin-block--button {}
     // meta
-    .tp-media-block--metadata	{}
+    .tp-leadin-block--metadata	{}
   }
 }
 
