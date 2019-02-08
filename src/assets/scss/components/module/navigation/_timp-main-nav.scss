@@ -19,14 +19,17 @@
   color: $secondary-color;
   padding:.45rem 0 0 0;
   margin-left:1rem;
+  margin-top:36px;
   position: relative;
   @include breakpoint(medium down) {
-    font-size: $global-font-size-l * .85;
+    font-size: $global-font-size-xl * .6;
     padding:.25rem;
     margin:0 auto;
     float: none;
     display: inline-block;
+    margin-left: .25rem;
   }
+
   &:hover {
     color:inherit;
   }
@@ -43,7 +46,7 @@
     display:block;
     width:40px;
     height:40px;
-    background-image:url('/assets/img/icons/brgr-white.svg');
+    background-image:url('/assets/img/icons/brgr.svg');
     background-repeat: no-repeat;
     background-position:8px;
     background-size:20px;
@@ -60,7 +63,7 @@
     display:block;
     width:40px;
     height:40px;
-    background-image:url('/assets/img/icons/more-white.svg');
+    background-image:url('/assets/img/icons/more.svg');
     background-repeat: no-repeat;
     background-position:8px;
     background-size:20px;
@@ -109,11 +112,10 @@
   }
 }
 
-
-
 .tp-secondary-nav {
   width:100%;
   background-color: $secondary-color-dark;
+
   @include transition-mixin(background-color $trans-speed);
   &:hover {
     background-color:$bar-color;
@@ -207,13 +209,13 @@
 @include breakpoint(medium down) {
   .tp-main-nav {
     text-align: center;
-    background-color:$secondary-color-dark;
-    padding-bottom:1.25rem;
+    background-color:$bar-color;
+    padding-bottom:1rem;
     .tp-home-logo {
-      margin:0 auto;
-      float: none;
-      display: inline-block;
-      font-size: $global-font-size-xl;
+      // margin:0 auto;
+      // float: none;
+      // display: inline-block;
+      // font-size: $global-font-size-xl;
       &:after {}
       &:hover {}
     }
@@ -259,6 +261,7 @@
     .tp-secondary-nav--list-anchor {
       padding: .5rem 1.45rem .5rem 1.45rem;
       border-top:1px solid scale-color($secondary-color, $lightness:5%);
+      display: block;
     }
   }
 }
