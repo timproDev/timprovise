@@ -1,9 +1,11 @@
+$tp-main-nav-float-space:2rem;
+
 .tp-masthead {
   height:auto;
   @include breakpoint(medium down) {
     height:40px;
     text-align: center;
-    z-index:10;
+    z-index:100;
     position: relative;
   }
   .active {
@@ -19,8 +21,11 @@
   color: $secondary-color;
   padding:.45rem 0 0 0;
   margin-left:1rem;
-  margin-top:36px;
+  // margin-top:36px;
   position: relative;
+  @include breakpoint(large up) {
+    margin-top:$tp-main-nav-float-space;
+  }
   @include breakpoint(medium down) {
     font-size: $global-font-size-xl * .6;
     padding:.25rem;
@@ -92,6 +97,9 @@
     position: relative;
     z-index:2;
     overflow: hidden;
+    @include breakpoint(large up) {
+      margin-top:$tp-main-nav-float-space;
+    }
     &:after {
       content: '';
     	position: absolute;
@@ -115,7 +123,12 @@
 .tp-secondary-nav {
   width:100%;
   background-color: $secondary-color-dark;
-
+  z-index:100;
+  position: relative;
+  @include breakpoint(large up) {
+    position: absolute;
+    top:0;
+  }
   @include transition-mixin(background-color $trans-speed);
   &:hover {
     background-color:$bar-color;
