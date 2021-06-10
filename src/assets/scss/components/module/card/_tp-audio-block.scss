@@ -14,7 +14,7 @@
     &.tp-bg-image {
       &:after {
         content: "";
-        background-image: url('/assets/img/callout/ireland.jpg');
+        background-image: url('img/callout/ireland.jpg');
         background-size: cover;
         opacity: 0.25;
         top: 0;

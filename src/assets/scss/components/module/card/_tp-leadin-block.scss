@@ -135,7 +135,7 @@
         position: absolute;
         opacity:0;
         bottom:0;
-        background-image: url('/assets/img/icons/open-new-white.svg');
+        background-image: url('img/icons/open-new-white.svg');
         @include transition-mixin(opacity $trans-speed, bottom $trans-speed-rapid);
       }
       &:hover {
