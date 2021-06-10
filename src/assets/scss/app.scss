@@ -5,8 +5,8 @@
 @import 'motion-ui';
 
 @include foundation-global-styles;
-// @include foundation-grid;
-// @include foundation-flex-grid;
+@include foundation-grid;
+@include foundation-flex-grid;
 //
 @include foundation-xy-grid-classes;
 @include foundation-typography;
@@ -21,7 +21,7 @@
 // @include foundation-callout;
 // @include foundation-card;
 // @include foundation-close-button;
-// @include foundation-menu;
+@include foundation-menu;
 // @include foundation-menu-icon;
 // @include foundation-drilldown-menu;
 // @include foundation-dropdown;
@@ -50,7 +50,7 @@
 // @include foundation-prototype-classes;
 
 @include motion-ui-transitions;
-// @include motion-ui-animations;
+@include motion-ui-animations;
 
 // vendor styles
 // @import "vendor/aos";
