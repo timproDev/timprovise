@@ -1,10 +1,8 @@
+# My personal site
+
 the prefix "tp-" stands for timprovise
 
-
-
-
-
-# ZURB WebApp Template
+<!-- # ZURB WebApp Template
 
 [![devDependency Status](https://david-dm.org/zurb/foundation-zurb-template/dev-status.svg)](https://david-dm.org/zurb/foundation-zurb-template#info=devDependencies)
 
@@ -83,4 +81,4 @@ Inject an SVG by using an `img` tag with the `.inject-me` class like so:
 
 ### AOS (Animate on Scroll)
 
-### Tablesaw
+### Tablesaw -->
