@@ -1,5 +1,9 @@
 nav:
   -
+    link: 'video.html'
+    page: 'video'
+    text: Video
+  -
     link: 'data-visualization.html'
     page: 'data-visualization'
     text: Data Viz
@@ -11,3 +15,7 @@ nav:
     link: 'sketches.html'
     page: 'sketches'
     text: Sketches
+  -
+    link: 'portfolio.html'
+    page: 'portfolio'
+    text: Design

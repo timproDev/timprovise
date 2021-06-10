@@ -21,7 +21,7 @@
 // @include foundation-callout;
 // @include foundation-card;
 // @include foundation-close-button;
-@include foundation-menu;
+// @include foundation-menu;
 // @include foundation-menu-icon;
 // @include foundation-drilldown-menu;
 // @include foundation-dropdown;
@@ -50,7 +50,7 @@
 // @include foundation-prototype-classes;
 
 @include motion-ui-transitions;
-@include motion-ui-animations;
+// @include motion-ui-animations;
 
 // vendor styles
 // @import "vendor/aos";
@@ -82,6 +82,7 @@
         'components/module/card/tp-leadin-block',
         'components/module/card/tp-callout-block',
         'components/module/card/tp-audio-block',
+        'components/module/card/tp-video-block',
         'components/module/links/tp-link',
         'components/module/navigation/timp-main-nav',
         'components/module/footer/footer';

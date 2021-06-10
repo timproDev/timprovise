@@ -133,7 +133,7 @@ $tp-main-nav-float-space:2rem;
   &:hover {
     background-color:$bar-color;
     .tp-secondary-nav--list-anchor {
-      color: scale-color($secondary-color, $lightness: 25%);
+      color: scale-color($secondary-color, $lightness: 10%);
     }
   }
   .tp-secondary-nav--list {

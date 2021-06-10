@@ -47,6 +47,7 @@
     }
   }
 	.tp-page-header--description {
+    font-size:1.25rem; 
     @include space-stack(l);
     @include breakpoint(small down) {
       @include space-stack(xl);

@@ -1,0 +1,203 @@
+//////////////////////
+/// BLOCK__ELEMENT ///
+//////////////////////
+
+.tp-video-block {
+    // @extend .clearfix;
+    .tp-video-block--container {
+      //background-color:$complimentary-color;
+      position: relative;
+      overflow:hidden;
+      text-align: center;
+      padding:$space-m 0 $space-s 0;
+      margin:0;
+      border-top: 5px dotted #ededed;
+      margin-top: 3rem;
+      &.tp-bg-image {
+        &:after {
+          content: "";
+          background-image: url('/assets/img/callout/ireland.jpg');
+          background-size: cover;
+          opacity: 0.25;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          position: absolute;
+        }
+      }
+      @include breakpoint(small down) {
+        padding:$space-m 0 0 0;
+      }
+      @include breakpoint(medium) {
+        padding:$space-m 0 0 0;
+      }
+      @include breakpoint(large up) {
+        padding:$space-xl 0 0 0;
+      }
+    }
+  
+    // body
+      .tp-video-block--body-container {
+      z-index:2;
+      position: relative;
+      margin:0 auto;
+      text-align: left;
+      padding:2rem 4rem 0 4rem;
+      //color: $white;
+      @include breakpoint(small down) {
+        // width:80%;
+      }
+      @include breakpoint(medium) {
+        // width:60%;
+      }
+      @include breakpoint(large up) {
+        // width:40%;
+      }
+    }
+    // label
+    .tp-video-block--label {
+      @include label();
+  
+    }
+      .tp-video-block--title {
+      font-size: $global-font-size-xxl;
+      font-family: $font-family-two;
+    }
+      .tp-video-block--description {
+      a {
+        color:$white;
+        font-weight: bold;
+        line-height:1;
+        border-bottom:1px solid transparent;
+        display:inline-block;
+        margin:0;
+        padding:0;
+        @include transition-mixin(border $trans-speed-rapid);
+        &:hover {
+          border-bottom:1px solid $white;
+        }
+      }
+    }
+    .tp-video-block--embed-container {
+      z-index:2;
+      position: relative;
+      margin:0 auto;
+      padding-top:$space-m;
+      width:100%;
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      padding-top: 25px;
+      height: 0;
+  
+      iframe {
+        position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+      }
+  
+      @include breakpoint(small down) {
+        // width:80%;
+      }
+      @include breakpoint(medium) {
+        // width:60%;
+      }
+      @include breakpoint(large up) {
+        // width:30%;
+      }
+    }
+  }
+  
+  //////////////////////
+  /// THEME - SMALL ////
+  //////////////////////
+  
+  .tp-video-block {
+    &.tp-video-block_small {
+      .tp-video-block--container {
+        background-color:transparent;
+        position: relative;
+        overflow:hidden;
+        text-align: center;
+        padding:$space-l 0;
+        width:80%;
+        margin:0 auto;
+      }
+      // image
+      .tp-video-block--image-container {
+        position: absolute;
+        top:0;
+        left:0;
+        right:0;
+        margin:0 auto;
+        z-index:1;
+      }
+      .tp-video-block--image {
+        width:100%;
+        opacity: .25;
+        display: none;
+      }
+      // body
+      .tp-video-block--body-container {
+        z-index:2;
+        position: relative;
+        width:50%;
+        margin:0 0;
+        float: left;
+        text-align: right;
+        // color: $white;
+        color:$secondary-color;
+        padding:$space-l;
+        @include breakpoint(medium down) {
+          width:100%;
+          float: none;
+          text-align: center;
+          padding-bottom: 0;
+          padding:0;
+        }
+      }
+      // label
+      .tp-video-block--label {
+  
+      }
+      .tp-video-block--title {
+        font-size: $global-font-size-xl;
+        font-family: $font-family-two;
+      }
+      .tp-video-block--description {
+      }
+      .tp-video-block--embed-container {
+        z-index:2;
+        position: relative;
+        margin:0 0;
+        float: right;
+        width:50%;
+        padding:$space-l $space-l $space-l 0;
+        @include breakpoint(medium down) {
+          width:100%;
+          float: none;
+          padding:0;
+        }
+      }
+    }
+  }
+  
+  //////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////IE10+ specific styles go here //////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////
+  // NOTES: @extend is not supported within {media} ////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////
+  
+  @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {}
+  
+  ////////////////////////
+  /// IE MEDIA QUERIES ///
+  ////////////////////////
+  
+  @media only screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+      @media only screen and (max-width: 1024px) and (min-width: 641px) {}
+      @media only screen and (max-width: 640px) {}
+  }
+  
