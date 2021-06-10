@@ -1,6 +1,9 @@
 # My personal site
 
-the prefix "tp-" stands for timprovise
+### the prefix "tp-" stands for timprovise
+
+### push this to gh pages
+> git subtree push --prefix dist origin gh-pages
 
 <!-- # ZURB WebApp Template
 
