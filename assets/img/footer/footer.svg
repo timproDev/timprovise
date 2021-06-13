@@ -1,1 +1,28 @@
-<svg width="1440" height="437" viewBox="0 0 1440 437" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Group 2</title><defs><path id="a" d="M0 0h1440v512H0z"/></defs><g transform="translate(0 -75)" fill="none" fill-rule="evenodd"><mask id="b" fill="#fff"><use xlink:href="#a"/></mask><g transform="translate(-869 75)" mask="url(#b)" fill-rule="nonzero" opacity=".175"><circle fill="#253445" cx="1235.5" cy="508.5" r="508.5"/><circle fill="#253445" cx="1803.5" cy="1496.5" r="1333.5"/><circle fill="#253445" cx="2460.5" cy="660.5" r="598.5"/><circle fill="#992D46" cx="1991" cy="514" r="392"/><circle fill="#992D46" cx="773" cy="853" r="773"/></g></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440px" height="437px" viewBox="0 0 1440 437" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="1440" height="512"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(0.000000, -587.000000)">
+            <g id="Group-2" transform="translate(0.000000, 512.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="Rectangle" fill-rule="nonzero"></g>
+                <g id="Group" mask="url(#mask-2)" fill-rule="nonzero" opacity="0.174711682">
+                    <g transform="translate(-869.000000, 75.000000)" id="Oval">
+                        <circle fill="#253445" cx="1235.5" cy="508.5" r="508.5"></circle>
+                        <circle fill="#253445" cx="1803.5" cy="1496.5" r="1333.5"></circle>
+                        <circle fill="#253445" cx="2460.5" cy="660.5" r="598.5"></circle>
+                        <circle fill="#992D46" cx="1991" cy="514" r="392"></circle>
+                        <circle fill="#992D46" cx="773" cy="853" r="773"></circle>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
