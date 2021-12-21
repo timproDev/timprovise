@@ -76,17 +76,17 @@
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*!
- * jQuery JavaScript Library v3.2.1
+ * jQuery JavaScript Library v3.6.0
  * https://jquery.com/
  *
  * Includes Sizzle.js
  * https://sizzlejs.com/
  *
- * Copyright JS Foundation and other contributors
+ * Copyright OpenJS Foundation and other contributors
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2017-03-20T18:59Z
+ * Date: 2021-03-02T17:08Z
  */
 (function (global, factory) {
 
@@ -122,13 +122,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	var arr = [];
 
-	var document = window.document;
-
 	var getProto = Object.getPrototypeOf;
 
 	var _slice = arr.slice;
 
-	var concat = arr.concat;
+	var flat = arr.flat ? function (array) {
+		return arr.flat.call(array);
+	} : function (array) {
+		return arr.concat.apply([], array);
+	};
 
 	var push = arr.push;
 
@@ -146,20 +148,75 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	var support = {};
 
-	function DOMEval(code, doc) {
+	var isFunction = function isFunction(obj) {
+
+		// Support: Chrome <=57, Firefox <=52
+		// In some browsers, typeof returns "function" for HTML <object> elements
+		// (i.e., `typeof document.createElement( "object" ) === "function"`).
+		// We don't want to classify *any* DOM node as a function.
+		// Support: QtWeb <=3.8.5, WebKit <=534.34, wkhtmltopdf tool <=0.12.5
+		// Plus for old WebKit, typeof returns "function" for HTML collections
+		// (e.g., `typeof document.getElementsByTagName("div") === "function"`). (gh-4756)
+		return typeof obj === "function" && typeof obj.nodeType !== "number" && typeof obj.item !== "function";
+	};
+
+	var isWindow = function isWindow(obj) {
+		return obj != null && obj === obj.window;
+	};
+
+	var document = window.document;
+
+	var preservedScriptAttributes = {
+		type: true,
+		src: true,
+		nonce: true,
+		noModule: true
+	};
+
+	function DOMEval(code, node, doc) {
 		doc = doc || document;
 
-		var script = doc.createElement("script");
+		var i,
+		    val,
+		    script = doc.createElement("script");
 
 		script.text = code;
+		if (node) {
+			for (i in preservedScriptAttributes) {
+
+				// Support: Firefox 64+, Edge 18+
+				// Some browsers don't support the "nonce" property on scripts.
+				// On the other hand, just using `getAttribute` is not enough as
+				// the `nonce` attribute is reset to an empty string whenever it
+				// becomes browsing-context connected.
+				// See https://github.com/whatwg/html/issues/2369
+				// See https://html.spec.whatwg.org/#nonce-attributes
+				// The `node.getAttribute` check was added for the sake of
+				// `jQuery.globalEval` so that it can fake a nonce-containing node
+				// via an object.
+				val = node[i] || node.getAttribute && node.getAttribute(i);
+				if (val) {
+					script.setAttribute(i, val);
+				}
+			}
+		}
 		doc.head.appendChild(script).parentNode.removeChild(script);
+	}
+
+	function toType(obj) {
+		if (obj == null) {
+			return obj + "";
+		}
+
+		// Support: Android <=2.3 only (functionish RegExp)
+		return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
 	}
 	/* global Symbol */
 	// Defining this global in .eslintrc.json would create a danger of using the global
 	// unguarded in another place, it seems safer to define global only for this module
 
 
-	var version = "3.2.1",
+	var version = "3.6.0",
 
 
 	// Define a local copy of jQuery
@@ -168,22 +225,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		// The jQuery object is actually just the init constructor 'enhanced'
 		// Need init if jQuery is called (just allow error to be thrown if not included)
 		return new jQuery.fn.init(selector, context);
-	},
-
-
-	// Support: Android <=4.0 only
-	// Make sure we trim BOM and NBSP
-	rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
-
-
-	// Matches dashed string for camelizing
-	rmsPrefix = /^-ms-/,
-	    rdashAlpha = /-([a-z])/g,
-
-
-	// Used by jQuery.camelCase as callback to replace()
-	fcamelCase = function fcamelCase(all, letter) {
-		return letter.toUpperCase();
 	};
 
 	jQuery.fn = jQuery.prototype = {
@@ -250,6 +291,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this.eq(-1);
 		},
 
+		even: function even() {
+			return this.pushStack(jQuery.grep(this, function (_elem, i) {
+				return (i + 1) % 2;
+			}));
+		},
+
+		odd: function odd() {
+			return this.pushStack(jQuery.grep(this, function (_elem, i) {
+				return i % 2;
+			}));
+		},
+
 		eq: function eq(i) {
 			var len = this.length,
 			    j = +i + (i < 0 ? len : 0);
@@ -289,7 +342,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 
 		// Handle case when target is a string or something (possible in deep copy)
-		if ((typeof target === "undefined" ? "undefined" : _typeof(target)) !== "object" && !jQuery.isFunction(target)) {
+		if ((typeof target === "undefined" ? "undefined" : _typeof(target)) !== "object" && !isFunction(target)) {
 			target = {};
 		}
 
@@ -306,23 +359,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				// Extend the base object
 				for (name in options) {
-					src = target[name];
 					copy = options[name];
 
+					// Prevent Object.prototype pollution
 					// Prevent never-ending loop
-					if (target === copy) {
+					if (name === "__proto__" || target === copy) {
 						continue;
 					}
 
 					// Recurse if we're merging plain objects or arrays
 					if (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = Array.isArray(copy)))) {
+						src = target[name];
 
-						if (copyIsArray) {
-							copyIsArray = false;
-							clone = src && Array.isArray(src) ? src : [];
+						// Ensure proper type for the source value
+						if (copyIsArray && !Array.isArray(src)) {
+							clone = [];
+						} else if (!copyIsArray && !jQuery.isPlainObject(src)) {
+							clone = {};
 						} else {
-							clone = src && jQuery.isPlainObject(src) ? src : {};
+							clone = src;
 						}
+						copyIsArray = false;
 
 						// Never move original objects, clone them
 						target[name] = jQuery.extend(deep, clone, copy);
@@ -353,28 +410,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		noop: function noop() {},
 
-		isFunction: function isFunction(obj) {
-			return jQuery.type(obj) === "function";
-		},
-
-		isWindow: function isWindow(obj) {
-			return obj != null && obj === obj.window;
-		},
-
-		isNumeric: function isNumeric(obj) {
-
-			// As of jQuery 3.0, isNumeric is limited to
-			// strings and numbers (primitives or objects)
-			// that can be coerced to finite numbers (gh-2662)
-			var type = jQuery.type(obj);
-			return (type === "number" || type === "string") &&
-
-			// parseFloat NaNs numeric-cast false positives ("")
-			// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
-			// subtraction forces infinities to NaN
-			!isNaN(obj - parseFloat(obj));
-		},
-
 		isPlainObject: function isPlainObject(obj) {
 			var proto, Ctor;
 
@@ -397,9 +432,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		isEmptyObject: function isEmptyObject(obj) {
-
-			/* eslint-disable no-unused-vars */
-			// See https://github.com/eslint/eslint/issues/6125
 			var name;
 
 			for (name in obj) {
@@ -408,25 +440,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return true;
 		},
 
-		type: function type(obj) {
-			if (obj == null) {
-				return obj + "";
-			}
-
-			// Support: Android <=2.3 only (functionish RegExp)
-			return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
-		},
-
-		// Evaluates a script in a global context
-		globalEval: function globalEval(code) {
-			DOMEval(code);
-		},
-
-		// Convert dashed to camelCase; used by the css and data modules
-		// Support: IE <=9 - 11, Edge 12 - 13
-		// Microsoft forgot to hump their vendor prefix (#9572)
-		camelCase: function camelCase(string) {
-			return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
+		// Evaluates a script in a provided context; falls back to the global one
+		// if not specified.
+		globalEval: function globalEval(code, options, doc) {
+			DOMEval(code, { nonce: options && options.nonce }, doc);
 		},
 
 		each: function each(obj, callback) {
@@ -449,11 +466,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			return obj;
-		},
-
-		// Support: Android <=4.0 only
-		trim: function trim(text) {
-			return text == null ? "" : (text + "").replace(rtrim, "");
 		},
 
 		// results is for internal usage only
@@ -540,42 +552,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			// Flatten any nested arrays
-			return concat.apply([], ret);
+			return flat(ret);
 		},
 
 		// A global GUID counter for objects
 		guid: 1,
-
-		// Bind a function to a context, optionally partially applying any
-		// arguments.
-		proxy: function proxy(fn, context) {
-			var tmp, args, proxy;
-
-			if (typeof context === "string") {
-				tmp = fn[context];
-				context = fn;
-				fn = tmp;
-			}
-
-			// Quick check to determine if target is callable, in the spec
-			// this throws a TypeError, but we will just return undefined.
-			if (!jQuery.isFunction(fn)) {
-				return undefined;
-			}
-
-			// Simulated bind
-			args = _slice.call(arguments, 2);
-			proxy = function proxy() {
-				return fn.apply(context || this, args.concat(_slice.call(arguments)));
-			};
-
-			// Set the guid of unique handler to the same of original handler, so it can be removed
-			proxy.guid = fn.guid = fn.guid || jQuery.guid++;
-
-			return proxy;
-		},
-
-		now: Date.now,
 
 		// jQuery.support is not used in Core but other projects attach their
 		// properties to it so it needs to exist.
@@ -587,7 +568,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	}
 
 	// Populate the class2type map
-	jQuery.each("Boolean Number String Function Array Date RegExp Object Error Symbol".split(" "), function (i, name) {
+	jQuery.each("Boolean Number String Function Array Date RegExp Object Error Symbol".split(" "), function (_i, name) {
 		class2type["[object " + name + "]"] = name.toLowerCase();
 	});
 
@@ -598,9 +579,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		// hasOwn isn't used here due to false negatives
 		// regarding Nodelist length in IE
 		var length = !!obj && "length" in obj && obj.length,
-		    type = jQuery.type(obj);
+		    type = toType(obj);
 
-		if (type === "function" || jQuery.isWindow(obj)) {
+		if (isFunction(obj) || isWindow(obj)) {
 			return false;
 		}
 
@@ -608,17 +589,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	}
 	var Sizzle =
 	/*!
-  * Sizzle CSS Selector Engine v2.3.3
+  * Sizzle CSS Selector Engine v2.3.6
   * https://sizzlejs.com/
   *
-  * Copyright jQuery Foundation and other contributors
+  * Copyright JS Foundation and other contributors
   * Released under the MIT license
-  * http://jquery.org/license
+  * https://js.foundation/
   *
-  * Date: 2016-08-08
+  * Date: 2021-02-16
   */
 	function (window) {
-
 		var i,
 		    support,
 		    Expr,
@@ -651,6 +631,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		    classCache = createCache(),
 		    tokenCache = createCache(),
 		    compilerCache = createCache(),
+		    nonnativeSelectorCache = createCache(),
 		    sortOrder = function sortOrder(a, b) {
 			if (a === b) {
 				hasDuplicate = true;
@@ -663,9 +644,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		hasOwn = {}.hasOwnProperty,
 		    arr = [],
 		    pop = arr.pop,
-		    push_native = arr.push,
+		    pushNative = arr.push,
 		    push = arr.push,
 		    slice = arr.slice,
+
 
 		// Use a stripped-down indexOf as it's faster than native
 		// https://jsperf.com/thor-indexof-vs-for/5
@@ -679,7 +661,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 			return -1;
 		},
-		    booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
+		    booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|" + "ismap|loop|multiple|open|readonly|required|scoped",
 
 
 		// Regular expressions
@@ -688,22 +670,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		whitespace = "[\\x20\\t\\r\\n\\f]",
 
 
-		// http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
-		identifier = "(?:\\\\.|[\\w-]|[^\0-\\xa0])+",
+		// https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
+		identifier = "(?:\\\\[\\da-fA-F]{1,6}" + whitespace + "?|\\\\[^\\r\\n\\f]|[\\w-]|[^\0-\\x7f])+",
 
 
 		// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
 		attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
+
 		// Operator (capture 2)
 		"*([*^$|!~]?=)" + whitespace +
-		// "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
+
+		// "Attribute values must be CSS identifiers [capture 5]
+		// or strings [capture 3 or capture 4]"
 		"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" + whitespace + "*\\]",
 		    pseudos = ":(" + identifier + ")(?:\\((" +
+
 		// To reduce the number of selectors needing tokenize in the preFilter, prefer arguments:
 		// 1. quoted (capture 3; capture 4 or capture 5)
 		"('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|" +
+
 		// 2. simple (capture 6)
 		"((?:\\\\.|[^\\\\()[\\]]|" + attributes + ")*)|" +
+
 		// 3. anything else (capture 2)
 		".*" + ")\\)|)",
 
@@ -713,7 +701,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		    rtrim = new RegExp("^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g"),
 		    rcomma = new RegExp("^" + whitespace + "*," + whitespace + "*"),
 		    rcombinators = new RegExp("^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*"),
-		    rattributeQuotes = new RegExp("=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g"),
+		    rdescend = new RegExp(whitespace + "|>"),
 		    rpseudo = new RegExp(pseudos),
 		    ridentifier = new RegExp("^" + identifier + "$"),
 		    matchExpr = {
@@ -724,10 +712,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			"PSEUDO": new RegExp("^" + pseudos),
 			"CHILD": new RegExp("^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace + "*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace + "*(\\d+)|))" + whitespace + "*\\)|)", "i"),
 			"bool": new RegExp("^(?:" + booleans + ")$", "i"),
+
 			// For use in libraries implementing .is()
 			// We use this for POS matching in `select`
 			"needsContext": new RegExp("^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i")
 		},
+		    rhtml = /HTML$/i,
 		    rinputs = /^(?:input|select|textarea|button)$/i,
 		    rheader = /^h\d$/i,
 		    rnative = /^[^{]+\{\s*\[native \w/,
@@ -740,17 +730,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		// CSS escapes
 		// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
-		runescape = new RegExp("\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig"),
-		    funescape = function funescape(_, escaped, escapedWhitespace) {
-			var high = "0x" + escaped - 0x10000;
-			// NaN means non-codepoint
-			// Support: Firefox<24
-			// Workaround erroneous numeric interpretation of +"0x"
-			return high !== high || escapedWhitespace ? escaped : high < 0 ?
-			// BMP codepoint
-			String.fromCharCode(high + 0x10000) :
-			// Supplemental Plane codepoint (surrogate pair)
-			String.fromCharCode(high >> 10 | 0xD800, high & 0x3FF | 0xDC00);
+		runescape = new RegExp("\\\\[\\da-fA-F]{1,6}" + whitespace + "?|\\\\([^\\r\\n\\f])", "g"),
+		    funescape = function funescape(escape, nonHex) {
+			var high = "0x" + escape.slice(1) - 0x10000;
+
+			return nonHex ?
+
+			// Strip the backslash prefix from a non-hex escape sequence
+			nonHex :
+
+			// Replace a hexadecimal escape sequence with the encoded Unicode code point
+			// Support: IE <=11+
+			// For values outside the Basic Multilingual Plane (BMP), manually construct a
+			// surrogate pair
+			high < 0 ? String.fromCharCode(high + 0x10000) : String.fromCharCode(high >> 10 | 0xD800, high & 0x3FF | 0xDC00);
 		},
 
 
@@ -781,22 +774,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		unloadHandler = function unloadHandler() {
 			setDocument();
 		},
-		    disabledAncestor = addCombinator(function (elem) {
-			return elem.disabled === true && ("form" in elem || "label" in elem);
+		    inDisabledFieldset = addCombinator(function (elem) {
+			return elem.disabled === true && elem.nodeName.toLowerCase() === "fieldset";
 		}, { dir: "parentNode", next: "legend" });
 
 		// Optimize for push.apply( _, NodeList )
 		try {
 			push.apply(arr = slice.call(preferredDoc.childNodes), preferredDoc.childNodes);
+
 			// Support: Android<4.0
 			// Detect silently failing push.apply
+			// eslint-disable-next-line no-unused-expressions
 			arr[preferredDoc.childNodes.length].nodeType;
 		} catch (e) {
 			push = { apply: arr.length ?
 
 				// Leverage slice if possible
 				function (target, els) {
-					push_native.apply(target, slice.call(els));
+					pushNative.apply(target, slice.call(els));
 				} :
 
 				// Support: IE<9
@@ -804,6 +799,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				function (target, els) {
 					var j = target.length,
 					    i = 0;
+
 					// Can't trust NodeList.length
 					while (target[j++] = els[i++]) {}
 					target.length = j - 1;
@@ -835,10 +831,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// Try to shortcut find operations (as opposed to filters) in HTML documents
 			if (!seed) {
-
-				if ((context ? context.ownerDocument || context : preferredDoc) !== document) {
-					setDocument(context);
-				}
+				setDocument(context);
 				context = context || document;
 
 				if (documentIsHTML) {
@@ -892,45 +885,56 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 
 					// Take advantage of querySelectorAll
-					if (support.qsa && !compilerCache[selector + " "] && (!rbuggyQSA || !rbuggyQSA.test(selector))) {
+					if (support.qsa && !nonnativeSelectorCache[selector + " "] && (!rbuggyQSA || !rbuggyQSA.test(selector)) && (
 
-						if (nodeType !== 1) {
-							newContext = context;
-							newSelector = selector;
+					// Support: IE 8 only
+					// Exclude object elements
+					nodeType !== 1 || context.nodeName.toLowerCase() !== "object")) {
 
-							// qSA looks outside Element context, which is not what we want
-							// Thanks to Andrew Dupont for this workaround technique
-							// Support: IE <=8
-							// Exclude object elements
-						} else if (context.nodeName.toLowerCase() !== "object") {
+						newSelector = selector;
+						newContext = context;
 
-							// Capture the context ID, setting it first if necessary
-							if (nid = context.getAttribute("id")) {
-								nid = nid.replace(rcssescape, fcssescape);
-							} else {
-								context.setAttribute("id", nid = expando);
+						// qSA considers elements outside a scoping root when evaluating child or
+						// descendant combinators, which is not what we want.
+						// In such cases, we work around the behavior by prefixing every selector in the
+						// list with an ID selector referencing the scope context.
+						// The technique has to be used as well when a leading combinator is used
+						// as such selectors are not recognized by querySelectorAll.
+						// Thanks to Andrew Dupont for this technique.
+						if (nodeType === 1 && (rdescend.test(selector) || rcombinators.test(selector))) {
+
+							// Expand context for sibling selectors
+							newContext = rsibling.test(selector) && testContext(context.parentNode) || context;
+
+							// We can use :scope instead of the ID hack if the browser
+							// supports it & if we're not changing the context.
+							if (newContext !== context || !support.scope) {
+
+								// Capture the context ID, setting it first if necessary
+								if (nid = context.getAttribute("id")) {
+									nid = nid.replace(rcssescape, fcssescape);
+								} else {
+									context.setAttribute("id", nid = expando);
+								}
 							}
 
 							// Prefix every selector in the list
 							groups = tokenize(selector);
 							i = groups.length;
 							while (i--) {
-								groups[i] = "#" + nid + " " + toSelector(groups[i]);
+								groups[i] = (nid ? "#" + nid : ":scope") + " " + toSelector(groups[i]);
 							}
 							newSelector = groups.join(",");
-
-							// Expand context for sibling selectors
-							newContext = rsibling.test(selector) && testContext(context.parentNode) || context;
 						}
 
-						if (newSelector) {
-							try {
-								push.apply(results, newContext.querySelectorAll(newSelector));
-								return results;
-							} catch (qsaError) {} finally {
-								if (nid === expando) {
-									context.removeAttribute("id");
-								}
+						try {
+							push.apply(results, newContext.querySelectorAll(newSelector));
+							return results;
+						} catch (qsaError) {
+							nonnativeSelectorCache(selector, true);
+						} finally {
+							if (nid === expando) {
+								context.removeAttribute("id");
 							}
 						}
 					}
@@ -951,8 +955,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			var keys = [];
 
 			function cache(key, value) {
+
 				// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
 				if (keys.push(key + " ") > Expr.cacheLength) {
+
 					// Only keep the most recent entries
 					delete cache[keys.shift()];
 				}
@@ -982,10 +988,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			} catch (e) {
 				return false;
 			} finally {
+
 				// Remove from its parent by default
 				if (el.parentNode) {
 					el.parentNode.removeChild(el);
 				}
+
 				// release memory in IE
 				el = null;
 			}
@@ -1092,7 +1100,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 						// Where there is no isDisabled, check manually
 						/* jshint -W018 */
-						elem.isDisabled !== !disabled && disabledAncestor(elem) === disabled;
+						elem.isDisabled !== !disabled && inDisabledFieldset(elem) === disabled;
 					}
 
 					return elem.disabled === disabled;
@@ -1149,10 +1157,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    * @returns {Boolean} True iff elem is a non-HTML XML node
    */
 		isXML = Sizzle.isXML = function (elem) {
-			// documentElement is verified for cases where it doesn't yet exist
-			// (such as loading iframes in IE - #4833)
-			var documentElement = elem && (elem.ownerDocument || elem).documentElement;
-			return documentElement ? documentElement.nodeName !== "HTML" : false;
+			var namespace = elem && elem.namespaceURI,
+			    docElem = elem && (elem.ownerDocument || elem).documentElement;
+
+			// Support: IE <=8
+			// Assume HTML when documentElement doesn't yet exist, such as inside loading iframes
+			// https://bugs.jquery.com/ticket/4833
+			return !rhtml.test(namespace || docElem && docElem.nodeName || "HTML");
 		};
 
 		/**
@@ -1166,7 +1177,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    doc = node ? node.ownerDocument || node : preferredDoc;
 
 			// Return early if doc is invalid or already selected
-			if (doc === document || doc.nodeType !== 9 || !doc.documentElement) {
+			// Support: IE 11+, Edge 17 - 18+
+			// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+			// two documents; shallow comparisons work.
+			// eslint-disable-next-line eqeqeq
+			if (doc == document || doc.nodeType !== 9 || !doc.documentElement) {
 				return document;
 			}
 
@@ -1175,9 +1190,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			docElem = document.documentElement;
 			documentIsHTML = !isXML(document);
 
-			// Support: IE 9-11, Edge
+			// Support: IE 9 - 11+, Edge 12 - 18+
 			// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
-			if (preferredDoc !== document && (subWindow = document.defaultView) && subWindow.top !== subWindow) {
+			// Support: IE 11+, Edge 17 - 18+
+			// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+			// two documents; shallow comparisons work.
+			// eslint-disable-next-line eqeqeq
+			if (preferredDoc != document && (subWindow = document.defaultView) && subWindow.top !== subWindow) {
 
 				// Support: IE 11, Edge
 				if (subWindow.addEventListener) {
@@ -1188,6 +1207,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					subWindow.attachEvent("onunload", unloadHandler);
 				}
 			}
+
+			// Support: IE 8 - 11+, Edge 12 - 18+, Chrome <=16 - 25 only, Firefox <=3.6 - 31 only,
+			// Safari 4 - 5 only, Opera <=11.6 - 12.x only
+			// IE/Edge & older browsers don't support the :scope pseudo-class.
+			// Support: Safari 6.0 only
+			// Safari 6.0 supports :scope but it's an alias of :root there.
+			support.scope = assert(function (el) {
+				docElem.appendChild(el).appendChild(document.createElement("div"));
+				return typeof el.querySelectorAll !== "undefined" && !el.querySelectorAll(":scope fieldset div").length;
+			});
 
 			/* Attributes
    ---------------------------------------------------------------------- */
@@ -1291,6 +1320,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				    tmp = [],
 				    i = 0,
 
+
 				// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
 				results = context.getElementsByTagName(tag);
 
@@ -1330,9 +1360,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			rbuggyQSA = [];
 
 			if (support.qsa = rnative.test(document.querySelectorAll)) {
+
 				// Build QSA regex
 				// Regex strategy adopted from Diego Perini
 				assert(function (el) {
+
+					var input;
+
 					// Select is set to empty string on purpose
 					// This is to test IE's treatment of not explicitly
 					// setting a boolean content attribute,
@@ -1359,6 +1393,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						rbuggyQSA.push("~=");
 					}
 
+					// Support: IE 11+, Edge 15 - 18+
+					// IE 11/Edge don't find elements on a `[name='']` query in some cases.
+					// Adding a temporary attribute to the document before the selection works
+					// around the issue.
+					// Interestingly, IE 10 & older don't seem to have the issue.
+					input = document.createElement("input");
+					input.setAttribute("name", "");
+					el.appendChild(input);
+					if (!el.querySelectorAll("[name='']").length) {
+						rbuggyQSA.push("\\[" + whitespace + "*name" + whitespace + "*=" + whitespace + "*(?:''|\"\")");
+					}
+
 					// Webkit/Opera - :checked should return selected option elements
 					// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 					// IE8 throws error here and will not see later tests
@@ -1372,6 +1418,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					if (!el.querySelectorAll("a#" + expando + "+*").length) {
 						rbuggyQSA.push(".#.+[+~]");
 					}
+
+					// Support: Firefox <=3.6 - 5 only
+					// Old Firefox doesn't throw on a badly-escaped identifier.
+					el.querySelectorAll("\\\f");
+					rbuggyQSA.push("[\\r\\n\\f]");
 				});
 
 				assert(function (el) {
@@ -1402,6 +1453,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						rbuggyQSA.push(":enabled", ":disabled");
 					}
 
+					// Support: Opera 10 - 11 only
 					// Opera 10-11 does not throw on post-comma invalid pseudos
 					el.querySelectorAll("*,:x");
 					rbuggyQSA.push(",.*:");
@@ -1411,6 +1463,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			if (support.matchesSelector = rnative.test(matches = docElem.matches || docElem.webkitMatchesSelector || docElem.mozMatchesSelector || docElem.oMatchesSelector || docElem.msMatchesSelector)) {
 
 				assert(function (el) {
+
 					// Check to see if it's possible to do matchesSelector
 					// on a disconnected node (IE 9)
 					support.disconnectedMatch = matches.call(el, "*");
@@ -1466,7 +1519,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}
 
 				// Calculate position if both inputs belong to the same document
-				compare = (a.ownerDocument || a) === (b.ownerDocument || b) ? a.compareDocumentPosition(b) :
+				// Support: IE 11+, Edge 17 - 18+
+				// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+				// two documents; shallow comparisons work.
+				// eslint-disable-next-line eqeqeq
+				compare = (a.ownerDocument || a) == (b.ownerDocument || b) ? a.compareDocumentPosition(b) :
 
 				// Otherwise we know they are disconnected
 				1;
@@ -1475,10 +1532,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				if (compare & 1 || !support.sortDetached && b.compareDocumentPosition(a) === compare) {
 
 					// Choose the first element that is related to our preferred document
-					if (a === document || a.ownerDocument === preferredDoc && contains(preferredDoc, a)) {
+					// Support: IE 11+, Edge 17 - 18+
+					// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+					// two documents; shallow comparisons work.
+					// eslint-disable-next-line eqeqeq
+					if (a == document || a.ownerDocument == preferredDoc && contains(preferredDoc, a)) {
 						return -1;
 					}
-					if (b === document || b.ownerDocument === preferredDoc && contains(preferredDoc, b)) {
+
+					// Support: IE 11+, Edge 17 - 18+
+					// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+					// two documents; shallow comparisons work.
+					// eslint-disable-next-line eqeqeq
+					if (b == document || b.ownerDocument == preferredDoc && contains(preferredDoc, b)) {
 						return 1;
 					}
 
@@ -1488,6 +1554,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				return compare & 4 ? -1 : 1;
 			} : function (a, b) {
+
 				// Exit early if the nodes are identical
 				if (a === b) {
 					hasDuplicate = true;
@@ -1503,7 +1570,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				// Parentless nodes are either documents or disconnected
 				if (!aup || !bup) {
-					return a === document ? -1 : b === document ? 1 : aup ? -1 : bup ? 1 : sortInput ? indexOf(sortInput, a) - indexOf(sortInput, b) : 0;
+
+					// Support: IE 11+, Edge 17 - 18+
+					// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+					// two documents; shallow comparisons work.
+					/* eslint-disable eqeqeq */
+					return a == document ? -1 : b == document ? 1 :
+					/* eslint-enable eqeqeq */
+					aup ? -1 : bup ? 1 : sortInput ? indexOf(sortInput, a) - indexOf(sortInput, b) : 0;
 
 					// If the nodes are siblings, we can do a quick check
 				} else if (aup === bup) {
@@ -1526,11 +1600,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}
 
 				return i ?
+
 				// Do a sibling check if the nodes have a common ancestor
 				siblingCheck(ap[i], bp[i]) :
 
 				// Otherwise nodes in our document sort first
-				ap[i] === preferredDoc ? -1 : bp[i] === preferredDoc ? 1 : 0;
+				// Support: IE 11+, Edge 17 - 18+
+				// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+				// two documents; shallow comparisons work.
+				/* eslint-disable eqeqeq */
+				ap[i] == preferredDoc ? -1 : bp[i] == preferredDoc ? 1 :
+				/* eslint-enable eqeqeq */
+				0;
 			};
 
 			return document;
@@ -1541,47 +1622,55 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		};
 
 		Sizzle.matchesSelector = function (elem, expr) {
-			// Set document vars if needed
-			if ((elem.ownerDocument || elem) !== document) {
-				setDocument(elem);
-			}
+			setDocument(elem);
 
-			// Make sure that attribute selectors are quoted
-			expr = expr.replace(rattributeQuotes, "='$1']");
-
-			if (support.matchesSelector && documentIsHTML && !compilerCache[expr + " "] && (!rbuggyMatches || !rbuggyMatches.test(expr)) && (!rbuggyQSA || !rbuggyQSA.test(expr))) {
+			if (support.matchesSelector && documentIsHTML && !nonnativeSelectorCache[expr + " "] && (!rbuggyMatches || !rbuggyMatches.test(expr)) && (!rbuggyQSA || !rbuggyQSA.test(expr))) {
 
 				try {
 					var ret = matches.call(elem, expr);
 
 					// IE 9's matchesSelector returns false on disconnected nodes
 					if (ret || support.disconnectedMatch ||
+
 					// As well, disconnected nodes are said to be in a document
 					// fragment in IE 9
 					elem.document && elem.document.nodeType !== 11) {
 						return ret;
 					}
-				} catch (e) {}
+				} catch (e) {
+					nonnativeSelectorCache(expr, true);
+				}
 			}
 
 			return Sizzle(expr, document, null, [elem]).length > 0;
 		};
 
 		Sizzle.contains = function (context, elem) {
+
 			// Set document vars if needed
-			if ((context.ownerDocument || context) !== document) {
+			// Support: IE 11+, Edge 17 - 18+
+			// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+			// two documents; shallow comparisons work.
+			// eslint-disable-next-line eqeqeq
+			if ((context.ownerDocument || context) != document) {
 				setDocument(context);
 			}
 			return contains(context, elem);
 		};
 
 		Sizzle.attr = function (elem, name) {
+
 			// Set document vars if needed
-			if ((elem.ownerDocument || elem) !== document) {
+			// Support: IE 11+, Edge 17 - 18+
+			// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+			// two documents; shallow comparisons work.
+			// eslint-disable-next-line eqeqeq
+			if ((elem.ownerDocument || elem) != document) {
 				setDocument(elem);
 			}
 
 			var fn = Expr.attrHandle[name.toLowerCase()],
+
 
 			// Don't get fooled by Object.prototype properties (jQuery #13807)
 			val = fn && hasOwn.call(Expr.attrHandle, name.toLowerCase()) ? fn(elem, name, !documentIsHTML) : undefined;
@@ -1641,17 +1730,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    nodeType = elem.nodeType;
 
 			if (!nodeType) {
+
 				// If no nodeType, this is expected to be an array
 				while (node = elem[i++]) {
+
 					// Do not traverse comment nodes
 					ret += getText(node);
 				}
 			} else if (nodeType === 1 || nodeType === 9 || nodeType === 11) {
+
 				// Use textContent for elements
 				// innerText usage removed for consistency of new lines (jQuery #11153)
 				if (typeof elem.textContent === "string") {
 					return elem.textContent;
 				} else {
+
 					// Traverse its children
 					for (elem = elem.firstChild; elem; elem = elem.nextSibling) {
 						ret += getText(elem);
@@ -1660,6 +1753,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			} else if (nodeType === 3 || nodeType === 4) {
 				return elem.nodeValue;
 			}
+
 			// Do not include comment or processing instruction nodes
 
 			return ret;
@@ -1700,6 +1794,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				},
 
 				"CHILD": function CHILD(match) {
+
 					/* matches from matchExpr["CHILD"]
      	1 type (only|nth|...)
      	2 what (child|of-type)
@@ -1713,6 +1808,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					match[1] = match[1].toLowerCase();
 
 					if (match[1].slice(0, 3) === "nth") {
+
 						// nth-* requires argument
 						if (!match[3]) {
 							Sizzle.error(match[0]);
@@ -1745,8 +1841,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 						// Strip excess characters from unquoted arguments
 					} else if (unquoted && rpseudo.test(unquoted) && (
+
 					// Get excess from tokenize (recursively)
 					excess = tokenize(unquoted, true)) && (
+
 					// advance to the next closing parenthesis
 					excess = unquoted.indexOf(")", unquoted.length - excess) - unquoted.length)) {
 
@@ -1792,11 +1890,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 						result += "";
 
+						/* eslint-disable max-len */
+
 						return operator === "=" ? result === check : operator === "!=" ? result !== check : operator === "^=" ? check && result.indexOf(check) === 0 : operator === "*=" ? check && result.indexOf(check) > -1 : operator === "$=" ? check && result.slice(-check.length) === check : operator === "~=" ? (" " + result.replace(rwhitespace, " ") + " ").indexOf(check) > -1 : operator === "|=" ? result === check || result.slice(0, check.length + 1) === check + "-" : false;
+						/* eslint-enable max-len */
 					};
 				},
 
-				"CHILD": function CHILD(type, what, argument, first, last) {
+				"CHILD": function CHILD(type, what, _argument, first, last) {
 					var simple = type.slice(0, 3) !== "nth",
 					    forward = type.slice(-4) !== "last",
 					    ofType = what === "of-type";
@@ -1806,7 +1907,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					// Shortcut for :nth-*(n)
 					function (elem) {
 						return !!elem.parentNode;
-					} : function (elem, context, xml) {
+					} : function (elem, _context, xml) {
 						var cache,
 						    uniqueCache,
 						    outerCache,
@@ -1831,6 +1932,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 											return false;
 										}
 									}
+
 									// Reverse direction for :only-* (if we haven't yet done so)
 									start = dir = type === "only" && !start && "nextSibling";
 								}
@@ -1869,8 +1971,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 									}
 								}
 							} else {
+
 								// Use previously-cached element index if available
 								if (useCache) {
+
 									// ...in a gzip-friendly way
 									node = elem;
 									outerCache = node[expando] || (node[expando] = {});
@@ -1887,6 +1991,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 								// xml :nth-child(...)
 								// or :nth-last-child(...) or :nth(-last)?-of-type(...)
 								if (diff === false) {
+
 									// Use the same loop as above to seek `elem` from the start
 									while (node = ++nodeIndex && node && node[dir] || (diff = nodeIndex = 0) || start.pop()) {
 
@@ -1919,6 +2024,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				},
 
 				"PSEUDO": function PSEUDO(pseudo, argument) {
+
 					// pseudo-class names are case-insensitive
 					// http://www.w3.org/TR/selectors/#pseudo-classes
 					// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
@@ -1954,8 +2060,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			},
 
 			pseudos: {
+
 				// Potentially complex pseudos
 				"not": markFunction(function (selector) {
+
 					// Trim the selector passed to compile
 					// to avoid treating leading and trailing
 					// spaces as combinators
@@ -1963,7 +2071,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					    results = [],
 					    matcher = compile(selector.replace(rtrim, "$1"));
 
-					return matcher[expando] ? markFunction(function (seed, matches, context, xml) {
+					return matcher[expando] ? markFunction(function (seed, matches, _context, xml) {
 						var elem,
 						    unmatched = matcher(seed, null, xml, []),
 						    i = seed.length;
@@ -1974,9 +2082,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 								seed[i] = !(matches[i] = elem);
 							}
 						}
-					}) : function (elem, context, xml) {
+					}) : function (elem, _context, xml) {
 						input[0] = elem;
 						matcher(input, null, xml, results);
+
 						// Don't keep the element (issue #299)
 						input[0] = null;
 						return !results.pop();
@@ -1992,7 +2101,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				"contains": markFunction(function (text) {
 					text = text.replace(runescape, funescape);
 					return function (elem) {
-						return (elem.textContent || elem.innerText || getText(elem)).indexOf(text) > -1;
+						return (elem.textContent || getText(elem)).indexOf(text) > -1;
 					};
 				}),
 
@@ -2004,6 +2113,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				// The identifier C does not have to be a valid language name."
 				// http://www.w3.org/TR/selectors/#lang-pseudo
 				"lang": markFunction(function (lang) {
+
 					// lang value must be a valid identifier
 					if (!ridentifier.test(lang || "")) {
 						Sizzle.error("unsupported lang: " + lang);
@@ -2041,6 +2151,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				"disabled": createDisabledPseudo(true),
 
 				"checked": function checked(elem) {
+
 					// In CSS3, :checked should return both checked and selected elements
 					// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 					var nodeName = elem.nodeName.toLowerCase();
@@ -2048,9 +2159,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				},
 
 				"selected": function selected(elem) {
+
 					// Accessing this property makes selected-by-default
 					// options in Safari work properly
 					if (elem.parentNode) {
+						// eslint-disable-next-line no-unused-expressions
 						elem.parentNode.selectedIndex;
 					}
 
@@ -2059,6 +2172,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				// Contents
 				"empty": function empty(elem) {
+
 					// http://www.w3.org/TR/selectors/#empty-pseudo
 					// :empty is negated by element (1) or content nodes (text: 3; cdata: 4; entity ref: 5),
 					//   but not by others (comment: 8; processing instruction: 7; etc.)
@@ -2103,11 +2217,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					return [0];
 				}),
 
-				"last": createPositionalPseudo(function (matchIndexes, length) {
+				"last": createPositionalPseudo(function (_matchIndexes, length) {
 					return [length - 1];
 				}),
 
-				"eq": createPositionalPseudo(function (matchIndexes, length, argument) {
+				"eq": createPositionalPseudo(function (_matchIndexes, length, argument) {
 					return [argument < 0 ? argument + length : argument];
 				}),
 
@@ -2128,7 +2242,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}),
 
 				"lt": createPositionalPseudo(function (matchIndexes, length, argument) {
-					var i = argument < 0 ? argument + length : argument;
+					var i = argument < 0 ? argument + length : argument > length ? length : argument;
 					for (; --i >= 0;) {
 						matchIndexes.push(i);
 					}
@@ -2183,6 +2297,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				// Comma and first run
 				if (!matched || (match = rcomma.exec(soFar))) {
 					if (match) {
+
 						// Don't consume trailing commas as valid
 						soFar = soFar.slice(match[0].length) || soFar;
 					}
@@ -2196,6 +2311,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					matched = match.shift();
 					tokens.push({
 						value: matched,
+
 						// Cast descendant combinators to space
 						type: match[0].replace(rtrim, " ")
 					});
@@ -2224,6 +2340,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			// if we're just parsing
 			// Otherwise, throw an error or return tokens
 			return parseOnly ? soFar.length : soFar ? Sizzle.error(selector) :
+
 			// Cache the tokens
 			tokenCache(selector, groups).slice(0);
 		};
@@ -2246,6 +2363,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    doneName = done++;
 
 			return combinator.first ?
+
 			// Check against closest ancestor/preceding element
 			function (elem, context, xml) {
 				while (elem = elem[dir]) {
@@ -2288,6 +2406,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 								// Assign to newCache so results back-propagate to previous elements
 								return newCache[2] = oldCache[2];
 							} else {
+
 								// Reuse newcache so results back-propagate to previous elements
 								uniqueCache[key] = newCache;
 
@@ -2368,6 +2487,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				// Prefilter to get matcher input, preserving a map for seed-results synchronization
 				matcherIn = preFilter && (seed || !selector) ? condense(elems, preMap, preFilter, context, xml) : elems,
 				    matcherOut = matcher ?
+
 				// If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
 				postFinder || (seed ? preFilter : preexisting || postFilter) ?
 
@@ -2399,11 +2519,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				if (seed) {
 					if (postFinder || preFilter) {
 						if (postFinder) {
+
 							// Get the final matcherOut by condensing this intermediate into postFinder contexts
 							temp = [];
 							i = matcherOut.length;
 							while (i--) {
 								if (elem = matcherOut[i]) {
+
 									// Restore matcherIn since elem is not yet a final match
 									temp.push(matcherIn[i] = elem);
 								}
@@ -2452,6 +2574,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}, implicitRelative, true),
 			    matchers = [function (elem, context, xml) {
 				var ret = !leadingRelative && (xml || context !== outermostContext) || ((checkContext = context).nodeType ? matchContext(elem, context, xml) : matchAnyContext(elem, context, xml));
+
 				// Avoid hanging onto element (issue #299)
 				checkContext = null;
 				return ret;
@@ -2465,6 +2588,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 					// Return special upon seeing a positional matcher
 					if (matcher[expando]) {
+
 						// Find the next relative operator (if any) for proper handling
 						j = ++i;
 						for (; j < len; j++) {
@@ -2473,6 +2597,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 							}
 						}
 						return setMatcher(i > 1 && elementMatcher(matchers), i > 1 && toSelector(
+
 						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
 						tokens.slice(0, i - 1).concat({ value: tokens[i - 2].type === " " ? "*" : "" })).replace(rtrim, "$1"), matcher, i < j && matcherFromTokens(tokens.slice(i, j)), j < len && matcherFromTokens(tokens = tokens.slice(j)), j < len && toSelector(tokens));
 					}
@@ -2496,15 +2621,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				    setMatched = [],
 				    contextBackup = outermostContext,
 
+
 				// We must always have either seed elements or outermost context
 				elems = seed || byElement && Expr.find["TAG"]("*", outermost),
+
 
 				// Use integer dirruns iff this is the outermost matcher
 				dirrunsUnique = dirruns += contextBackup == null ? 1 : Math.random() || 0.1,
 				    len = elems.length;
 
 				if (outermost) {
-					outermostContext = context === document || context || outermost;
+
+					// Support: IE 11+, Edge 17 - 18+
+					// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+					// two documents; shallow comparisons work.
+					// eslint-disable-next-line eqeqeq
+					outermostContext = context == document || context || outermost;
 				}
 
 				// Add elements passing elementMatchers directly to results
@@ -2513,7 +2645,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				for (; i !== len && (elem = elems[i]) != null; i++) {
 					if (byElement && elem) {
 						j = 0;
-						if (!context && elem.ownerDocument !== document) {
+
+						// Support: IE 11+, Edge 17 - 18+
+						// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+						// two documents; shallow comparisons work.
+						// eslint-disable-next-line eqeqeq
+						if (!context && elem.ownerDocument != document) {
 							setDocument(elem);
 							xml = !documentIsHTML;
 						}
@@ -2530,6 +2667,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 					// Track unmatched elements for set filters
 					if (bySet) {
+
 						// They will have gone through all possible matchers
 						if (elem = !matcher && elem) {
 							matchedCount--;
@@ -2560,6 +2698,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					}
 
 					if (seed) {
+
 						// Reintegrate element matches to eliminate the need for sorting
 						if (matchedCount > 0) {
 							while (i--) {
@@ -2602,6 +2741,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    cached = compilerCache[selector + " "];
 
 			if (!cached) {
+
 				// Generate a function of recursive functions that can be used to check each element
 				if (!match) {
 					match = tokenize(selector);
@@ -2675,6 +2815,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						break;
 					}
 					if (find = Expr.find[type]) {
+
 						// Search, expanding context for leading sibling combinators
 						if (seed = find(token.matches[0].replace(runescape, funescape), rsibling.test(tokens[0].type) && testContext(context.parentNode) || context)) {
 
@@ -2713,6 +2854,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		// Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 		// Detached nodes confoundingly follow *each other*
 		support.sortDetached = assert(function (el) {
+
 			// Should return 1, but returns 4 (following)
 			return el.compareDocumentPosition(document.createElement("fieldset")) & 1;
 		});
@@ -2738,7 +2880,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			el.firstChild.setAttribute("value", "");
 			return el.firstChild.getAttribute("value") === "";
 		})) {
-			addHandle("value", function (elem, name, isXML) {
+			addHandle("value", function (elem, _name, isXML) {
 				if (!isXML && elem.nodeName.toLowerCase() === "input") {
 					return elem.defaultValue;
 				}
@@ -2804,14 +2946,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	function nodeName(elem, name) {
 
 		return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
-	};
+	}
 	var rsingleTag = /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i;
-
-	var risSimple = /^.[^:#\[\.,]*$/;
 
 	// Implement the identical functionality for filter and not
 	function winnow(elements, qualifier, not) {
-		if (jQuery.isFunction(qualifier)) {
+		if (isFunction(qualifier)) {
 			return jQuery.grep(elements, function (elem, i) {
 				return !!qualifier.call(elem, i, elem) !== not;
 			});
@@ -2831,16 +2971,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			});
 		}
 
-		// Simple selector that can be filtered directly, removing non-Elements
-		if (risSimple.test(qualifier)) {
-			return jQuery.filter(qualifier, elements, not);
-		}
-
-		// Complex selector, compare the two sets, removing non-Elements
-		qualifier = jQuery.filter(qualifier, elements);
-		return jQuery.grep(elements, function (elem) {
-			return indexOf.call(qualifier, elem) > -1 !== not && elem.nodeType === 1;
-		});
+		// Filtered directly for both simple and complex selectors
+		return jQuery.filter(qualifier, elements, not);
 	}
 
 	jQuery.filter = function (expr, elems, not) {
@@ -2949,7 +3081,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						for (match in context) {
 
 							// Properties of context are called as methods if possible
-							if (jQuery.isFunction(this[match])) {
+							if (isFunction(this[match])) {
 								this[match](context[match]);
 
 								// ...and otherwise set as attributes
@@ -2992,7 +3124,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// HANDLE: $(function)
 			// Shortcut for document ready
-		} else if (jQuery.isFunction(selector)) {
+		} else if (isFunction(selector)) {
 			return root.ready !== undefined ? root.ready(selector) :
 
 			// Execute immediately if ready is not present
@@ -3104,7 +3236,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		parents: function parents(elem) {
 			return dir(elem, "parentNode");
 		},
-		parentsUntil: function parentsUntil(elem, i, until) {
+		parentsUntil: function parentsUntil(elem, _i, until) {
 			return dir(elem, "parentNode", until);
 		},
 		next: function next(elem) {
@@ -3119,10 +3251,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		prevAll: function prevAll(elem) {
 			return dir(elem, "previousSibling");
 		},
-		nextUntil: function nextUntil(elem, i, until) {
+		nextUntil: function nextUntil(elem, _i, until) {
 			return dir(elem, "nextSibling", until);
 		},
-		prevUntil: function prevUntil(elem, i, until) {
+		prevUntil: function prevUntil(elem, _i, until) {
 			return dir(elem, "previousSibling", until);
 		},
 		siblings: function siblings(elem) {
@@ -3132,7 +3264,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return _siblings(elem.firstChild);
 		},
 		contents: function contents(elem) {
-			if (nodeName(elem, "iframe")) {
+			if (elem.contentDocument != null &&
+
+			// Support: IE 11+
+			// <object> elements with no `data` attribute has an object
+			// `contentDocument` with a `null` prototype.
+			getProto(elem.contentDocument)) {
+
 				return elem.contentDocument;
 			}
 
@@ -3300,11 +3438,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 					(function add(args) {
 						jQuery.each(args, function (_, arg) {
-							if (jQuery.isFunction(arg)) {
+							if (isFunction(arg)) {
 								if (!options.unique || !self.has(arg)) {
 									list.push(arg);
 								}
-							} else if (arg && arg.length && jQuery.type(arg) !== "string") {
+							} else if (arg && arg.length && toType(arg) !== "string") {
 
 								// Inspect recursively
 								add(arg);
@@ -3416,11 +3554,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		try {
 
 			// Check for promise aspect first to privilege synchronous behavior
-			if (value && jQuery.isFunction(method = value.promise)) {
+			if (value && isFunction(method = value.promise)) {
 				method.call(value).done(resolve).fail(reject);
 
 				// Other thenables
-			} else if (value && jQuery.isFunction(method = value.then)) {
+			} else if (value && isFunction(method = value.then)) {
 				method.call(value, resolve, reject);
 
 				// Other non-thenables
@@ -3469,17 +3607,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					var fns = arguments;
 
 					return jQuery.Deferred(function (newDefer) {
-						jQuery.each(tuples, function (i, tuple) {
+						jQuery.each(tuples, function (_i, tuple) {
 
 							// Map tuples (progress, done, fail) to arguments (done, fail, progress)
-							var fn = jQuery.isFunction(fns[tuple[4]]) && fns[tuple[4]];
+							var fn = isFunction(fns[tuple[4]]) && fns[tuple[4]];
 
 							// deferred.progress(function() { bind to newDefer or newDefer.notify })
 							// deferred.done(function() { bind to newDefer or newDefer.resolve })
 							// deferred.fail(function() { bind to newDefer or newDefer.reject })
 							deferred[tuple[1]](function () {
 								var returned = fn && fn.apply(this, arguments);
-								if (returned && jQuery.isFunction(returned.promise)) {
+								if (returned && isFunction(returned.promise)) {
 									returned.promise().progress(newDefer.notify).done(newDefer.resolve).fail(newDefer.reject);
 								} else {
 									newDefer[tuple[0] + "With"](this, fn ? [returned] : arguments);
@@ -3525,7 +3663,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 								(typeof returned === "undefined" ? "undefined" : _typeof(returned)) === "object" || typeof returned === "function") && returned.then;
 
 								// Handle a returned thenable
-								if (jQuery.isFunction(then)) {
+								if (isFunction(then)) {
 
 									// Special processors (notify) just wait for resolution
 									if (special) {
@@ -3605,13 +3743,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					return jQuery.Deferred(function (newDefer) {
 
 						// progress_handlers.add( ... )
-						tuples[0][3].add(resolve(0, newDefer, jQuery.isFunction(onProgress) ? onProgress : Identity, newDefer.notifyWith));
+						tuples[0][3].add(resolve(0, newDefer, isFunction(onProgress) ? onProgress : Identity, newDefer.notifyWith));
 
 						// fulfilled_handlers.add( ... )
-						tuples[1][3].add(resolve(0, newDefer, jQuery.isFunction(onFulfilled) ? onFulfilled : Identity));
+						tuples[1][3].add(resolve(0, newDefer, isFunction(onFulfilled) ? onFulfilled : Identity));
 
 						// rejected_handlers.add( ... )
-						tuples[2][3].add(resolve(0, newDefer, jQuery.isFunction(onRejected) ? onRejected : Thrower));
+						tuples[2][3].add(resolve(0, newDefer, isFunction(onRejected) ? onRejected : Thrower));
 					}).promise();
 				},
 
@@ -3646,8 +3784,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					// fulfilled_callbacks.disable
 					tuples[3 - i][2].disable,
 
+					// rejected_handlers.disable
+					// fulfilled_handlers.disable
+					tuples[3 - i][3].disable,
+
 					// progress_callbacks.lock
-					tuples[0][2].lock);
+					tuples[0][2].lock,
+
+					// progress_handlers.lock
+					tuples[0][3].lock);
 				}
 
 				// progress_handlers.fire
@@ -3698,8 +3843,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    resolveValues = _slice.call(arguments),
 
 
-			// the master Deferred
-			master = jQuery.Deferred(),
+			// the primary Deferred
+			primary = jQuery.Deferred(),
 
 
 			// subordinate callback factory
@@ -3708,28 +3853,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					resolveContexts[i] = this;
 					resolveValues[i] = arguments.length > 1 ? _slice.call(arguments) : value;
 					if (! --remaining) {
-						master.resolveWith(resolveContexts, resolveValues);
+						primary.resolveWith(resolveContexts, resolveValues);
 					}
 				};
 			};
 
 			// Single- and empty arguments are adopted like Promise.resolve
 			if (remaining <= 1) {
-				adoptValue(singleValue, master.done(updateFunc(i)).resolve, master.reject, !remaining);
+				adoptValue(singleValue, primary.done(updateFunc(i)).resolve, primary.reject, !remaining);
 
 				// Use .then() to unwrap secondary thenables (cf. gh-3000)
-				if (master.state() === "pending" || jQuery.isFunction(resolveValues[i] && resolveValues[i].then)) {
+				if (primary.state() === "pending" || isFunction(resolveValues[i] && resolveValues[i].then)) {
 
-					return master.then();
+					return primary.then();
 				}
 			}
 
 			// Multiple arguments are aggregated like Promise.all array elements
 			while (i--) {
-				adoptValue(resolveValues[i], updateFunc(i), master.reject);
+				adoptValue(resolveValues[i], updateFunc(i), primary.reject);
 			}
 
-			return master.promise();
+			return primary.promise();
 		}
 	});
 
@@ -3833,7 +3978,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		    bulk = key == null;
 
 		// Sets many values
-		if (jQuery.type(key) === "object") {
+		if (toType(key) === "object") {
 			chainable = true;
 			for (i in key) {
 				access(elems, fn, i, key[i], true, emptyGet, raw);
@@ -3843,7 +3988,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		} else if (value !== undefined) {
 			chainable = true;
 
-			if (!jQuery.isFunction(value)) {
+			if (!isFunction(value)) {
 				raw = true;
 			}
 
@@ -3857,7 +4002,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					// ...except when executing function values
 				} else {
 					bulk = fn;
-					fn = function fn(elem, key, value) {
+					fn = function fn(elem, _key, value) {
 						return bulk.call(jQuery(elem), value);
 					};
 				}
@@ -3881,6 +4026,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		return len ? fn(elems[0], key) : emptyGet;
 	};
+
+	// Matches dashed string for camelizing
+	var rmsPrefix = /^-ms-/,
+	    rdashAlpha = /-([a-z])/g;
+
+	// Used by camelCase as callback to replace()
+	function fcamelCase(_all, letter) {
+		return letter.toUpperCase();
+	}
+
+	// Convert dashed to camelCase; used by the css and data modules
+	// Support: IE <=9 - 11, Edge 12 - 15
+	// Microsoft forgot to hump their vendor prefix (#9572)
+	function camelCase(string) {
+		return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
+	}
 	var acceptData = function acceptData(owner) {
 
 		// Accepts only:
@@ -3940,14 +4101,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			// Handle: [ owner, key, value ] args
 			// Always use camelCase key (gh-2257)
 			if (typeof data === "string") {
-				cache[jQuery.camelCase(data)] = value;
+				cache[camelCase(data)] = value;
 
 				// Handle: [ owner, { properties } ] args
 			} else {
 
 				// Copy the properties one-by-one to the cache object
 				for (prop in data) {
-					cache[jQuery.camelCase(prop)] = data[prop];
+					cache[camelCase(prop)] = data[prop];
 				}
 			}
 			return cache;
@@ -3956,7 +4117,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return key === undefined ? this.cache(owner) :
 
 			// Always use camelCase key (gh-2257)
-			owner[this.expando] && owner[this.expando][jQuery.camelCase(key)];
+			owner[this.expando] && owner[this.expando][camelCase(key)];
 		},
 		access: function access(owner, key, value) {
 
@@ -4003,9 +4164,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 					// If key is an array of keys...
 					// We always set camelCase keys, so remove that.
-					key = key.map(jQuery.camelCase);
+					key = key.map(camelCase);
 				} else {
-					key = jQuery.camelCase(key);
+					key = camelCase(key);
 
 					// If a key with the spaces exists, use it.
 					// Otherwise, create an array by matching non-whitespace
@@ -4149,7 +4310,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 							if (attrs[i]) {
 								name = attrs[i].name;
 								if (name.indexOf("data-") === 0) {
-									name = jQuery.camelCase(name.slice(5));
+									name = camelCase(name.slice(5));
 									dataAttr(elem, name, data[name]);
 								}
 							}
@@ -4349,6 +4510,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	var cssExpand = ["Top", "Right", "Bottom", "Left"];
 
+	var documentElement = document.documentElement;
+
+	var isAttached = function isAttached(elem) {
+		return jQuery.contains(elem.ownerDocument, elem);
+	},
+	    composed = { composed: true };
+
+	// Support: IE 9 - 11+, Edge 12 - 18+, iOS 10.0 - 10.2 only
+	// Check attachment across shadow DOM boundaries when possible (gh-3504)
+	// Support: iOS 10.0-10.2 only
+	// Early iOS 10 versions support `attachShadow` but not `getRootNode`,
+	// leading to errors. We need to check for `getRootNode`.
+	if (documentElement.getRootNode) {
+		isAttached = function isAttached(elem) {
+			return jQuery.contains(elem.ownerDocument, elem) || elem.getRootNode(composed) === elem.ownerDocument;
+		};
+	}
 	var isHiddenWithinTree = function isHiddenWithinTree(elem, el) {
 
 		// isHiddenWithinTree might be called from jQuery#filter function;
@@ -4362,33 +4540,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		// Support: Firefox <=43 - 45
 		// Disconnected elements can have computed display: none, so first confirm that elem is
 		// in the document.
-		jQuery.contains(elem.ownerDocument, elem) && jQuery.css(elem, "display") === "none";
-	};
-
-	var swap = function swap(elem, options, callback, args) {
-		var ret,
-		    name,
-		    old = {};
-
-		// Remember the old values, and insert the new ones
-		for (name in options) {
-			old[name] = elem.style[name];
-			elem.style[name] = options[name];
-		}
-
-		ret = callback.apply(elem, args || []);
-
-		// Revert the old values
-		for (name in options) {
-			elem.style[name] = old[name];
-		}
-
-		return ret;
+		isAttached(elem) && jQuery.css(elem, "display") === "none";
 	};
 
 	function adjustCSS(elem, prop, valueParts, tween) {
 		var adjusted,
-		    scale = 1,
+		    scale,
 		    maxIterations = 20,
 		    currentValue = tween ? function () {
 			return tween.cur();
@@ -4400,32 +4557,36 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 		// Starting value computation is required for potential unit mismatches
-		initialInUnit = (jQuery.cssNumber[prop] || unit !== "px" && +initial) && rcssNum.exec(jQuery.css(elem, prop));
+		initialInUnit = elem.nodeType && (jQuery.cssNumber[prop] || unit !== "px" && +initial) && rcssNum.exec(jQuery.css(elem, prop));
 
 		if (initialInUnit && initialInUnit[3] !== unit) {
+
+			// Support: Firefox <=54
+			// Halve the iteration target value to prevent interference from CSS upper bounds (gh-2144)
+			initial = initial / 2;
 
 			// Trust units reported by jQuery.css
 			unit = unit || initialInUnit[3];
 
-			// Make sure we update the tween properties later on
-			valueParts = valueParts || [];
-
 			// Iteratively approximate from a nonzero starting point
 			initialInUnit = +initial || 1;
 
-			do {
+			while (maxIterations--) {
 
-				// If previous iteration zeroed out, double until we get *something*.
-				// Use string for doubling so we don't accidentally see scale as unchanged below
-				scale = scale || ".5";
-
-				// Adjust and apply
-				initialInUnit = initialInUnit / scale;
+				// Evaluate and update our best guess (doubling guesses that zero out).
+				// Finish if the scale equals or crosses 1 (making the old*new product non-positive).
 				jQuery.style(elem, prop, initialInUnit + unit);
+				if ((1 - scale) * (1 - (scale = currentValue() / initial || 0.5)) <= 0) {
+					maxIterations = 0;
+				}
+				initialInUnit = initialInUnit / scale;
+			}
 
-				// Update scale, tolerating zero or NaN from tween.cur()
-				// Break the loop if scale is unchanged or perfect, or if we've just had enough.
-			} while (scale !== (scale = currentValue() / initial) && scale !== 1 && --maxIterations);
+			initialInUnit = initialInUnit * 2;
+			jQuery.style(elem, prop, initialInUnit + unit);
+
+			// Make sure we update the tween properties later on
+			valueParts = valueParts || [];
 		}
 
 		if (valueParts) {
@@ -4539,15 +4700,43 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	});
 	var rcheckableType = /^(?:checkbox|radio)$/i;
 
-	var rtagName = /<([a-z][^\/\0>\x20\t\r\n\f]+)/i;
+	var rtagName = /<([a-z][^\/\0>\x20\t\r\n\f]*)/i;
 
-	var rscriptType = /^$|\/(?:java|ecma)script/i;
+	var rscriptType = /^$|^module$|\/(?:java|ecma)script/i;
+
+	(function () {
+		var fragment = document.createDocumentFragment(),
+		    div = fragment.appendChild(document.createElement("div")),
+		    input = document.createElement("input");
+
+		// Support: Android 4.0 - 4.3 only
+		// Check state lost if the name is set (#11217)
+		// Support: Windows Web Apps (WWA)
+		// `name` and `type` must use .setAttribute for WWA (#14901)
+		input.setAttribute("type", "radio");
+		input.setAttribute("checked", "checked");
+		input.setAttribute("name", "t");
+
+		div.appendChild(input);
+
+		// Support: Android <=4.1 only
+		// Older WebKit doesn't clone checked state correctly in fragments
+		support.checkClone = div.cloneNode(true).cloneNode(true).lastChild.checked;
+
+		// Support: IE <=11 only
+		// Make sure textarea (and checkbox) defaultValue is properly cloned
+		div.innerHTML = "<textarea>x</textarea>";
+		support.noCloneChecked = !!div.cloneNode(true).lastChild.defaultValue;
+
+		// Support: IE <=9 only
+		// IE <=9 replaces <option> tags with their contents when inserted outside of
+		// the select element.
+		div.innerHTML = "<option></option>";
+		support.option = !!div.lastChild;
+	})();
 
 	// We have to close these tags to support XHTML (#13200)
 	var wrapMap = {
-
-		// Support: IE <=9 only
-		option: [1, "<select multiple='multiple'>", "</select>"],
 
 		// XHTML parsers do not magically insert elements in the
 		// same way that tag soup parsers do. So we cannot shorten
@@ -4560,11 +4749,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		_default: [0, "", ""]
 	};
 
-	// Support: IE <=9 only
-	wrapMap.optgroup = wrapMap.option;
-
 	wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
 	wrapMap.th = wrapMap.td;
+
+	// Support: IE <=9 only
+	if (!support.option) {
+		wrapMap.optgroup = wrapMap.option = [1, "<select multiple='multiple'>", "</select>"];
+	}
 
 	function getAll(context, tag) {
 
@@ -4604,7 +4795,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		    tmp,
 		    tag,
 		    wrap,
-		    contains,
+		    attached,
 		    j,
 		    fragment = context.createDocumentFragment(),
 		    nodes = [],
@@ -4617,7 +4808,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			if (elem || elem === 0) {
 
 				// Add nodes directly
-				if (jQuery.type(elem) === "object") {
+				if (toType(elem) === "object") {
 
 					// Support: Android <=4.0 only, PhantomJS 1 only
 					// push.apply(_, arraylike) throws on ancient WebKit
@@ -4669,13 +4860,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				continue;
 			}
 
-			contains = jQuery.contains(elem.ownerDocument, elem);
+			attached = isAttached(elem);
 
 			// Append to fragment
 			tmp = getAll(fragment.appendChild(elem), "script");
 
 			// Preserve script evaluation history
-			if (contains) {
+			if (attached) {
 				setGlobalEval(tmp);
 			}
 
@@ -4693,35 +4884,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return fragment;
 	}
 
-	(function () {
-		var fragment = document.createDocumentFragment(),
-		    div = fragment.appendChild(document.createElement("div")),
-		    input = document.createElement("input");
-
-		// Support: Android 4.0 - 4.3 only
-		// Check state lost if the name is set (#11217)
-		// Support: Windows Web Apps (WWA)
-		// `name` and `type` must use .setAttribute for WWA (#14901)
-		input.setAttribute("type", "radio");
-		input.setAttribute("checked", "checked");
-		input.setAttribute("name", "t");
-
-		div.appendChild(input);
-
-		// Support: Android <=4.1 only
-		// Older WebKit doesn't clone checked state correctly in fragments
-		support.checkClone = div.cloneNode(true).cloneNode(true).lastChild.checked;
-
-		// Support: IE <=11 only
-		// Make sure textarea (and checkbox) defaultValue is properly cloned
-		div.innerHTML = "<textarea>x</textarea>";
-		support.noCloneChecked = !!div.cloneNode(true).lastChild.defaultValue;
-	})();
-	var documentElement = document.documentElement;
-
-	var rkeyEvent = /^key/,
-	    rmouseEvent = /^(?:mouse|pointer|contextmenu|drag|drop)|click/,
-	    rtypenamespace = /^([^.]*)(?:\.(.+)|)/;
+	var rtypenamespace = /^([^.]*)(?:\.(.+)|)/;
 
 	function returnTrue() {
 		return true;
@@ -4731,8 +4894,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return false;
 	}
 
+	// Support: IE <=9 - 11+
+	// focus() and blur() are asynchronous, except when they are no-op.
+	// So expect focus to be synchronous when the element is already active,
+	// and blur to be synchronous when the element is not already active.
+	// (focus and blur are always synchronous in other supported browsers,
+	// this just defines when we can count on it).
+	function expectSync(elem, type) {
+		return elem === safeActiveElement() === (type === "focus");
+	}
+
 	// Support: IE <=9 only
-	// See #13393 for more info
+	// Accessing document.activeElement can throw unexpectedly
+	// https://bugs.jquery.com/ticket/13393
 	function safeActiveElement() {
 		try {
 			return document.activeElement;
@@ -4823,8 +4997,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    origType,
 			    elemData = dataPriv.get(elem);
 
-			// Don't attach events to noData or text/comment nodes (but allow plain objects)
-			if (!elemData) {
+			// Only attach events to objects that accept data
+			if (!acceptData(elem)) {
 				return;
 			}
 
@@ -4848,7 +5022,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// Init the element's event structure and main handler, if this is the first
 			if (!(events = elemData.events)) {
-				events = elemData.events = {};
+				events = elemData.events = Object.create(null);
 			}
 			if (!(eventHandle = elemData.handle)) {
 				eventHandle = elemData.handle = function (e) {
@@ -5005,9 +5179,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		dispatch: function dispatch(nativeEvent) {
 
-			// Make a writable jQuery.Event from the native event object
-			var event = jQuery.event.fix(nativeEvent);
-
 			var i,
 			    j,
 			    ret,
@@ -5015,7 +5186,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    handleObj,
 			    handlerQueue,
 			    args = new Array(arguments.length),
-			    handlers = (dataPriv.get(this, "events") || {})[event.type] || [],
+
+
+			// Make a writable jQuery.Event from the native event object
+			event = jQuery.event.fix(nativeEvent),
+			    handlers = (dataPriv.get(this, "events") || Object.create(null))[event.type] || [],
 			    special = jQuery.event.special[event.type] || {};
 
 			// Use the fix-ed jQuery.Event rather than the (read-only) native event
@@ -5043,9 +5218,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				j = 0;
 				while ((handleObj = matched.handlers[j++]) && !event.isImmediatePropagationStopped()) {
 
-					// Triggered event must either 1) have no namespace, or 2) have namespace(s)
-					// a subset or equal to those in the bound event (both can have no namespace).
-					if (!event.rnamespace || event.rnamespace.test(handleObj.namespace)) {
+					// If the event is namespaced, then each handler is only invoked if it is
+					// specially universal or its namespaces are a superset of the event's.
+					if (!event.rnamespace || handleObj.namespace === false || event.rnamespace.test(handleObj.namespace)) {
 
 						event.handleObj = handleObj;
 						event.data = handleObj.data;
@@ -5135,7 +5310,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				enumerable: true,
 				configurable: true,
 
-				get: jQuery.isFunction(hook) ? function () {
+				get: isFunction(hook) ? function () {
 					if (this.originalEvent) {
 						return hook(this.originalEvent);
 					}
@@ -5166,39 +5341,46 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				// Prevent triggered image.load events from bubbling to window.load
 				noBubble: true
 			},
-			focus: {
-
-				// Fire native event if possible so blur/focus sequence is correct
-				trigger: function trigger() {
-					if (this !== safeActiveElement() && this.focus) {
-						this.focus();
-						return false;
-					}
-				},
-				delegateType: "focusin"
-			},
-			blur: {
-				trigger: function trigger() {
-					if (this === safeActiveElement() && this.blur) {
-						this.blur();
-						return false;
-					}
-				},
-				delegateType: "focusout"
-			},
 			click: {
 
-				// For checkbox, fire native event so checked state will be right
-				trigger: function trigger() {
-					if (this.type === "checkbox" && this.click && nodeName(this, "input")) {
-						this.click();
-						return false;
+				// Utilize native event to ensure correct state for checkable inputs
+				setup: function setup(data) {
+
+					// For mutual compressibility with _default, replace `this` access with a local var.
+					// `|| data` is dead code meant only to preserve the variable through minification.
+					var el = this || data;
+
+					// Claim the first handler
+					if (rcheckableType.test(el.type) && el.click && nodeName(el, "input")) {
+
+						// dataPriv.set( el, "click", ... )
+						leverageNative(el, "click", returnTrue);
 					}
+
+					// Return false to allow normal processing in the caller
+					return false;
+				},
+				trigger: function trigger(data) {
+
+					// For mutual compressibility with _default, replace `this` access with a local var.
+					// `|| data` is dead code meant only to preserve the variable through minification.
+					var el = this || data;
+
+					// Force setup before triggering a click
+					if (rcheckableType.test(el.type) && el.click && nodeName(el, "input")) {
+
+						leverageNative(el, "click");
+					}
+
+					// Return non-false to allow normal event-path propagation
+					return true;
 				},
 
-				// For cross-browser consistency, don't fire native .click() on links
+				// For cross-browser consistency, suppress native .click() on links
+				// Also prevent it if we're currently inside a leveraged native-event stack
 				_default: function _default(event) {
-					return nodeName(event.target, "a");
+					var target = event.target;
+					return rcheckableType.test(target.type) && target.click && nodeName(target, "input") && dataPriv.get(target, "click") || nodeName(target, "a");
 				}
 			},
 
@@ -5214,6 +5396,97 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 		}
 	};
+
+	// Ensure the presence of an event listener that handles manually-triggered
+	// synthetic events by interrupting progress until reinvoked in response to
+	// *native* events that it fires directly, ensuring that state changes have
+	// already occurred before other listeners are invoked.
+	function leverageNative(el, type, expectSync) {
+
+		// Missing expectSync indicates a trigger call, which must force setup through jQuery.event.add
+		if (!expectSync) {
+			if (dataPriv.get(el, type) === undefined) {
+				jQuery.event.add(el, type, returnTrue);
+			}
+			return;
+		}
+
+		// Register the controller as a special universal handler for all event namespaces
+		dataPriv.set(el, type, false);
+		jQuery.event.add(el, type, {
+			namespace: false,
+			handler: function handler(event) {
+				var notAsync,
+				    result,
+				    saved = dataPriv.get(this, type);
+
+				if (event.isTrigger & 1 && this[type]) {
+
+					// Interrupt processing of the outer synthetic .trigger()ed event
+					// Saved data should be false in such cases, but might be a leftover capture object
+					// from an async native handler (gh-4350)
+					if (!saved.length) {
+
+						// Store arguments for use when handling the inner native event
+						// There will always be at least one argument (an event object), so this array
+						// will not be confused with a leftover capture object.
+						saved = _slice.call(arguments);
+						dataPriv.set(this, type, saved);
+
+						// Trigger the native event and capture its result
+						// Support: IE <=9 - 11+
+						// focus() and blur() are asynchronous
+						notAsync = expectSync(this, type);
+						this[type]();
+						result = dataPriv.get(this, type);
+						if (saved !== result || notAsync) {
+							dataPriv.set(this, type, false);
+						} else {
+							result = {};
+						}
+						if (saved !== result) {
+
+							// Cancel the outer synthetic event
+							event.stopImmediatePropagation();
+							event.preventDefault();
+
+							// Support: Chrome 86+
+							// In Chrome, if an element having a focusout handler is blurred by
+							// clicking outside of it, it invokes the handler synchronously. If
+							// that handler calls `.remove()` on the element, the data is cleared,
+							// leaving `result` undefined. We need to guard against this.
+							return result && result.value;
+						}
+
+						// If this is an inner synthetic event for an event with a bubbling surrogate
+						// (focus or blur), assume that the surrogate already propagated from triggering the
+						// native event and prevent that from happening again here.
+						// This technically gets the ordering wrong w.r.t. to `.trigger()` (in which the
+						// bubbling surrogate propagates *after* the non-bubbling base), but that seems
+						// less bad than duplication.
+					} else if ((jQuery.event.special[type] || {}).delegateType) {
+						event.stopPropagation();
+					}
+
+					// If this is a native event triggered above, everything is now in order
+					// Fire an inner synthetic event with the original arguments
+				} else if (saved.length) {
+
+					// ...and capture the result
+					dataPriv.set(this, type, {
+						value: jQuery.event.trigger(
+
+						// Support: IE <=9 - 11+
+						// Extend with the prototype to reset the above stopImmediatePropagation()
+						jQuery.extend(saved[0], jQuery.Event.prototype), saved.slice(1), this)
+					});
+
+					// Abort handling of the native event
+					event.stopImmediatePropagation();
+				}
+			}
+		});
+	}
 
 	jQuery.removeEvent = function (elem, type, handle) {
 
@@ -5261,7 +5534,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 
 		// Create a timestamp if incoming event doesn't have one
-		this.timeStamp = src && src.timeStamp || jQuery.now();
+		this.timeStamp = src && src.timeStamp || Date.now();
 
 		// Mark it as fixed
 		this[jQuery.expando] = true;
@@ -5322,6 +5595,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		shiftKey: true,
 		view: true,
 		"char": true,
+		code: true,
 		charCode: true,
 		key: true,
 		keyCode: true,
@@ -5338,35 +5612,41 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		targetTouches: true,
 		toElement: true,
 		touches: true,
-
-		which: function which(event) {
-			var button = event.button;
-
-			// Add which for key events
-			if (event.which == null && rkeyEvent.test(event.type)) {
-				return event.charCode != null ? event.charCode : event.keyCode;
-			}
-
-			// Add which for click: 1 === left; 2 === middle; 3 === right
-			if (!event.which && button !== undefined && rmouseEvent.test(event.type)) {
-				if (button & 1) {
-					return 1;
-				}
-
-				if (button & 2) {
-					return 3;
-				}
-
-				if (button & 4) {
-					return 2;
-				}
-
-				return 0;
-			}
-
-			return event.which;
-		}
+		which: true
 	}, jQuery.event.addProp);
+
+	jQuery.each({ focus: "focusin", blur: "focusout" }, function (type, delegateType) {
+		jQuery.event.special[type] = {
+
+			// Utilize native event if possible so blur/focus sequence is correct
+			setup: function setup() {
+
+				// Claim the first handler
+				// dataPriv.set( this, "focus", ... )
+				// dataPriv.set( this, "blur", ... )
+				leverageNative(this, type, expectSync);
+
+				// Return false to allow normal processing in the caller
+				return false;
+			},
+			trigger: function trigger() {
+
+				// Force setup before trigger
+				leverageNative(this, type);
+
+				// Return non-false to allow normal event-path propagation
+				return true;
+			},
+
+			// Suppress native focus or blur as it's already being fired
+			// in leverageNative.
+			_default: function _default() {
+				return true;
+			},
+
+			delegateType: delegateType
+		};
+	});
 
 	// Create mouseenter/leave events using mouseover/out and event-time checks
 	// so that event delegation works in jQuery.
@@ -5446,15 +5726,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	var
 
-	/* eslint-disable max-len */
-
-	// See https://github.com/eslint/eslint/issues/3229
-	rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi,
-
-
-	/* eslint-enable */
-
-	// Support: IE <=10 - 11, Edge 12 - 13
+	// Support: IE <=10 - 11, Edge 12 - 13 only
 	// In IE/Edge using regex groups here causes severe slowdowns.
 	// See https://connect.microsoft.com/IE/feedback/details/1736512/
 	rnoInnerhtml = /<script|<style|<link/i,
@@ -5462,14 +5734,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	// checked="checked" or checked
 	rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i,
-	    rscriptTypeMasked = /^true\/(.*)/,
 	    rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g;
 
 	// Prefer a tbody over its parent table for containing new rows
 	function manipulationTarget(elem, content) {
 		if (nodeName(elem, "table") && nodeName(content.nodeType !== 11 ? content : content.firstChild, "tr")) {
 
-			return jQuery(">tbody", elem)[0] || elem;
+			return jQuery(elem).children("tbody")[0] || elem;
 		}
 
 		return elem;
@@ -5481,10 +5752,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return elem;
 	}
 	function restoreScript(elem) {
-		var match = rscriptTypeMasked.exec(elem.type);
-
-		if (match) {
-			elem.type = match[1];
+		if ((elem.type || "").slice(0, 5) === "true/") {
+			elem.type = elem.type.slice(5);
 		} else {
 			elem.removeAttribute("type");
 		}
@@ -5493,7 +5762,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	}
 
 	function cloneCopyEvent(src, dest) {
-		var i, l, type, pdataOld, pdataCur, udataOld, udataCur, events;
+		var i, l, type, pdataOld, udataOld, udataCur, events;
 
 		if (dest.nodeType !== 1) {
 			return;
@@ -5501,13 +5770,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		// 1. Copy private data: events, handlers, etc.
 		if (dataPriv.hasData(src)) {
-			pdataOld = dataPriv.access(src);
-			pdataCur = dataPriv.set(dest, pdataOld);
+			pdataOld = dataPriv.get(src);
 			events = pdataOld.events;
 
 			if (events) {
-				delete pdataCur.handle;
-				pdataCur.events = {};
+				dataPriv.remove(dest, "handle events");
 
 				for (type in events) {
 					for (i = 0, l = events[type].length; i < l; i++) {
@@ -5543,7 +5810,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	function domManip(collection, args, callback, ignored) {
 
 		// Flatten any nested arrays
-		args = concat.apply([], args);
+		args = flat(args);
 
 		var fragment,
 		    first,
@@ -5555,13 +5822,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		    l = collection.length,
 		    iNoClone = l - 1,
 		    value = args[0],
-		    isFunction = jQuery.isFunction(value);
+		    valueIsFunction = isFunction(value);
 
 		// We can't cloneNode fragments that contain checked, in WebKit
-		if (isFunction || l > 1 && typeof value === "string" && !support.checkClone && rchecked.test(value)) {
+		if (valueIsFunction || l > 1 && typeof value === "string" && !support.checkClone && rchecked.test(value)) {
 			return collection.each(function (index) {
 				var self = collection.eq(index);
-				if (isFunction) {
+				if (valueIsFunction) {
 					args[0] = value.call(this, index, self.html());
 				}
 				domManip(self, args, callback, ignored);
@@ -5613,14 +5880,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						node = scripts[i];
 						if (rscriptType.test(node.type || "") && !dataPriv.access(node, "globalEval") && jQuery.contains(doc, node)) {
 
-							if (node.src) {
+							if (node.src && (node.type || "").toLowerCase() !== "module") {
 
 								// Optional AJAX dependency, but won't run scripts if not present
-								if (jQuery._evalUrl) {
-									jQuery._evalUrl(node.src);
+								if (jQuery._evalUrl && !node.noModule) {
+									jQuery._evalUrl(node.src, {
+										nonce: node.nonce || node.getAttribute("nonce")
+									}, doc);
 								}
 							} else {
-								DOMEval(node.textContent.replace(rcleanScript, ""), doc);
+								DOMEval(node.textContent.replace(rcleanScript, ""), node, doc);
 							}
 						}
 					}
@@ -5642,7 +5911,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			if (node.parentNode) {
-				if (keepData && jQuery.contains(node.ownerDocument, node)) {
+				if (keepData && isAttached(node)) {
 					setGlobalEval(getAll(node, "script"));
 				}
 				node.parentNode.removeChild(node);
@@ -5654,7 +5923,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	jQuery.extend({
 		htmlPrefilter: function htmlPrefilter(html) {
-			return html.replace(rxhtmlTag, "<$1></$2>");
+			return html;
 		},
 
 		clone: function clone(elem, dataAndEvents, deepDataAndEvents) {
@@ -5663,7 +5932,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    srcElements,
 			    destElements,
 			    clone = elem.cloneNode(true),
-			    inPage = jQuery.contains(elem.ownerDocument, elem);
+			    inPage = isAttached(elem);
 
 			// Fix IE cloning issues
 			if (!support.noCloneChecked && (elem.nodeType === 1 || elem.nodeType === 11) && !jQuery.isXMLDoc(elem)) {
@@ -5901,8 +6170,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this.pushStack(ret);
 		};
 	});
-	var rmargin = /^margin/;
-
 	var rnumnonpx = new RegExp("^(" + pnum + ")(?!px)[a-z%]+$", "i");
 
 	var getStyles = function getStyles(elem) {
@@ -5919,6 +6186,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return view.getComputedStyle(elem);
 	};
 
+	var swap = function swap(elem, options, callback) {
+		var ret,
+		    name,
+		    old = {};
+
+		// Remember the old values, and insert the new ones
+		for (name in options) {
+			old[name] = elem.style[name];
+			elem.style[name] = options[name];
+		}
+
+		ret = callback.call(elem);
+
+		// Revert the old values
+		for (name in options) {
+			elem.style[name] = old[name];
+		}
+
+		return ret;
+	};
+
+	var rboxStyle = new RegExp(cssExpand.join("|"), "i");
+
 	(function () {
 
 		// Executing both pixelPosition & boxSizingReliable tests require only one layout
@@ -5930,21 +6220,31 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return;
 			}
 
-			div.style.cssText = "box-sizing:border-box;" + "position:relative;display:block;" + "margin:auto;border:1px;padding:1px;" + "top:1%;width:50%";
-			div.innerHTML = "";
-			documentElement.appendChild(container);
+			container.style.cssText = "position:absolute;left:-11111px;width:60px;" + "margin-top:1px;padding:0;border:0";
+			div.style.cssText = "position:relative;display:block;box-sizing:border-box;overflow:scroll;" + "margin:auto;border:1px;padding:1px;" + "width:60%;top:1%";
+			documentElement.appendChild(container).appendChild(div);
 
 			var divStyle = window.getComputedStyle(div);
 			pixelPositionVal = divStyle.top !== "1%";
 
 			// Support: Android 4.0 - 4.3 only, Firefox <=3 - 44
-			reliableMarginLeftVal = divStyle.marginLeft === "2px";
-			boxSizingReliableVal = divStyle.width === "4px";
+			reliableMarginLeftVal = roundPixelMeasures(divStyle.marginLeft) === 12;
 
-			// Support: Android 4.0 - 4.3 only
+			// Support: Android 4.0 - 4.3 only, Safari <=9.1 - 10.1, iOS <=7.0 - 9.3
 			// Some styles come back with percentage values, even though they shouldn't
-			div.style.marginRight = "50%";
-			pixelMarginRightVal = divStyle.marginRight === "4px";
+			div.style.right = "60%";
+			pixelBoxStylesVal = roundPixelMeasures(divStyle.right) === 36;
+
+			// Support: IE 9 - 11 only
+			// Detect misreporting of content dimensions for box-sizing:border-box elements
+			boxSizingReliableVal = roundPixelMeasures(divStyle.width) === 36;
+
+			// Support: IE 9 only
+			// Detect overflow:scroll screwiness (gh-3699)
+			// Support: Chrome <=64
+			// Don't get tricked when zoom affects offsetWidth (gh-4029)
+			div.style.position = "absolute";
+			scrollboxSizeVal = roundPixelMeasures(div.offsetWidth / 3) === 12;
 
 			documentElement.removeChild(container);
 
@@ -5953,9 +6253,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			div = null;
 		}
 
+		function roundPixelMeasures(measure) {
+			return Math.round(parseFloat(measure));
+		}
+
 		var pixelPositionVal,
 		    boxSizingReliableVal,
-		    pixelMarginRightVal,
+		    scrollboxSizeVal,
+		    pixelBoxStylesVal,
+		    reliableTrDimensionsVal,
 		    reliableMarginLeftVal,
 		    container = document.createElement("div"),
 		    div = document.createElement("div");
@@ -5971,25 +6277,69 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		div.cloneNode(true).style.backgroundClip = "";
 		support.clearCloneStyle = div.style.backgroundClip === "content-box";
 
-		container.style.cssText = "border:0;width:8px;height:0;top:0;left:-9999px;" + "padding:0;margin-top:1px;position:absolute";
-		container.appendChild(div);
-
 		jQuery.extend(support, {
-			pixelPosition: function pixelPosition() {
-				computeStyleTests();
-				return pixelPositionVal;
-			},
 			boxSizingReliable: function boxSizingReliable() {
 				computeStyleTests();
 				return boxSizingReliableVal;
 			},
-			pixelMarginRight: function pixelMarginRight() {
+			pixelBoxStyles: function pixelBoxStyles() {
 				computeStyleTests();
-				return pixelMarginRightVal;
+				return pixelBoxStylesVal;
+			},
+			pixelPosition: function pixelPosition() {
+				computeStyleTests();
+				return pixelPositionVal;
 			},
 			reliableMarginLeft: function reliableMarginLeft() {
 				computeStyleTests();
 				return reliableMarginLeftVal;
+			},
+			scrollboxSize: function scrollboxSize() {
+				computeStyleTests();
+				return scrollboxSizeVal;
+			},
+
+			// Support: IE 9 - 11+, Edge 15 - 18+
+			// IE/Edge misreport `getComputedStyle` of table rows with width/height
+			// set in CSS while `offset*` properties report correct values.
+			// Behavior in IE 9 is more subtle than in newer versions & it passes
+			// some versions of this test; make sure not to make it pass there!
+			//
+			// Support: Firefox 70+
+			// Only Firefox includes border widths
+			// in computed dimensions. (gh-4529)
+			reliableTrDimensions: function reliableTrDimensions() {
+				var table, tr, trChild, trStyle;
+				if (reliableTrDimensionsVal == null) {
+					table = document.createElement("table");
+					tr = document.createElement("tr");
+					trChild = document.createElement("div");
+
+					table.style.cssText = "position:absolute;left:-11111px;border-collapse:separate";
+					tr.style.cssText = "border:1px solid";
+
+					// Support: Chrome 86+
+					// Height set through cssText does not get applied.
+					// Computed height then comes back as 0.
+					tr.style.height = "1px";
+					trChild.style.height = "9px";
+
+					// Support: Android 8 Chrome 86+
+					// In our bodyBackground.html iframe,
+					// display for all div elements is set to "inline",
+					// which causes a problem only in Android 8 Chrome 86.
+					// Ensuring the div is display: block
+					// gets around this issue.
+					trChild.style.display = "block";
+
+					documentElement.appendChild(table).appendChild(tr).appendChild(trChild);
+
+					trStyle = window.getComputedStyle(tr);
+					reliableTrDimensionsVal = parseInt(trStyle.height, 10) + parseInt(trStyle.borderTopWidth, 10) + parseInt(trStyle.borderBottomWidth, 10) === tr.offsetHeight;
+
+					documentElement.removeChild(table);
+				}
+				return reliableTrDimensionsVal;
 			}
 		});
 	})();
@@ -6015,7 +6365,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		if (computed) {
 			ret = computed.getPropertyValue(name) || computed[name];
 
-			if (ret === "" && !jQuery.contains(elem.ownerDocument, elem)) {
+			if (ret === "" && !isAttached(elem)) {
 				ret = jQuery.style(elem, name);
 			}
 
@@ -6024,7 +6374,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			// but width seems to be reliably pixels.
 			// This is against the CSSOM draft spec:
 			// https://drafts.csswg.org/cssom/#resolved-values
-			if (!support.pixelMarginRight() && rnumnonpx.test(ret) && rmargin.test(name)) {
+			if (!support.pixelBoxStyles() && rnumnonpx.test(ret) && rboxStyle.test(name)) {
 
 				// Remember the original values
 				width = style.width;
@@ -6068,28 +6418,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		};
 	}
 
-	var
+	var cssPrefixes = ["Webkit", "Moz", "ms"],
+	    emptyStyle = document.createElement("div").style,
+	    vendorProps = {};
 
-	// Swappable if display is none or starts with table
-	// except "table", "table-cell", or "table-caption"
-	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
-	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
-	    rcustomProp = /^--/,
-	    cssShow = { position: "absolute", visibility: "hidden", display: "block" },
-	    cssNormalTransform = {
-		letterSpacing: "0",
-		fontWeight: "400"
-	},
-	    cssPrefixes = ["Webkit", "Moz", "ms"],
-	    emptyStyle = document.createElement("div").style;
-
-	// Return a css property mapped to a potentially vendor prefixed property
+	// Return a vendor-prefixed property or undefined
 	function vendorPropName(name) {
-
-		// Shortcut for names that are not vendor prefixed
-		if (name in emptyStyle) {
-			return name;
-		}
 
 		// Check for vendor prefixed names
 		var capName = name[0].toUpperCase() + name.slice(1),
@@ -6103,17 +6437,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	}
 
-	// Return a property mapped along what jQuery.cssProps suggests or to
-	// a vendor prefixed property.
+	// Return a potentially-mapped jQuery.cssProps or vendor prefixed property
 	function finalPropName(name) {
-		var ret = jQuery.cssProps[name];
-		if (!ret) {
-			ret = jQuery.cssProps[name] = vendorPropName(name) || name;
+		var final = jQuery.cssProps[name] || vendorProps[name];
+
+		if (final) {
+			return final;
 		}
-		return ret;
+		if (name in emptyStyle) {
+			return name;
+		}
+		return vendorProps[name] = vendorPropName(name) || name;
 	}
 
-	function setPositiveNumber(elem, value, subtract) {
+	var
+
+	// Swappable if display is none or starts with table
+	// except "table", "table-cell", or "table-caption"
+	// See here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
+	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
+	    rcustomProp = /^--/,
+	    cssShow = { position: "absolute", visibility: "hidden", display: "block" },
+	    cssNormalTransform = {
+		letterSpacing: "0",
+		fontWeight: "400"
+	};
+
+	function setPositiveNumber(_elem, value, subtract) {
 
 		// Any relative (+/-) values have already been
 		// normalized at this point
@@ -6124,80 +6474,133 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		Math.max(0, matches[2] - (subtract || 0)) + (matches[3] || "px") : value;
 	}
 
-	function augmentWidthOrHeight(elem, name, extra, isBorderBox, styles) {
-		var i,
-		    val = 0;
+	function boxModelAdjustment(elem, dimension, box, isBorderBox, styles, computedVal) {
+		var i = dimension === "width" ? 1 : 0,
+		    extra = 0,
+		    delta = 0;
 
-		// If we already have the right measurement, avoid augmentation
-		if (extra === (isBorderBox ? "border" : "content")) {
-			i = 4;
-
-			// Otherwise initialize for horizontal or vertical properties
-		} else {
-			i = name === "width" ? 1 : 0;
+		// Adjustment may not be necessary
+		if (box === (isBorderBox ? "border" : "content")) {
+			return 0;
 		}
 
 		for (; i < 4; i += 2) {
 
-			// Both box models exclude margin, so add it if we want it
-			if (extra === "margin") {
-				val += jQuery.css(elem, extra + cssExpand[i], true, styles);
+			// Both box models exclude margin
+			if (box === "margin") {
+				delta += jQuery.css(elem, box + cssExpand[i], true, styles);
 			}
 
-			if (isBorderBox) {
+			// If we get here with a content-box, we're seeking "padding" or "border" or "margin"
+			if (!isBorderBox) {
 
-				// border-box includes padding, so remove it if we want content
-				if (extra === "content") {
-					val -= jQuery.css(elem, "padding" + cssExpand[i], true, styles);
+				// Add padding
+				delta += jQuery.css(elem, "padding" + cssExpand[i], true, styles);
+
+				// For "border" or "margin", add border
+				if (box !== "padding") {
+					delta += jQuery.css(elem, "border" + cssExpand[i] + "Width", true, styles);
+
+					// But still keep track of it otherwise
+				} else {
+					extra += jQuery.css(elem, "border" + cssExpand[i] + "Width", true, styles);
 				}
 
-				// At this point, extra isn't border nor margin, so remove border
-				if (extra !== "margin") {
-					val -= jQuery.css(elem, "border" + cssExpand[i] + "Width", true, styles);
-				}
+				// If we get here with a border-box (content + padding + border), we're seeking "content" or
+				// "padding" or "margin"
 			} else {
 
-				// At this point, extra isn't content, so add padding
-				val += jQuery.css(elem, "padding" + cssExpand[i], true, styles);
+				// For "content", subtract padding
+				if (box === "content") {
+					delta -= jQuery.css(elem, "padding" + cssExpand[i], true, styles);
+				}
 
-				// At this point, extra isn't content nor padding, so add border
-				if (extra !== "padding") {
-					val += jQuery.css(elem, "border" + cssExpand[i] + "Width", true, styles);
+				// For "content" or "padding", subtract border
+				if (box !== "margin") {
+					delta -= jQuery.css(elem, "border" + cssExpand[i] + "Width", true, styles);
 				}
 			}
 		}
 
-		return val;
+		// Account for positive content-box scroll gutter when requested by providing computedVal
+		if (!isBorderBox && computedVal >= 0) {
+
+			// offsetWidth/offsetHeight is a rounded sum of content, padding, scroll gutter, and border
+			// Assuming integer scroll gutter, subtract the rest and round down
+			delta += Math.max(0, Math.ceil(elem["offset" + dimension[0].toUpperCase() + dimension.slice(1)] - computedVal - delta - extra - 0.5
+
+			// If offsetWidth/offsetHeight is unknown, then we can't determine content-box scroll gutter
+			// Use an explicit zero to avoid NaN (gh-3964)
+			)) || 0;
+		}
+
+		return delta;
 	}
 
-	function getWidthOrHeight(elem, name, extra) {
+	function getWidthOrHeight(elem, dimension, extra) {
 
 		// Start with computed style
-		var valueIsBorderBox,
-		    styles = getStyles(elem),
-		    val = curCSS(elem, name, styles),
-		    isBorderBox = jQuery.css(elem, "boxSizing", false, styles) === "border-box";
+		var styles = getStyles(elem),
 
-		// Computed unit is not pixels. Stop here and return.
+
+		// To avoid forcing a reflow, only fetch boxSizing if we need it (gh-4322).
+		// Fake content-box until we know it's needed to know the true value.
+		boxSizingNeeded = !support.boxSizingReliable() || extra,
+		    isBorderBox = boxSizingNeeded && jQuery.css(elem, "boxSizing", false, styles) === "border-box",
+		    valueIsBorderBox = isBorderBox,
+		    val = curCSS(elem, dimension, styles),
+		    offsetProp = "offset" + dimension[0].toUpperCase() + dimension.slice(1);
+
+		// Support: Firefox <=54
+		// Return a confounding non-pixel value or feign ignorance, as appropriate.
 		if (rnumnonpx.test(val)) {
-			return val;
+			if (!extra) {
+				return val;
+			}
+			val = "auto";
 		}
 
-		// Check for style in case a browser which returns unreliable values
-		// for getComputedStyle silently falls back to the reliable elem.style
-		valueIsBorderBox = isBorderBox && (support.boxSizingReliable() || val === elem.style[name]);
+		// Support: IE 9 - 11 only
+		// Use offsetWidth/offsetHeight for when box sizing is unreliable.
+		// In those cases, the computed value can be trusted to be border-box.
+		if ((!support.boxSizingReliable() && isBorderBox ||
 
-		// Fall back to offsetWidth/Height when value is "auto"
+		// Support: IE 10 - 11+, Edge 15 - 18+
+		// IE/Edge misreport `getComputedStyle` of table rows with width/height
+		// set in CSS while `offset*` properties report correct values.
+		// Interestingly, in some cases IE 9 doesn't suffer from this issue.
+		!support.reliableTrDimensions() && nodeName(elem, "tr") ||
+
+		// Fall back to offsetWidth/offsetHeight when value is "auto"
 		// This happens for inline elements with no explicit setting (gh-3571)
-		if (val === "auto") {
-			val = elem["offset" + name[0].toUpperCase() + name.slice(1)];
+		val === "auto" ||
+
+		// Support: Android <=4.1 - 4.3 only
+		// Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
+		!parseFloat(val) && jQuery.css(elem, "display", false, styles) === "inline") &&
+
+		// Make sure the element is visible & connected
+		elem.getClientRects().length) {
+
+			isBorderBox = jQuery.css(elem, "boxSizing", false, styles) === "border-box";
+
+			// Where available, offsetWidth/offsetHeight approximate border box dimensions.
+			// Where not available (e.g., SVG), assume unreliable box-sizing and interpret the
+			// retrieved value as a content box dimension.
+			valueIsBorderBox = offsetProp in elem;
+			if (valueIsBorderBox) {
+				val = elem[offsetProp];
+			}
 		}
 
-		// Normalize "", auto, and prepare for extra
+		// Normalize "" and auto
 		val = parseFloat(val) || 0;
 
-		// Use the active box-sizing model to add/subtract irrelevant styles
-		return val + augmentWidthOrHeight(elem, name, extra || (isBorderBox ? "border" : "content"), valueIsBorderBox, styles) + "px";
+		// Adjust for the element's box model
+		return val + boxModelAdjustment(elem, dimension, extra || (isBorderBox ? "border" : "content"), valueIsBorderBox, styles,
+
+		// Provide the current computed size to request scroll gutter calculation (gh-3589)
+		val) + "px";
 	}
 
 	jQuery.extend({
@@ -6225,6 +6628,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			"flexGrow": true,
 			"flexShrink": true,
 			"fontWeight": true,
+			"gridArea": true,
+			"gridColumn": true,
+			"gridColumnEnd": true,
+			"gridColumnStart": true,
+			"gridRow": true,
+			"gridRowEnd": true,
+			"gridRowStart": true,
 			"lineHeight": true,
 			"opacity": true,
 			"order": true,
@@ -6236,9 +6646,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		// Add in properties whose names you wish to fix before
 		// setting or getting the value
-		cssProps: {
-			"float": "cssFloat"
-		},
+		cssProps: {},
 
 		// Get and set the style property on a DOM Node
 		style: function style(elem, name, value, extra) {
@@ -6252,7 +6660,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			var ret,
 			    type,
 			    hooks,
-			    origName = jQuery.camelCase(name),
+			    origName = camelCase(name),
 			    isCustomProp = rcustomProp.test(name),
 			    style = elem.style;
 
@@ -6284,7 +6692,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}
 
 				// If a number was passed in, add the unit (except for certain CSS properties)
-				if (type === "number") {
+				// The isCustomProp check can be removed in jQuery 4.0 when we only auto-append
+				// "px" to a few hardcoded values.
+				if (type === "number" && !isCustomProp) {
 					value += ret && ret[3] || (jQuery.cssNumber[origName] ? "" : "px");
 				}
 
@@ -6319,7 +6729,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			var val,
 			    num,
 			    hooks,
-			    origName = jQuery.camelCase(name),
+			    origName = camelCase(name),
 			    isCustomProp = rcustomProp.test(name);
 
 			// Make sure that we're working with the right name. We don't
@@ -6357,8 +6767,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	});
 
-	jQuery.each(["height", "width"], function (i, name) {
-		jQuery.cssHooks[name] = {
+	jQuery.each(["height", "width"], function (_i, dimension) {
+		jQuery.cssHooks[dimension] = {
 			get: function get(elem, computed, extra) {
 				if (computed) {
 
@@ -6373,21 +6783,37 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					// Running getBoundingClientRect on a disconnected node
 					// in IE throws an error.
 					!elem.getClientRects().length || !elem.getBoundingClientRect().width) ? swap(elem, cssShow, function () {
-						return getWidthOrHeight(elem, name, extra);
-					}) : getWidthOrHeight(elem, name, extra);
+						return getWidthOrHeight(elem, dimension, extra);
+					}) : getWidthOrHeight(elem, dimension, extra);
 				}
 			},
 
 			set: function set(elem, value, extra) {
 				var matches,
-				    styles = extra && getStyles(elem),
-				    subtract = extra && augmentWidthOrHeight(elem, name, extra, jQuery.css(elem, "boxSizing", false, styles) === "border-box", styles);
+				    styles = getStyles(elem),
+
+
+				// Only read styles.position if the test has a chance to fail
+				// to avoid forcing a reflow.
+				scrollboxSizeBuggy = !support.scrollboxSize() && styles.position === "absolute",
+
+
+				// To avoid forcing a reflow, only fetch boxSizing if we need it (gh-3991)
+				boxSizingNeeded = scrollboxSizeBuggy || extra,
+				    isBorderBox = boxSizingNeeded && jQuery.css(elem, "boxSizing", false, styles) === "border-box",
+				    subtract = extra ? boxModelAdjustment(elem, dimension, extra, isBorderBox, styles) : 0;
+
+				// Account for unreliable border-box dimensions by comparing offset* to computed and
+				// faking a content-box to get border and padding (gh-3699)
+				if (isBorderBox && scrollboxSizeBuggy) {
+					subtract -= Math.ceil(elem["offset" + dimension[0].toUpperCase() + dimension.slice(1)] - parseFloat(styles[dimension]) - boxModelAdjustment(elem, dimension, "border", false, styles) - 0.5);
+				}
 
 				// Convert to pixels if value adjustment is needed
 				if (subtract && (matches = rcssNum.exec(value)) && (matches[3] || "px") !== "px") {
 
-					elem.style[name] = value;
-					value = jQuery.css(elem, name);
+					elem.style[dimension] = value;
+					value = jQuery.css(elem, dimension);
 				}
 
 				return setPositiveNumber(elem, value, subtract);
@@ -6426,7 +6852,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 		};
 
-		if (!rmargin.test(prefix)) {
+		if (prefix !== "margin") {
 			jQuery.cssHooks[prefix + suffix].set = setPositiveNumber;
 		}
 	});
@@ -6529,7 +6955,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				// Use .style if available and use plain properties where available.
 				if (jQuery.fx.step[tween.prop]) {
 					jQuery.fx.step[tween.prop](tween);
-				} else if (tween.elem.nodeType === 1 && (tween.elem.style[jQuery.cssProps[tween.prop]] != null || jQuery.cssHooks[tween.prop])) {
+				} else if (tween.elem.nodeType === 1 && (jQuery.cssHooks[tween.prop] || tween.elem.style[finalPropName(tween.prop)] != null)) {
 					jQuery.style(tween.elem, tween.prop, tween.now + tween.unit);
 				} else {
 					tween.elem[tween.prop] = tween.now;
@@ -6585,7 +7011,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		window.setTimeout(function () {
 			fxNow = undefined;
 		});
-		return fxNow = jQuery.now();
+		return fxNow = Date.now();
 	}
 
 	// Generate parameters to create a standard animation
@@ -6696,9 +7122,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		// Restrict "overflow" and "display" styles during box animations
 		if (isBox && elem.nodeType === 1) {
 
-			// Support: IE <=9 - 11, Edge 12 - 13
+			// Support: IE <=9 - 11, Edge 12 - 15
 			// Record all 3 overflow attributes because IE does not infer the shorthand
-			// from identically-valued overflowX and overflowY
+			// from identically-valued overflowX and overflowY and Edge just mirrors
+			// the overflowX value there.
 			opts.overflow = [style.overflow, style.overflowX, style.overflowY];
 
 			// Identify a display type, preferring old show/hide data over the CSS cascade
@@ -6806,7 +7233,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		// camelCase, specialEasing and expand cssHook pass
 		for (index in props) {
-			name = jQuery.camelCase(index);
+			name = camelCase(index);
 			easing = specialEasing[name];
 			value = props[index];
 			if (Array.isArray(value)) {
@@ -6932,8 +7359,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		for (; index < length; index++) {
 			result = Animation.prefilters[index].call(animation, elem, props, animation.opts);
 			if (result) {
-				if (jQuery.isFunction(result.stop)) {
-					jQuery._queueHooks(animation.elem, animation.opts.queue).stop = jQuery.proxy(result.stop, result);
+				if (isFunction(result.stop)) {
+					jQuery._queueHooks(animation.elem, animation.opts.queue).stop = result.stop.bind(result);
 				}
 				return result;
 			}
@@ -6941,7 +7368,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		jQuery.map(props, createTween, animation);
 
-		if (jQuery.isFunction(animation.opts.start)) {
+		if (isFunction(animation.opts.start)) {
 			animation.opts.start.call(elem, animation);
 		}
 
@@ -6968,7 +7395,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		tweener: function tweener(props, callback) {
-			if (jQuery.isFunction(props)) {
+			if (isFunction(props)) {
 				callback = props;
 				props = ["*"];
 			} else {
@@ -6999,9 +7426,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	jQuery.speed = function (speed, easing, fn) {
 		var opt = speed && (typeof speed === "undefined" ? "undefined" : _typeof(speed)) === "object" ? jQuery.extend({}, speed) : {
-			complete: fn || !fn && easing || jQuery.isFunction(speed) && speed,
+			complete: fn || !fn && easing || isFunction(speed) && speed,
 			duration: speed,
-			easing: fn && easing || easing && !jQuery.isFunction(easing) && easing
+			easing: fn && easing || easing && !isFunction(easing) && easing
 		};
 
 		// Go to the end state if fx are off
@@ -7026,7 +7453,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		opt.old = opt.complete;
 
 		opt.complete = function () {
-			if (jQuery.isFunction(opt.old)) {
+			if (isFunction(opt.old)) {
 				opt.old.call(this);
 			}
 
@@ -7060,6 +7487,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					anim.stop(true);
 				}
 			};
+
 			doAnimation.finish = doAnimation;
 
 			return empty || optall.queue === false ? this.each(doAnimation) : this.queue(optall.queue, doAnimation);
@@ -7076,7 +7504,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				clearQueue = type;
 				type = undefined;
 			}
-			if (clearQueue && type !== false) {
+			if (clearQueue) {
 				this.queue(type || "fx", []);
 			}
 
@@ -7158,7 +7586,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	});
 
-	jQuery.each(["toggle", "show", "hide"], function (i, name) {
+	jQuery.each(["toggle", "show", "hide"], function (_i, name) {
 		var cssFn = jQuery.fn[name];
 		jQuery.fn[name] = function (speed, easing, callback) {
 			return speed == null || typeof speed === "boolean" ? cssFn.apply(this, arguments) : this.animate(genFx(name, true), speed, easing, callback);
@@ -7185,7 +7613,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		    i = 0,
 		    timers = jQuery.timers;
 
-		fxNow = jQuery.now();
+		fxNow = Date.now();
 
 		for (; i < timers.length; i++) {
 			timer = timers[i];
@@ -7373,7 +7801,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	};
 
-	jQuery.each(jQuery.expr.match.bool.source.match(/\w+/g), function (i, name) {
+	jQuery.each(jQuery.expr.match.bool.source.match(/\w+/g), function (_i, name) {
 		var getter = attrHandle[name] || jQuery.find.attr;
 
 		attrHandle[name] = function (elem, name, isXML) {
@@ -7512,7 +7940,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	});
 
 	// Strip and collapse whitespace according to HTML spec
-	// https://html.spec.whatwg.org/multipage/infrastructure.html#strip-and-collapse-whitespace
+	// https://infra.spec.whatwg.org/#strip-and-collapse-ascii-whitespace
 	function stripAndCollapse(value) {
 		var tokens = value.match(rnothtmlwhite) || [];
 		return tokens.join(" ");
@@ -7520,6 +7948,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	function getClass(elem) {
 		return elem.getAttribute && elem.getAttribute("class") || "";
+	}
+
+	function classesToArray(value) {
+		if (Array.isArray(value)) {
+			return value;
+		}
+		if (typeof value === "string") {
+			return value.match(rnothtmlwhite) || [];
+		}
+		return [];
 	}
 
 	jQuery.fn.extend({
@@ -7533,15 +7971,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    finalValue,
 			    i = 0;
 
-			if (jQuery.isFunction(value)) {
+			if (isFunction(value)) {
 				return this.each(function (j) {
 					jQuery(this).addClass(value.call(this, j, getClass(this)));
 				});
 			}
 
-			if (typeof value === "string" && value) {
-				classes = value.match(rnothtmlwhite) || [];
+			classes = classesToArray(value);
 
+			if (classes.length) {
 				while (elem = this[i++]) {
 					curValue = getClass(elem);
 					cur = elem.nodeType === 1 && " " + stripAndCollapse(curValue) + " ";
@@ -7576,7 +8014,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    finalValue,
 			    i = 0;
 
-			if (jQuery.isFunction(value)) {
+			if (isFunction(value)) {
 				return this.each(function (j) {
 					jQuery(this).removeClass(value.call(this, j, getClass(this)));
 				});
@@ -7586,9 +8024,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return this.attr("class", "");
 			}
 
-			if (typeof value === "string" && value) {
-				classes = value.match(rnothtmlwhite) || [];
+			classes = classesToArray(value);
 
+			if (classes.length) {
 				while (elem = this[i++]) {
 					curValue = getClass(elem);
 
@@ -7618,13 +8056,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		toggleClass: function toggleClass(value, stateVal) {
-			var type = typeof value === "undefined" ? "undefined" : _typeof(value);
+			var type = typeof value === "undefined" ? "undefined" : _typeof(value),
+			    isValidValue = type === "string" || Array.isArray(value);
 
-			if (typeof stateVal === "boolean" && type === "string") {
+			if (typeof stateVal === "boolean" && isValidValue) {
 				return stateVal ? this.addClass(value) : this.removeClass(value);
 			}
 
-			if (jQuery.isFunction(value)) {
+			if (isFunction(value)) {
 				return this.each(function (i) {
 					jQuery(this).toggleClass(value.call(this, i, getClass(this), stateVal), stateVal);
 				});
@@ -7633,12 +8072,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return this.each(function () {
 				var className, i, self, classNames;
 
-				if (type === "string") {
+				if (isValidValue) {
 
 					// Toggle individual class names
 					i = 0;
 					self = jQuery(this);
-					classNames = value.match(rnothtmlwhite) || [];
+					classNames = classesToArray(value);
 
 					while (className = classNames[i++]) {
 
@@ -7692,7 +8131,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		val: function val(value) {
 			var hooks,
 			    ret,
-			    isFunction,
+			    valueIsFunction,
 			    elem = this[0];
 
 			if (!arguments.length) {
@@ -7717,7 +8156,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return;
 			}
 
-			isFunction = jQuery.isFunction(value);
+			valueIsFunction = isFunction(value);
 
 			return this.each(function (i) {
 				var val;
@@ -7726,7 +8165,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					return;
 				}
 
-				if (isFunction) {
+				if (valueIsFunction) {
 					val = value.call(this, i, jQuery(this).val());
 				} else {
 					val = value;
@@ -7860,7 +8299,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// Return jQuery for attributes-only inclusion
 
 
-	var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/;
+	support.focusin = "onfocusin" in window;
+
+	var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/,
+	    stopPropagationCallback = function stopPropagationCallback(e) {
+		e.stopPropagation();
+	};
 
 	jQuery.extend(jQuery.event, {
 
@@ -7873,11 +8317,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    ontype,
 			    handle,
 			    special,
+			    lastElement,
 			    eventPath = [elem || document],
 			    type = hasOwn.call(event, "type") ? event.type : event,
 			    namespaces = hasOwn.call(event, "namespace") ? event.namespace.split(".") : [];
 
-			cur = tmp = elem = elem || document;
+			cur = lastElement = tmp = elem = elem || document;
 
 			// Don't do events on text and comment nodes
 			if (elem.nodeType === 3 || elem.nodeType === 8) {
@@ -7923,7 +8368,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// Determine event propagation path in advance, per W3C events spec (#9951)
 			// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
-			if (!onlyHandlers && !special.noBubble && !jQuery.isWindow(elem)) {
+			if (!onlyHandlers && !special.noBubble && !isWindow(elem)) {
 
 				bubbleType = special.delegateType || type;
 				if (!rfocusMorph.test(bubbleType + type)) {
@@ -7943,11 +8388,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			// Fire handlers on the event path
 			i = 0;
 			while ((cur = eventPath[i++]) && !event.isPropagationStopped()) {
-
+				lastElement = cur;
 				event.type = i > 1 ? bubbleType : special.bindType || type;
 
 				// jQuery handler
-				handle = (dataPriv.get(cur, "events") || {})[event.type] && dataPriv.get(cur, "handle");
+				handle = (dataPriv.get(cur, "events") || Object.create(null))[event.type] && dataPriv.get(cur, "handle");
 				if (handle) {
 					handle.apply(cur, data);
 				}
@@ -7970,7 +8415,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 					// Call a native DOM method on the target with the same name as the event.
 					// Don't do default actions on window, that's where global variables be (#6170)
-					if (ontype && jQuery.isFunction(elem[type]) && !jQuery.isWindow(elem)) {
+					if (ontype && isFunction(elem[type]) && !isWindow(elem)) {
 
 						// Don't re-trigger an onFOO event when we call its FOO() method
 						tmp = elem[ontype];
@@ -7981,7 +8426,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 						// Prevent re-triggering of the same event, since we already bubbled it above
 						jQuery.event.triggered = type;
+
+						if (event.isPropagationStopped()) {
+							lastElement.addEventListener(type, stopPropagationCallback);
+						}
+
 						elem[type]();
+
+						if (event.isPropagationStopped()) {
+							lastElement.removeEventListener(type, stopPropagationCallback);
+						}
+
 						jQuery.event.triggered = undefined;
 
 						if (tmp) {
@@ -8022,22 +8477,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	});
 
-	jQuery.each(("blur focus focusin focusout resize scroll click dblclick " + "mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " + "change select submit keydown keypress keyup contextmenu").split(" "), function (i, name) {
-
-		// Handle event binding
-		jQuery.fn[name] = function (data, fn) {
-			return arguments.length > 0 ? this.on(name, null, data, fn) : this.trigger(name);
-		};
-	});
-
-	jQuery.fn.extend({
-		hover: function hover(fnOver, fnOut) {
-			return this.mouseenter(fnOver).mouseleave(fnOut || fnOver);
-		}
-	});
-
-	support.focusin = "onfocusin" in window;
-
 	// Support: Firefox <=44
 	// Firefox doesn't have focus(in | out) events
 	// Related ticket - https://bugzilla.mozilla.org/show_bug.cgi?id=687787
@@ -8056,7 +8495,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			jQuery.event.special[fix] = {
 				setup: function setup() {
-					var doc = this.ownerDocument || this,
+
+					// Handle: regular nodes (via `this.ownerDocument`), window
+					// (via `this.document`) & document (via `this`).
+					var doc = this.ownerDocument || this.document || this,
 					    attaches = dataPriv.access(doc, fix);
 
 					if (!attaches) {
@@ -8065,7 +8507,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					dataPriv.access(doc, fix, (attaches || 0) + 1);
 				},
 				teardown: function teardown() {
-					var doc = this.ownerDocument || this,
+					var doc = this.ownerDocument || this.document || this,
 					    attaches = dataPriv.access(doc, fix) - 1;
 
 					if (!attaches) {
@@ -8080,13 +8522,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	}
 	var location = window.location;
 
-	var nonce = jQuery.now();
+	var nonce = { guid: Date.now() };
 
 	var rquery = /\?/;
 
 	// Cross-browser xml parsing
 	jQuery.parseXML = function (data) {
-		var xml;
+		var xml, parserErrorElem;
 		if (!data || typeof data !== "string") {
 			return null;
 		}
@@ -8095,12 +8537,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		// IE throws on parseFromString with invalid input.
 		try {
 			xml = new window.DOMParser().parseFromString(data, "text/xml");
-		} catch (e) {
-			xml = undefined;
-		}
+		} catch (e) {}
 
-		if (!xml || xml.getElementsByTagName("parsererror").length) {
-			jQuery.error("Invalid XML: " + data);
+		parserErrorElem = xml && xml.getElementsByTagName("parsererror")[0];
+		if (!xml || parserErrorElem) {
+			jQuery.error("Invalid XML: " + (parserErrorElem ? jQuery.map(parserErrorElem.childNodes, function (el) {
+				return el.textContent;
+			}).join("\n") : data));
 		}
 		return xml;
 	};
@@ -8127,7 +8570,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					buildParams(prefix + "[" + ((typeof v === "undefined" ? "undefined" : _typeof(v)) === "object" && v != null ? i : "") + "]", v, traditional, add);
 				}
 			});
-		} else if (!traditional && jQuery.type(obj) === "object") {
+		} else if (!traditional && toType(obj) === "object") {
 
 			// Serialize object item.
 			for (name in obj) {
@@ -8148,10 +8591,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		    add = function add(key, valueOrFunction) {
 
 			// If value is a function, invoke it and use its return value
-			var value = jQuery.isFunction(valueOrFunction) ? valueOrFunction() : valueOrFunction;
+			var value = isFunction(valueOrFunction) ? valueOrFunction() : valueOrFunction;
 
 			s[s.length] = encodeURIComponent(key) + "=" + encodeURIComponent(value == null ? "" : value);
 		};
+
+		if (a == null) {
+			return "";
+		}
 
 		// If an array was passed in, assume that it is an array of form elements.
 		if (Array.isArray(a) || a.jquery && !jQuery.isPlainObject(a)) {
@@ -8188,7 +8635,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				// Use .is( ":disabled" ) so that fieldset[disabled] works
 				return this.name && !jQuery(this).is(":disabled") && rsubmittable.test(this.nodeName) && !rsubmitterTypes.test(type) && (this.checked || !rcheckableType.test(type));
-			}).map(function (i, elem) {
+			}).map(function (_i, elem) {
 				var val = jQuery(this).val();
 
 				if (val == null) {
@@ -8244,6 +8691,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	// Anchor tag for parsing the document origin
 	originAnchor = document.createElement("a");
+
 	originAnchor.href = location.href;
 
 	// Base "constructor" for jQuery.ajaxPrefilter and jQuery.ajaxTransport
@@ -8261,7 +8709,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			    i = 0,
 			    dataTypes = dataTypeExpression.toLowerCase().match(rnothtmlwhite) || [];
 
-			if (jQuery.isFunction(func)) {
+			if (isFunction(func)) {
 
 				// For each dataType in the dataTypeExpression
 				while (dataType = dataTypes[i++]) {
@@ -8673,12 +9121,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						if (!responseHeaders) {
 							responseHeaders = {};
 							while (match = rheaders.exec(responseHeadersString)) {
-								responseHeaders[match[1].toLowerCase()] = match[2];
+								responseHeaders[match[1].toLowerCase() + " "] = (responseHeaders[match[1].toLowerCase() + " "] || []).concat(match[2]);
 							}
 						}
-						match = responseHeaders[key.toLowerCase()];
+						match = responseHeaders[key.toLowerCase() + " "];
 					}
-					return match == null ? null : match;
+					return match == null ? null : match.join(", ");
 				},
 
 				// Raw string
@@ -8751,7 +9199,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			if (s.crossDomain == null) {
 				urlAnchor = document.createElement("a");
 
-				// Support: IE <=8 - 11, Edge 12 - 13
+				// Support: IE <=8 - 11, Edge 12 - 15
 				// IE throws exception on accessing the href property if url is malformed,
 				// e.g. http://example.com:80x/
 				try {
@@ -8808,8 +9256,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				// Remember the hash so we can put it back
 				uncached = s.url.slice(cacheURL.length);
 
-				// If data is available, append data to url
-				if (s.data) {
+				// If data is available and should be processed, append data to url
+				if (s.data && (s.processData || typeof s.data === "string")) {
 					cacheURL += (rquery.test(cacheURL) ? "&" : "?") + s.data;
 
 					// #9682: remove data so that it's not used in an eventual retry
@@ -8819,7 +9267,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				// Add or update anti-cache param if needed
 				if (s.cache === false) {
 					cacheURL = cacheURL.replace(rantiCache, "$1");
-					uncached = (rquery.test(cacheURL) ? "&" : "?") + "_=" + nonce++ + uncached;
+					uncached = (rquery.test(cacheURL) ? "&" : "?") + "_=" + nonce.guid++ + uncached;
 				}
 
 				// Put hash and anti-cache on the URL that will be requested (gh-1732)
@@ -8948,6 +9396,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					response = ajaxHandleResponses(s, jqXHR, responses);
 				}
 
+				// Use a noop converter for missing script but not if jsonp
+				if (!isSuccess && jQuery.inArray("script", s.dataTypes) > -1 && jQuery.inArray("json", s.dataTypes) < 0) {
+					s.converters["text script"] = function () {};
+				}
+
 				// Convert no matter what (that way responseXXX fields are always set)
 				response = ajaxConvert(s, response, jqXHR, isSuccess);
 
@@ -9037,11 +9490,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 	});
 
-	jQuery.each(["get", "post"], function (i, method) {
+	jQuery.each(["get", "post"], function (_i, method) {
 		jQuery[method] = function (url, data, callback, type) {
 
 			// Shift arguments if data argument was omitted
-			if (jQuery.isFunction(data)) {
+			if (isFunction(data)) {
 				type = type || callback;
 				callback = data;
 				data = undefined;
@@ -9058,7 +9511,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		};
 	});
 
-	jQuery._evalUrl = function (url) {
+	jQuery.ajaxPrefilter(function (s) {
+		var i;
+		for (i in s.headers) {
+			if (i.toLowerCase() === "content-type") {
+				s.contentType = s.headers[i] || "";
+			}
+		}
+	});
+
+	jQuery._evalUrl = function (url, options, doc) {
 		return jQuery.ajax({
 			url: url,
 
@@ -9068,7 +9530,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			cache: true,
 			async: false,
 			global: false,
-			"throws": true
+
+			// Only evaluate the response if it is successful (gh-4126)
+			// dataFilter is not invoked for failure responses, so using it instead
+			// of the default converter is kludgy but it works.
+			converters: {
+				"text script": function textScript() {}
+			},
+			dataFilter: function dataFilter(response) {
+				jQuery.globalEval(response, options, doc);
+			}
 		});
 	};
 
@@ -9077,7 +9548,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			var wrap;
 
 			if (this[0]) {
-				if (jQuery.isFunction(html)) {
+				if (isFunction(html)) {
 					html = html.call(this[0]);
 				}
 
@@ -9103,7 +9574,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		wrapInner: function wrapInner(html) {
-			if (jQuery.isFunction(html)) {
+			if (isFunction(html)) {
 				return this.each(function (i) {
 					jQuery(this).wrapInner(html.call(this, i));
 				});
@@ -9122,10 +9593,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 
 		wrap: function wrap(html) {
-			var isFunction = jQuery.isFunction(html);
+			var htmlIsFunction = isFunction(html);
 
 			return this.each(function (i) {
-				jQuery(this).wrapAll(isFunction ? html.call(this, i) : html);
+				jQuery(this).wrapAll(htmlIsFunction ? html.call(this, i) : html);
 			});
 		},
 
@@ -9206,7 +9677,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					_callback = function callback(type) {
 						return function () {
 							if (_callback) {
-								_callback = errorCallback = xhr.onload = xhr.onerror = xhr.onabort = xhr.onreadystatechange = null;
+								_callback = errorCallback = xhr.onload = xhr.onerror = xhr.onabort = xhr.ontimeout = xhr.onreadystatechange = null;
 
 								if (type === "abort") {
 									xhr.abort();
@@ -9237,7 +9708,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 					// Listen to events
 					xhr.onload = _callback();
-					errorCallback = xhr.onerror = _callback("error");
+					errorCallback = xhr.onerror = xhr.ontimeout = _callback("error");
 
 					// Support: IE 9 only
 					// Use onreadystatechange to replace onabort
@@ -9324,15 +9795,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// Bind script tag hack transport
 	jQuery.ajaxTransport("script", function (s) {
 
-		// This transport only deals with cross domain requests
-		if (s.crossDomain) {
+		// This transport only deals with cross domain or forced-by-attrs requests
+		if (s.crossDomain || s.scriptAttrs) {
 			var script, _callback2;
 			return {
 				send: function send(_, complete) {
-					script = jQuery("<script>").prop({
-						charset: s.scriptCharset,
-						src: s.url
-					}).on("load error", _callback2 = function callback(evt) {
+					script = jQuery("<script>").attr(s.scriptAttrs || {}).prop({ charset: s.scriptCharset, src: s.url }).on("load error", _callback2 = function callback(evt) {
 						script.remove();
 						_callback2 = null;
 						if (evt) {
@@ -9359,7 +9827,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	jQuery.ajaxSetup({
 		jsonp: "callback",
 		jsonpCallback: function jsonpCallback() {
-			var callback = oldCallbacks.pop() || jQuery.expando + "_" + nonce++;
+			var callback = oldCallbacks.pop() || jQuery.expando + "_" + nonce.guid++;
 			this[callback] = true;
 			return callback;
 		}
@@ -9377,7 +9845,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		if (jsonProp || s.dataTypes[0] === "jsonp") {
 
 			// Get callback name, remembering preexisting value associated with it
-			callbackName = s.jsonpCallback = jQuery.isFunction(s.jsonpCallback) ? s.jsonpCallback() : s.jsonpCallback;
+			callbackName = s.jsonpCallback = isFunction(s.jsonpCallback) ? s.jsonpCallback() : s.jsonpCallback;
 
 			// Insert callback into url or form data
 			if (jsonProp) {
@@ -9426,7 +9894,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				}
 
 				// Call if it was a function and we have a response
-				if (responseContainer && jQuery.isFunction(overwritten)) {
+				if (responseContainer && isFunction(overwritten)) {
 					overwritten(responseContainer[0]);
 				}
 
@@ -9515,7 +9983,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 
 		// If it's a function
-		if (jQuery.isFunction(params)) {
+		if (isFunction(params)) {
 
 			// We assume that it's the callback
 			callback = params;
@@ -9564,13 +10032,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		return this;
 	};
 
-	// Attach a bunch of functions for handling common AJAX events
-	jQuery.each(["ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend"], function (i, type) {
-		jQuery.fn[type] = function (fn) {
-			return this.on(type, fn);
-		};
-	});
-
 	jQuery.expr.pseudos.animated = function (elem) {
 		return jQuery.grep(jQuery.timers, function (fn) {
 			return elem === fn.elem;
@@ -9611,7 +10072,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				curLeft = parseFloat(curCSSLeft) || 0;
 			}
 
-			if (jQuery.isFunction(options)) {
+			if (isFunction(options)) {
 
 				// Use jQuery.extend here to allow modification of coordinates argument (gh-1848)
 				options = options.call(elem, i, jQuery.extend({}, curOffset));
@@ -9633,6 +10094,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	};
 
 	jQuery.fn.extend({
+
+		// offset() relates an element's border box to the document origin
 		offset: function offset(options) {
 
 			// Preserve chaining for setter
@@ -9642,9 +10105,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				});
 			}
 
-			var doc,
-			    docElem,
-			    rect,
+			var rect,
 			    win,
 			    elem = this[0];
 
@@ -9660,18 +10121,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return { top: 0, left: 0 };
 			}
 
+			// Get document-relative position by adding viewport scroll to viewport-relative gBCR
 			rect = elem.getBoundingClientRect();
-
-			doc = elem.ownerDocument;
-			docElem = doc.documentElement;
-			win = doc.defaultView;
-
+			win = elem.ownerDocument.defaultView;
 			return {
-				top: rect.top + win.pageYOffset - docElem.clientTop,
-				left: rect.left + win.pageXOffset - docElem.clientLeft
+				top: rect.top + win.pageYOffset,
+				left: rect.left + win.pageXOffset
 			};
 		},
 
+		// position() relates an element's margin box to its offset parent's padding box
+		// This corresponds to the behavior of CSS absolute positioning
 		position: function position() {
 			if (!this[0]) {
 				return;
@@ -9679,31 +10139,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			var offsetParent,
 			    offset,
+			    doc,
 			    elem = this[0],
 			    parentOffset = { top: 0, left: 0 };
 
-			// Fixed elements are offset from window (parentOffset = {top:0, left: 0},
-			// because it is its only offset parent
+			// position:fixed elements are offset from the viewport, which itself always has zero offset
 			if (jQuery.css(elem, "position") === "fixed") {
 
-				// Assume getBoundingClientRect is there when computed position is fixed
+				// Assume position:fixed implies availability of getBoundingClientRect
 				offset = elem.getBoundingClientRect();
 			} else {
-
-				// Get *real* offsetParent
-				offsetParent = this.offsetParent();
-
-				// Get correct offsets
 				offset = this.offset();
-				if (!nodeName(offsetParent[0], "html")) {
-					parentOffset = offsetParent.offset();
-				}
 
-				// Add offsetParent borders
-				parentOffset = {
-					top: parentOffset.top + jQuery.css(offsetParent[0], "borderTopWidth", true),
-					left: parentOffset.left + jQuery.css(offsetParent[0], "borderLeftWidth", true)
-				};
+				// Account for the *real* offset parent, which can be the document or its root element
+				// when a statically positioned element is identified
+				doc = elem.ownerDocument;
+				offsetParent = elem.offsetParent || doc.documentElement;
+				while (offsetParent && (offsetParent === doc.body || offsetParent === doc.documentElement) && jQuery.css(offsetParent, "position") === "static") {
+
+					offsetParent = offsetParent.parentNode;
+				}
+				if (offsetParent && offsetParent !== elem && offsetParent.nodeType === 1) {
+
+					// Incorporate borders into its offset, since they are outside its content origin
+					parentOffset = jQuery(offsetParent).offset();
+					parentOffset.top += jQuery.css(offsetParent, "borderTopWidth", true);
+					parentOffset.left += jQuery.css(offsetParent, "borderLeftWidth", true);
+				}
 			}
 
 			// Subtract parent offsets and element margins
@@ -9745,7 +10207,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 				// Coalesce documents and windows
 				var win;
-				if (jQuery.isWindow(elem)) {
+				if (isWindow(elem)) {
 					win = elem;
 				} else if (elem.nodeType === 9) {
 					win = elem.defaultView;
@@ -9770,7 +10232,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// Blink bug: https://bugs.chromium.org/p/chromium/issues/detail?id=589347
 	// getComputedStyle returns percent when specified for top/left/bottom/right;
 	// rather than make the css module depend on the offset module, just check for it here
-	jQuery.each(["top", "left"], function (i, prop) {
+	jQuery.each(["top", "left"], function (_i, prop) {
 		jQuery.cssHooks[prop] = addGetHookIf(support.pixelPosition, function (elem, computed) {
 			if (computed) {
 				computed = curCSS(elem, prop);
@@ -9783,7 +10245,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	// Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods
 	jQuery.each({ Height: "height", Width: "width" }, function (name, type) {
-		jQuery.each({ padding: "inner" + name, content: type, "": "outer" + name }, function (defaultExtra, funcName) {
+		jQuery.each({
+			padding: "inner" + name,
+			content: type,
+			"": "outer" + name
+		}, function (defaultExtra, funcName) {
 
 			// Margin is only for outerHeight, outerWidth
 			jQuery.fn[funcName] = function (margin, value) {
@@ -9793,7 +10259,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				return access(this, function (elem, type, value) {
 					var doc;
 
-					if (jQuery.isWindow(elem)) {
+					if (isWindow(elem)) {
 
 						// $( window ).outerWidth/Height return w/h including scrollbars (gh-1729)
 						return funcName.indexOf("outer") === 0 ? elem["inner" + name] : elem.document.documentElement["client" + name];
@@ -9820,6 +10286,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		});
 	});
 
+	jQuery.each(["ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend"], function (_i, type) {
+		jQuery.fn[type] = function (fn) {
+			return this.on(type, fn);
+		};
+	});
+
 	jQuery.fn.extend({
 
 		bind: function bind(types, data, fn) {
@@ -9836,8 +10308,55 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			// ( namespace ) or ( selector, types [, fn] )
 			return arguments.length === 1 ? this.off(selector, "**") : this.off(types, selector || "**", fn);
+		},
+
+		hover: function hover(fnOver, fnOut) {
+			return this.mouseenter(fnOver).mouseleave(fnOut || fnOver);
 		}
 	});
+
+	jQuery.each(("blur focus focusin focusout resize scroll click dblclick " + "mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " + "change select submit keydown keypress keyup contextmenu").split(" "), function (_i, name) {
+
+		// Handle event binding
+		jQuery.fn[name] = function (data, fn) {
+			return arguments.length > 0 ? this.on(name, null, data, fn) : this.trigger(name);
+		};
+	});
+
+	// Support: Android <=4.0 only
+	// Make sure we trim BOM and NBSP
+	var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+
+	// Bind a function to a context, optionally partially applying any
+	// arguments.
+	// jQuery.proxy is deprecated to promote standards (specifically Function#bind)
+	// However, it is not slated for removal any time soon
+	jQuery.proxy = function (fn, context) {
+		var tmp, args, proxy;
+
+		if (typeof context === "string") {
+			tmp = fn[context];
+			context = fn;
+			fn = tmp;
+		}
+
+		// Quick check to determine if target is callable, in the spec
+		// this throws a TypeError, but we will just return undefined.
+		if (!isFunction(fn)) {
+			return undefined;
+		}
+
+		// Simulated bind
+		args = _slice.call(arguments, 2);
+		proxy = function proxy() {
+			return fn.apply(context || this, args.concat(_slice.call(arguments)));
+		};
+
+		// Set the guid of unique handler to the same of original handler, so it can be removed
+		proxy.guid = fn.guid = fn.guid || jQuery.guid++;
+
+		return proxy;
+	};
 
 	jQuery.holdReady = function (hold) {
 		if (hold) {
@@ -9849,6 +10368,30 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	jQuery.isArray = Array.isArray;
 	jQuery.parseJSON = JSON.parse;
 	jQuery.nodeName = nodeName;
+	jQuery.isFunction = isFunction;
+	jQuery.isWindow = isWindow;
+	jQuery.camelCase = camelCase;
+	jQuery.type = toType;
+
+	jQuery.now = Date.now;
+
+	jQuery.isNumeric = function (obj) {
+
+		// As of jQuery 3.0, isNumeric is limited to
+		// strings and numbers (primitives or objects)
+		// that can be coerced to finite numbers (gh-2662)
+		var type = jQuery.type(obj);
+		return (type === "number" || type === "string") &&
+
+		// parseFloat NaNs numeric-cast false positives ("")
+		// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
+		// subtraction forces infinities to NaN
+		!isNaN(obj - parseFloat(obj));
+	};
+
+	jQuery.trim = function (text) {
+		return text == null ? "" : (text + "").replace(rtrim, "");
+	};
 
 	// Register as a named AMD module, since jQuery can be concatenated with other
 	// files that may use define, but not via a proper concatenation script that
@@ -9894,7 +10437,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	// Expose jQuery and $ identifiers, even in AMD
 	// (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
 	// and CommonJS for browser emulators (#13566)
-	if (!noGlobal) {
+	if (typeof noGlobal === "undefined") {
 		window.jQuery = window.$ = jQuery;
 	}
 
@@ -14561,9 +15104,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         a = (o(r), n(6)),
         u = o(a),
         c = n(7),
-        f = o(c),
-        s = n(8),
-        d = o(s),
+        s = o(c),
+        f = n(8),
+        d = o(f),
         l = n(9),
         p = o(l),
         m = n(10),
@@ -14574,33 +15117,30 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         h = o(g),
         w = [],
         k = !1,
-        x = document.all && !window.atob,
-        j = { offset: 120, delay: 0, easing: "ease", duration: 400, disable: !1, once: !1, startEvent: "DOMContentLoaded" },
+        x = { offset: 120, delay: 0, easing: "ease", duration: 400, disable: !1, once: !1, startEvent: "DOMContentLoaded", throttleDelay: 99, debounceDelay: 50, disableMutationObserver: !1 },
+        j = function j() {
+      var e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];if (e && (k = !0), k) return w = (0, y.default)(w, x), (0, b.default)(w, x.once), w;
+    },
         O = function O() {
-      var e = arguments.length > 0 && void 0 !== arguments[0] && arguments[0];if (e && (k = !0), k) return w = (0, y.default)(w, j), (0, b.default)(w, j.once), w;
+      w = (0, h.default)(), j();
     },
-        S = function S() {
-      w = (0, h.default)(), O();
-    },
-        _ = function _() {
+        M = function M() {
       w.forEach(function (e, t) {
         e.node.removeAttribute("data-aos"), e.node.removeAttribute("data-aos-easing"), e.node.removeAttribute("data-aos-duration"), e.node.removeAttribute("data-aos-delay");
       });
     },
-        E = function E(e) {
+        S = function S(e) {
       return e === !0 || "mobile" === e && p.default.mobile() || "phone" === e && p.default.phone() || "tablet" === e && p.default.tablet() || "function" == typeof e && e() === !0;
     },
-        z = function z(e) {
-      return j = i(j, e), w = (0, h.default)(), E(j.disable) || x ? _() : (document.querySelector("body").setAttribute("data-aos-easing", j.easing), document.querySelector("body").setAttribute("data-aos-duration", j.duration), document.querySelector("body").setAttribute("data-aos-delay", j.delay), "DOMContentLoaded" === j.startEvent && ["complete", "interactive"].indexOf(document.readyState) > -1 ? O(!0) : "load" === j.startEvent ? window.addEventListener(j.startEvent, function () {
-        O(!0);
-      }) : document.addEventListener(j.startEvent, function () {
-        O(!0);
-      }), window.addEventListener("resize", (0, f.default)(O, 50, !0)), window.addEventListener("orientationchange", (0, f.default)(O, 50, !0)), window.addEventListener("scroll", (0, u.default)(function () {
-        (0, b.default)(w, j.once);
-      }, 99)), document.addEventListener("DOMNodeRemoved", function (e) {
-        var t = e.target;t && 1 === t.nodeType && t.hasAttribute && t.hasAttribute("data-aos") && (0, f.default)(S, 50, !0);
-      }), (0, d.default)("[data-aos]", S), w);
-    };e.exports = { init: z, refresh: O, refreshHard: S };
+        _ = function _(e) {
+      x = i(x, e), w = (0, h.default)();var t = document.all && !window.atob;return S(x.disable) || t ? M() : (x.disableMutationObserver || d.default.isSupported() || (console.info('\n      aos: MutationObserver is not supported on this browser,\n      code mutations observing has been disabled.\n      You may have to call "refreshHard()" by yourself.\n    '), x.disableMutationObserver = !0), document.querySelector("body").setAttribute("data-aos-easing", x.easing), document.querySelector("body").setAttribute("data-aos-duration", x.duration), document.querySelector("body").setAttribute("data-aos-delay", x.delay), "DOMContentLoaded" === x.startEvent && ["complete", "interactive"].indexOf(document.readyState) > -1 ? j(!0) : "load" === x.startEvent ? window.addEventListener(x.startEvent, function () {
+        j(!0);
+      }) : document.addEventListener(x.startEvent, function () {
+        j(!0);
+      }), window.addEventListener("resize", (0, s.default)(j, x.debounceDelay, !0)), window.addEventListener("orientationchange", (0, s.default)(j, x.debounceDelay, !0)), window.addEventListener("scroll", (0, u.default)(function () {
+        (0, b.default)(w, x.once);
+      }, x.throttleDelay)), x.disableMutationObserver || d.default.ready("[data-aos]", O), w);
+    };e.exports = { init: _, refresh: j, refreshHard: O };
   }, function (e, t) {},,,,, function (e, t) {
     (function (t) {
       "use strict";
@@ -14609,18 +15149,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           var n = b,
               o = v;return b = v = void 0, k = t, g = e.apply(o, n);
         }function r(e) {
-          return k = e, h = setTimeout(s, t), S ? o(e) : g;
+          return k = e, h = setTimeout(f, t), M ? o(e) : g;
         }function a(e) {
           var n = e - w,
               o = e - k,
-              i = t - n;return _ ? j(i, y - o) : i;
+              i = t - n;return S ? j(i, y - o) : i;
         }function c(e) {
           var n = e - w,
-              o = e - k;return void 0 === w || n >= t || n < 0 || _ && o >= y;
-        }function s() {
-          var e = O();return c(e) ? d(e) : void (h = setTimeout(s, a(e)));
+              o = e - k;return void 0 === w || n >= t || n < 0 || S && o >= y;
+        }function f() {
+          var e = O();return c(e) ? d(e) : void (h = setTimeout(f, a(e)));
         }function d(e) {
-          return h = void 0, E && b ? o(e) : (b = v = void 0, g);
+          return h = void 0, _ && b ? o(e) : (b = v = void 0, g);
         }function l() {
           void 0 !== h && clearTimeout(h), k = 0, b = w = v = h = void 0;
         }function p() {
@@ -14628,8 +15168,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }function m() {
           var e = O(),
               n = c(e);if (b = arguments, v = this, w = e, n) {
-            if (void 0 === h) return r(w);if (_) return h = setTimeout(s, t), o(w);
-          }return void 0 === h && (h = setTimeout(s, t)), g;
+            if (void 0 === h) return r(w);if (S) return h = setTimeout(f, t), o(w);
+          }return void 0 === h && (h = setTimeout(f, t)), g;
         }var b,
             v,
             y,
@@ -14637,12 +15177,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             h,
             w,
             k = 0,
+            M = !1,
             S = !1,
-            _ = !1,
-            E = !0;if ("function" != typeof e) throw new TypeError(f);return t = u(t) || 0, i(n) && (S = !!n.leading, _ = "maxWait" in n, y = _ ? x(u(n.maxWait) || 0, t) : y, E = "trailing" in n ? !!n.trailing : E), m.cancel = l, m.flush = p, m;
+            _ = !0;if ("function" != typeof e) throw new TypeError(s);return t = u(t) || 0, i(n) && (M = !!n.leading, S = "maxWait" in n, y = S ? x(u(n.maxWait) || 0, t) : y, _ = "trailing" in n ? !!n.trailing : _), m.cancel = l, m.flush = p, m;
       }function o(e, t, o) {
         var r = !0,
-            a = !0;if ("function" != typeof e) throw new TypeError(f);return i(o) && (r = "leading" in o ? !!o.leading : r, a = "trailing" in o ? !!o.trailing : a), n(e, t, { leading: r, maxWait: t, trailing: a });
+            a = !0;if ("function" != typeof e) throw new TypeError(s);return i(o) && (r = "leading" in o ? !!o.leading : r, a = "trailing" in o ? !!o.trailing : a), n(e, t, { leading: r, maxWait: t, trailing: a });
       }function i(e) {
         var t = "undefined" == typeof e ? "undefined" : c(e);return !!e && ("object" == t || "function" == t);
       }function r(e) {
@@ -14650,16 +15190,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }function a(e) {
         return "symbol" == ("undefined" == typeof e ? "undefined" : c(e)) || r(e) && k.call(e) == d;
       }function u(e) {
-        if ("number" == typeof e) return e;if (a(e)) return s;if (i(e)) {
+        if ("number" == typeof e) return e;if (a(e)) return f;if (i(e)) {
           var t = "function" == typeof e.valueOf ? e.valueOf() : e;e = i(t) ? t + "" : t;
-        }if ("string" != typeof e) return 0 === e ? e : +e;e = e.replace(l, "");var n = m.test(e);return n || b.test(e) ? v(e.slice(2), n ? 2 : 8) : p.test(e) ? s : +e;
+        }if ("string" != typeof e) return 0 === e ? e : +e;e = e.replace(l, "");var n = m.test(e);return n || b.test(e) ? v(e.slice(2), n ? 2 : 8) : p.test(e) ? f : +e;
       }var c = "function" == typeof Symbol && "symbol" == _typeof(Symbol.iterator) ? function (e) {
         return typeof e === "undefined" ? "undefined" : _typeof(e);
       } : function (e) {
         return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e === "undefined" ? "undefined" : _typeof(e);
       },
-          f = "Expected a function",
-          s = NaN,
+          s = "Expected a function",
+          f = NaN,
           d = "[object Symbol]",
           l = /^\s+|\s+$/g,
           p = /^[-+]0x[0-9a-f]+$/i,
@@ -14687,27 +15227,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           var n = b,
               o = v;return b = v = void 0, O = t, g = e.apply(o, n);
         }function r(e) {
-          return O = e, h = setTimeout(s, t), S ? i(e) : g;
+          return O = e, h = setTimeout(f, t), M ? i(e) : g;
         }function u(e) {
           var n = e - w,
               o = e - O,
-              i = t - n;return _ ? x(i, y - o) : i;
-        }function f(e) {
+              i = t - n;return S ? x(i, y - o) : i;
+        }function s(e) {
           var n = e - w,
-              o = e - O;return void 0 === w || n >= t || n < 0 || _ && o >= y;
-        }function s() {
-          var e = j();return f(e) ? d(e) : void (h = setTimeout(s, u(e)));
+              o = e - O;return void 0 === w || n >= t || n < 0 || S && o >= y;
+        }function f() {
+          var e = j();return s(e) ? d(e) : void (h = setTimeout(f, u(e)));
         }function d(e) {
-          return h = void 0, E && b ? i(e) : (b = v = void 0, g);
+          return h = void 0, _ && b ? i(e) : (b = v = void 0, g);
         }function l() {
           void 0 !== h && clearTimeout(h), O = 0, b = w = v = h = void 0;
         }function p() {
           return void 0 === h ? g : d(j());
         }function m() {
           var e = j(),
-              n = f(e);if (b = arguments, v = this, w = e, n) {
-            if (void 0 === h) return r(w);if (_) return h = setTimeout(s, t), i(w);
-          }return void 0 === h && (h = setTimeout(s, t)), g;
+              n = s(e);if (b = arguments, v = this, w = e, n) {
+            if (void 0 === h) return r(w);if (S) return h = setTimeout(f, t), i(w);
+          }return void 0 === h && (h = setTimeout(f, t)), g;
         }var b,
             v,
             y,
@@ -14715,27 +15255,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             h,
             w,
             O = 0,
+            M = !1,
             S = !1,
-            _ = !1,
-            E = !0;if ("function" != typeof e) throw new TypeError(c);return t = a(t) || 0, o(n) && (S = !!n.leading, _ = "maxWait" in n, y = _ ? k(a(n.maxWait) || 0, t) : y, E = "trailing" in n ? !!n.trailing : E), m.cancel = l, m.flush = p, m;
+            _ = !0;if ("function" != typeof e) throw new TypeError(c);return t = a(t) || 0, o(n) && (M = !!n.leading, S = "maxWait" in n, y = S ? k(a(n.maxWait) || 0, t) : y, _ = "trailing" in n ? !!n.trailing : _), m.cancel = l, m.flush = p, m;
       }function o(e) {
         var t = "undefined" == typeof e ? "undefined" : u(e);return !!e && ("object" == t || "function" == t);
       }function i(e) {
         return !!e && "object" == ("undefined" == typeof e ? "undefined" : u(e));
       }function r(e) {
-        return "symbol" == ("undefined" == typeof e ? "undefined" : u(e)) || i(e) && w.call(e) == s;
+        return "symbol" == ("undefined" == typeof e ? "undefined" : u(e)) || i(e) && w.call(e) == f;
       }function a(e) {
-        if ("number" == typeof e) return e;if (r(e)) return f;if (o(e)) {
+        if ("number" == typeof e) return e;if (r(e)) return s;if (o(e)) {
           var t = "function" == typeof e.valueOf ? e.valueOf() : e;e = o(t) ? t + "" : t;
-        }if ("string" != typeof e) return 0 === e ? e : +e;e = e.replace(d, "");var n = p.test(e);return n || m.test(e) ? b(e.slice(2), n ? 2 : 8) : l.test(e) ? f : +e;
+        }if ("string" != typeof e) return 0 === e ? e : +e;e = e.replace(d, "");var n = p.test(e);return n || m.test(e) ? b(e.slice(2), n ? 2 : 8) : l.test(e) ? s : +e;
       }var u = "function" == typeof Symbol && "symbol" == _typeof(Symbol.iterator) ? function (e) {
         return typeof e === "undefined" ? "undefined" : _typeof(e);
       } : function (e) {
         return e && "function" == typeof Symbol && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e === "undefined" ? "undefined" : _typeof(e);
       },
           c = "Expected a function",
-          f = NaN,
-          s = "[object Symbol]",
+          s = NaN,
+          f = "[object Symbol]",
           d = /^\s+|\s+$/g,
           l = /^[-+]0x[0-9a-f]+$/i,
           p = /^0b[01]+$/i,
@@ -14756,18 +15296,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }());
   }, function (e, t) {
     "use strict";
-    function n(e, t) {
-      a.push({ selector: e, fn: t }), !u && r && (u = new r(o), u.observe(i.documentElement, { childList: !0, subtree: !0, removedNodes: !0 })), o();
+    function n(e) {
+      var t = void 0,
+          o = void 0,
+          i = void 0;for (t = 0; t < e.length; t += 1) {
+        if (o = e[t], o.dataset && o.dataset.aos) return !0;if (i = o.children && n(o.children)) return !0;
+      }return !1;
     }function o() {
-      for (var e, t, n = 0, o = a.length; n < o; n++) {
-        e = a[n], t = i.querySelectorAll(e.selector);for (var r, u = 0, c = t.length; u < c; u++) {
-          r = t[u], r.ready || (r.ready = !0, e.fn.call(r, r));
-        }
-      }
-    }Object.defineProperty(t, "__esModule", { value: !0 });var i = window.document,
-        r = window.MutationObserver || window.WebKitMutationObserver,
-        a = [],
-        u = void 0;t.default = n;
+      return window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+    }function i() {
+      return !!o();
+    }function r(e, t) {
+      var n = window.document,
+          i = o(),
+          r = new i(a);u = t, r.observe(n.documentElement, { childList: !0, subtree: !0, removedNodes: !0 });
+    }function a(e) {
+      e && e.forEach(function (e) {
+        var t = Array.prototype.slice.call(e.addedNodes),
+            o = Array.prototype.slice.call(e.removedNodes),
+            i = t.concat(o);if (n(i)) return u();
+      });
+    }Object.defineProperty(t, "__esModule", { value: !0 });var u = function u() {};t.default = { isSupported: i, ready: r };
   }, function (e, t) {
     "use strict";
     function n(e, t) {
@@ -14787,7 +15336,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         a = /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i,
         u = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i,
         c = /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i,
-        f = function () {
+        s = function () {
       function e() {
         n(this, e);
       }return i(e, [{ key: "phone", value: function value() {
@@ -14797,7 +15346,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         } }, { key: "tablet", value: function value() {
           return this.mobile() && !this.phone();
         } }]), e;
-    }();t.default = new f();
+    }();t.default = new s();
   }, function (e, t) {
     "use strict";
     Object.defineProperty(t, "__esModule", { value: !0 });var n = function n(e, t, _n) {
@@ -14851,13 +15400,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }, function (e, t) {
     "use strict";
     Object.defineProperty(t, "__esModule", { value: !0 });var n = function n(e) {
-      e = e || document.querySelectorAll("[data-aos]");var t = [];return [].forEach.call(e, function (e, n) {
-        t.push({ node: e });
-      }), t;
+      return e = e || document.querySelectorAll("[data-aos]"), Array.prototype.map.call(e, function (e) {
+        return { node: e };
+      });
     };t.default = n;
   }]);
 });
-//# sourceMappingURL=aos.js.map
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
 
 /***/ }),
@@ -25014,7 +25562,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*!
- * SVGInjector v2.1.3 - Fast, caching, dynamic inline SVG DOM injection library
+ * SVGInjector v2.1.5 - Fast, caching, dynamic inline SVG DOM injection library
  * https://github.com/flobacher/SVGInjector2
  * forked from:
  * https://github.com/iconic/SVGInjector
@@ -25066,12 +25614,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       r = r || {}, n = {}, o = {}, o.isLocal = "file:" === e.location.protocol, o.hasSvgSupport = t.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"), i = { count: 0, elements: [] }, l = {}, a = {}, a.evalScripts = r.evalScripts || "always", a.pngFallback = r.pngFallback || !1, a.svgFallbackDir = r.svgFallbackDir || !1, a.onlyInjectVisiblePart = r.onlyInjectVisiblePart || !0, a.keepStylesClass = void 0 === r.keepStylesClass ? "" : r.keepStylesClass, a.spriteClassName = void 0 === r.spriteClassName ? "sprite" : r.spriteClassName, a.spriteClassIdName = void 0 === r.spriteClassIdName ? "sprite--" : r.spriteClassIdName, a.removeStylesClass = void 0 === r.removeStylesClass ? "icon" : r.removeStylesClass, a.removeAllStyles = void 0 !== r.removeAllStyles && r.removeAllStyles, a.fallbackClassName = void 0 === r.fallbackClassName ? q : r.fallbackClassName, a.prefixStyleTags = void 0 === r.prefixStyleTags || r.prefixStyleTags, a.spritesheetURL = void 0 !== r.spritesheetURL && "" !== r.spritesheetURL && r.spritesheetURL, a.prefixFragIdClass = a.spriteClassIdName, a.forceFallbacks = void 0 !== r.forceFallbacks && r.forceFallbacks, a.forceFallbacks && (o.hasSvgSupport = !1), x(t.querySelector("html"), "no-svg", o.hasSvgSupport), o.hasSvgSupport && void 0 === r.removeStylesClass && C(a.removeStylesClass);
     }, r.prototype.inject = function (e, t, r) {
       if (void 0 !== e.length) {
-        var n = 0,
-            i = this;I.call(e, function (s) {
-          i.injectElement(s, function (i) {
-            r && "function" == typeof r && r(i), t && e.length === ++n && t(n);
+        if (0 === e.length) t && t(0);else {
+          var n = 0,
+              i = this;I.call(e, function (s) {
+            i.injectElement(s, function (i) {
+              r && "function" == typeof r && r(i), t && e.length === ++n && t(n);
+            });
           });
-        });
+        }
       } else e ? this.injectElement(e, function (n) {
         r && "function" == typeof r && r(n), t && t(1), e = null;
       }) : t && t(0);
