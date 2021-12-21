@@ -4,10 +4,6 @@ nav:
     page: 'video'
     text: Video
   -
-    link: 'data-visualization.html'
-    page: 'data-visualization'
-    text: Data Viz
-  -
     link: 'music.html'
     page: 'music'
     text: Music
