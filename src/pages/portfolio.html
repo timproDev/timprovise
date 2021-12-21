@@ -13,10 +13,33 @@ meta-title: Tim Schletter| Data Visualization
       }}
       <div class="tp-body-text tp-center">
         <p>I am still adding to my portfolio. In the meantime, <br>click below to see some of my latest work.</p>
-        <a href="//pasteapp.com/p/b0ltbGIELLb?view=ViX5xHJ7xJB" target="_blank" class="tp-link">See my pasteapp portfolio</a>
-        <a href="//dribbble.com/timprovise" target="_blank" class="tp-link">See my dribbble portfolio</a>
       </div>
     </div>
+    </div>
+  </div>
+</div>
+<div class="space-stack-xl"></div>
+<div class="grid-container">
+  <div class="grid-x grid-margin-x">
+    <div class="cell large-6 medium-6 small-12">
+        {{> tp-leadin-block
+          url="//pasteapp.com/p/b0ltbGIELLb?view=ViX5xHJ7xJB"
+          image-path=""
+          description=""
+          title="See my pasteapp portfolio"
+          class="tp-leadin-block_new-window"
+          target="_blank"
+        }}
+    </div>
+    <div class="cell large-6 medium-6 small-12">
+        {{> tp-leadin-block
+          url="//dribbble.com/timprovise"
+          image-path=""
+          description=""
+          title="See my dribbble portfolio"
+          class="tp-leadin-block_new-window"
+          target="_blank"
+        }}
     </div>
   </div>
 </div>
@@ -27,3 +50,9 @@ meta-title: Tim Schletter| Data Visualization
     </div>
   </div>
 </div>
+<style>
+.tp-leadin-block--container .space-stack-xl {
+display: none;}
+.tp-leadin-block--image-container {
+display: none;}
+</style>
