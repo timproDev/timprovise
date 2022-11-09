@@ -7,23 +7,41 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Timprovise is a gallery of work created by Tim Schletter. Tim's work includes both visual and audio creations. Visit timprovise.com to see and hear neat-o stuff!"/>
-    <title>{{meta-title}} | All Around Creative Person</title>
+    <title>{{meta-title}}</title>
     <link rel="stylesheet" href="{{root}}assets/app.css">
-    <link href="https://fonts.googleapis.com/css?family=Staatliches|Raleway|Yanone+Kaffeesatz:700" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@200;300;400&display=swap" rel="stylesheet">
 
     <link rel="shortcut icon" href="{{root}}assets/img/favicon.ico" type="image/x-icon">
     <link rel="icon" href="{{root}}assets/img/favicon.ico" type="image/x-icon">
 
   </head>
   <body>
-    <main>
+    <nav>
     {{> main-navigation}}
-    <div class="space-stack-xl"></div>
+    </nav>
+    <main style="max-width: 800px; margin: 0 auto;">    
     {{> body}}
-    <footer></footer>
+    <!-- pull in from pages -->
+    <footer>
+      <div class="tp-secondary-nav" id="tpSecondaryNav">
+        <ul class="tp-secondary-nav--list">
+          <li class="tp-secondary-nav--list-item">
+            <a target="_blank" href="//www.linkedin.com/in/schletter" class="tp-secondary-nav--list-anchor linkedin-icon">linkedin</a>
+          </li>
+          <li class="tp-secondary-nav--list-item">
+            <a target="_blank" href="//bl.ocks.org/timproDev" class="tp-secondary-nav--list-anchor d3-icon">bl.ocks</a>
+          </li>
+          <li class="tp-secondary-nav--list-item">
+            <a target="_blank" href="//dribbble.com/timprovise" class="tp-secondary-nav--list-anchor dribbble-icon">dribbble</a>
+          </li>
+          <li class="tp-secondary-nav--list-item">
+            <a target="_blank" href="//www.mixcloud.com/timprovise/uploads/" class="tp-secondary-nav--list-anchor mixcloud-icon">mixcloud</a>
+          </li>
+          <li class="tp-secondary-nav--list-item">
+            <a target="_blank" href="//soundcloud.com/timschletter" class="tp-secondary-nav--list-anchor soundcloud-icon">soundcloud</a>
+          </li>
+        </ul>
+      </div>
+    </footer>
     </main>
     <script src="{{root}}assets/js/app.js"></script>
   </body>

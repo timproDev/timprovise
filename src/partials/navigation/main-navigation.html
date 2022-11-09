@@ -1,0 +1,11 @@
+<a class="tp-home-logo {{#ifpage 'index'}}active{{/ifpage}}" href="index.html">Home</a>
+<div class="tp-masthead" id="tpMasthead">
+	<div class="tp-main-nav" id="tpMainNav">
+		<ul class="tp-main-nav--list">
+			{{#each global.nav}}
+		  <li class="tp-main-nav--list-item">
+				<a class="tp-main-nav--list-anchor {{#ifpage page}}active{{/ifpage}}" href="{{link}}">{{text}}</a></li>
+		  {{/each}}
+		</ul>
+	</div>	
+</div>

@@ -1,0 +1,9 @@
+html {
+    font-size: 1rem; // 16px
+}
+
+body {
+    @include mq('dark mode') {
+        // color: $color-text-ondark;
+    }
+}
