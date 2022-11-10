@@ -1,0 +1,6 @@
+.l-padding--top-xl {
+    padding-top: 4vh;
+    @include break('tablet') {
+        padding-top: 8vh;
+    }
+}

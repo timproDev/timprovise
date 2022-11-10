@@ -1,18 +1,22 @@
 .v-content-block--homepage {
     // @include boxIt;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
     justify-content: space-between;
-    padding: $tds-space-xl;
-    
+    padding: 0;
+    @include break('tablet') {
+        flex-direction: row;
+    }
     .tds-content-block {
         &__img-container {
-            width: 35%;            
+            width: initial;
+            @include break('tablet') {
+                width: 35%;
+            }
         }
         &__header-img {
-            width: 100%;
-            border-radius: 6px;
+            border-radius: 3px;
             box-shadow:
                 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
                 6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
@@ -20,28 +24,65 @@
                 22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
                 41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
                 100px 100px 80px rgba(0, 0, 0, 0.07);
+                @include break('tablet') {
+                    border-radius: 6px;
+                    width: 100%;
+                }
         }
         &__eyebrow {}
         &__eyebrow-text {}
         &__body {
-            width: 55%;            
+            padding-left: $tds-space-l;
+            padding-right: $tds-space-l;
+            @include break('tablet') {
+                padding: 0;
+                width: 60%;
+            }
         }
         &__body-title {
             h1 {
                 @include tds--typo('display');
-                text-shadow:
-                3px 3px 0 #fff,
-                2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
-                6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
-                12.5px 12.5px 10px rgba(0, 0, 0, 0.035);
+                background-color: white;
+                padding: $tds-space-m;
+                display: inline-block;
+                border-radius: 4px;                
+                // text-shadow: 1px 1px 0 salmon;
+                @include break('tablet') {
+                    text-shadow: 2px 2px 2px rgba(0,0,0,0.1);
+                    background-color: transparent;
+                    padding: 0;
+                    display: initial;
+                }
             }
-            border-bottom: 1px dashed salmon;
-            padding-top: $tds-space-xxl;
-            padding-bottom: $tds-space-m;
-            margin-block-end: $tds-space-m;
-            margin-left: -30%;
+            // border-bottom: 1.5px dashed salmon;
+            padding-bottom: $tds-space-l;
+            margin-block-end: $tds-space-l;            
+            margin-top: -15vw;
+            padding-top: 0;
+            position: relative;
+            &:after {
+                content: '';
+                width: 100%;
+                height: 1.5px;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                background: $color-accent;
+                background: linear-gradient(90deg, rgba(250,128,114,0) 0%, $color-accent 5%, $color-accent 5%, rgba(250,128,114,0) 100%);
+            }
+            @include break('tablet') {                
+                margin-top: 0;
+                margin-left: -18%;
+                padding-top: $tds-space-xxl;
+                padding-bottom: $tds-space-l;
+                margin-block-end: $tds-space-l;
+            }            
         }
-        &__body-text {}
+        &__body-text {
+            p, p a {
+                @include tds--typo('para ml');
+            }           
+        }
         &__footer {}
         &__footer-action-container {}
         &__footer-action {}

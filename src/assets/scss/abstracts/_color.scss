@@ -80,9 +80,13 @@ $color-tertiary-900:map-deep-get($color-palette,"tertiary", "900");
 $color-white:map-deep-get($color-palette,"white");
 $color-black:map-deep-get($color-palette,"black");
 // $color-grey: $color-grey-600;
-$color-background: #f4f6f9;
+$color-background-light: #ebedf3;
 $color-light-grey: #fcfcfc;
 
+
+// $color-accent: rgb(250,128,114);
+$color-accent: rgb(255, 54, 32);
+$color-text-onlight: #3f3838;
 // system
 // $color-success: $color-green-600;
 // $color-info: $color-blue-600;
@@ -116,4 +120,3 @@ $color-light-grey: #fcfcfc;
 // $color-disabled-ondark: $color-grey-200;
 
 
-$color-text-onlight: #636363;

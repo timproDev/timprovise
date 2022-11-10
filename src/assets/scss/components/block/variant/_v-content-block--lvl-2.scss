@@ -1,0 +1,68 @@
+.v-content-block--lvl-2 {
+    // @include boxIt;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    padding-bottom: $tds-space-xxl;
+    margin-block-end: $tds-space-xxl;
+    position: relative;
+    &:after {
+        content: '';
+        width: 100%;
+        height: 1.5px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: $color-accent;
+        background: linear-gradient(90deg, rgba(250,128,114,0) 0%, $color-accent 50%, $color-accent 50%, rgba(250,128,114,0) 100%);
+    }
+    .tds-content-block {
+        &__img-container {
+            text-align: center;
+            width: 35%;
+            order: 2;
+        }
+        &__header-img {            
+            border-radius: 3px;
+            box-shadow:
+                2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
+                6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
+                12.5px 12.5px 10px rgba(0, 0, 0, 0.035),
+                22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
+                41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
+                100px 100px 80px rgba(0, 0, 0, 0.07);
+                @include break('tablet') {
+                    border-radius: 6px;
+                    width: 100%;
+                }
+        }
+        &__eyebrow {}
+        &__eyebrow-text {}
+        &__body {
+            order: 1;
+            padding-bottom: $tds-space-m;
+        }
+        &__body-title {
+            h1 {
+                @include tds--typo('h1');
+                background-color: white;
+                padding: $tds-space-m;
+                display: inline-block;
+                border-radius: 4px;                
+                // text-shadow: 1px 1px 0 salmon;
+                @include break('tablet') {
+                    text-shadow: 2px 2px 2px rgba(0,0,0,0.1);
+                    background-color: transparent;
+                    padding: 0;
+                    display: initial;
+                }
+            }
+        }
+        &__body-text {}
+        &__footer {}
+        &__footer-action-container {}
+        &__footer-action {}
+    }
+}

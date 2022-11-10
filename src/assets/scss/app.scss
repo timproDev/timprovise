@@ -1,10 +1,10 @@
 @charset 'utf-8';
 
-// helpers
+// tools
+@import "abstracts/media-queries";
 @import "tools/index"; 
 
-// values
-@import "abstracts/media-queries";
+// abstracts
 @import "abstracts/color";
 @import "abstracts/space";
 @import "abstracts/type-scale";
@@ -15,4 +15,11 @@
 @import "base/typography";
 
 // components
-@import "components/index";
+@import "components/index"; 
+
+// components
+@import "components/index"; 
+
+// scaffolding
+@import "tools/tds-scaffolding"; 
+

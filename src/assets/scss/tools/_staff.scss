@@ -4,11 +4,11 @@ $slimWidth: 784px;
 
 @mixin tds-staff-row($width:'full-viewport') {
     // CSS vars prototype
-    --staffMargin: 16px;
-    @media (min-width: 768px) {
+    --staffMargin: 40px;
+    @include break('tablet') {
         --staffMargin: 32px;
     }
-    @media (min-width: 1024px) {
+    @include break('content-width') {
         --staffMargin: 0;
     }
     // CSS vars - end

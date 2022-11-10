@@ -3,7 +3,7 @@ $global-content-width: 1190px;
 $max-width: $global-content-width;
 
 
-@mixin mq($breakpoint) {
+@mixin break($breakpoint) {
     @if $breakpoint == "iphone" {
       @media (min-width: 320px) {
         @content;

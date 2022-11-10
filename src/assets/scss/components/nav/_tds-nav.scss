@@ -1,0 +1,31 @@
+nav {
+    background-color: rgba(255, 255, 255, .25);
+    padding: $tds-space-m 0;
+    ul {
+        list-style-type: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        @include break('tablet') {
+        }
+        li {
+            padding: 0 $tds-space-ml;
+            @include break('tablet') {}
+            margin-block-start: 0;
+        }
+    }
+    a {
+        // display: flex;
+        font-size: $tds-font-size-m;
+        text-decoration: none;
+        color: $color-text-onlight;        
+        padding: $tds-space-xxs 0;
+        font-weight: 200;
+        border-bottom: 1px dashed transparent;
+        @include transition(color $transition-speed-medium);
+        margin-block-start: 0;
+        &:hover {
+            color: black;
+        }
+    }
+}

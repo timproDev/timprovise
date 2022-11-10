@@ -5,11 +5,13 @@
     margin-block-end: 0;
     margin-inline-start: 0;
     margin-inline-end: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
 }
 
 html, body {
-    background-color: #eeedf3;
-    @include mq('dark mode') {
+    background-color: $color-background-light;
+    @include break('dark mode') {
         // background-color:$color-grey-900;
     }
 }
