@@ -1,3 +1,16 @@
-.tds-c-content-block {
-    border: 20px solid salmon; 
+.tds-content-block {
+    &__img-container {}
+    &__header-img {
+        width: 100%;
+    }
+    &__eyebrow {}
+    &__eyebrow-text {}
+    &__body {}
+    &__body-title {}
+    &__body-text {}
+    &__footer {}
+    &__footer-action-container {}
+    &__footer-action {}
 }
+
+@import "variant/v-content-block--homepage";

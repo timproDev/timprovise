@@ -1,16 +1,23 @@
-<div class="tds-content-block">
-  <div class="tds-content-block__header">
-    <div class="tds-content-block__img-container">
-      <img class="fit-picture" src="assets/img/tim-sit.jpg" alt="Tim is sitting and looking at you with his best Buddha smile.">
-    </div>
+<div class="tds-content-block {{variant-class}}">
+  {{#if header-img-src}}
+  <div class="tds-content-block__img-container">
+    <img src={{header-img-src}} alt={{header-img-alt}} class="tds-content-block__header-img">
   </div>
+  {{/if}}
+  {{#if eyebrow-text}}
+  <div class="tds-content-block__eyebrow">
+    <span class="tds-content-block__eyebrow-text">{{eyebrow-text}}</span>
+  </div>
+  {{/if}}
   <div class="tds-content-block__body">
-    <div class="tds-content-block__title"></div>
-    <div class="tds-content-block__text"></div>
+    <div class="tds-content-block__body-title">{{{title}}}</div>
+    <div class="tds-content-block__body-text">{{{text}}}</div>
   </div>
+  {{#if action-text}}
   <div class="tds-content-block__footer">
-    <div class="tds-content-block__action-container">
-      <a class="tds-content-block__action" href=""></a>
+    <div class="tds-content-block__footer-action-container">
+      <a class="tds-content-block__footer-action" href={{action-url}} target={{action-target}}>{{action-text}}</a>
     </div>
   </div>
+  {{/if}}
 </div>
