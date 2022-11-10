@@ -1,1 +1,33 @@
 @import "block/tds-content-block";
+
+nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(223, 222, 231, .15);
+    padding: $tds-space-m 0;
+    border-bottom: 1px dashed #fff;
+    width: 100%;
+    a {
+        // display: flex;
+        font-size: $tds-font-size-m;
+        align-self: center;
+        text-decoration: none;
+        color: $color-text-onlight;        
+        padding: $tds-space-xxs 0;
+        font-weight: 200;
+        border-bottom: 1px dashed transparent;
+        @include transition(color $transition-speed-medium);
+        &:hover {
+            color: black;
+        }
+    }
+    ul {        
+        list-style-type: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        column-gap: $tds-space-xxl;
+    }
+}

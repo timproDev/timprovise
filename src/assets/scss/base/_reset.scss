@@ -8,7 +8,7 @@
 }
 
 html, body {
-    background-color:$color-white;
+    background-color: #eeedf3;
     @include mq('dark mode') {
         // background-color:$color-grey-900;
     }

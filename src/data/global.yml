@@ -1,5 +1,9 @@
 nav:
   -
+    link: 'index.html'
+    page: 'home'
+    text: Home
+  -
     link: 'video.html'
     page: 'video'
     text: Video

@@ -111,8 +111,7 @@ html {
     font-size: 1rem; // 16px
 }
 
-body {
-    $color-text-onlight: #636363;
+body {    
     font-family: $font-family-body;
     color: $color-text-onlight;
     @include mq('dark mode') {
@@ -138,5 +137,40 @@ body {
     }
     p, p a, p span a, li {
         @include tds--typo('para ml');
+    }
+    a {
+        color: black;
+        @include transition(color $transition-speed-medium);
+        &:link {
+            color: black;
+        }
+        &:active {
+            color: black;
+        }
+        &:hover {
+            color: salmon;
+        }
+        &:visited {
+            color: #8c72d4;
+        }
+        &.active {}
+        &[target=_blank] {
+            display: inline-block;
+            &:after {
+                content: '';
+                height: 10px;
+                width: 0px;
+                display: inline-block;
+                background-color: salmon;
+                margin-left: 0;
+                @include transition(width $transition-speed-medium);
+            }
+            &:hover {
+                &:after {
+                    width: 10px;
+                    margin-left: 2px;
+                }
+            }
+        }
     }
 }

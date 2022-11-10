@@ -8,7 +8,7 @@
     
     .tds-content-block {
         &__img-container {
-            width: 25%;            
+            width: 35%;            
         }
         &__header-img {
             width: 100%;
@@ -24,15 +24,22 @@
         &__eyebrow {}
         &__eyebrow-text {}
         &__body {
-            width: 70%;
+            width: 55%;            
         }
         &__body-title {
             h1 {
                 @include tds--typo('display');
+                text-shadow:
+                3px 3px 0 #fff,
+                2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
+                6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
+                12.5px 12.5px 10px rgba(0, 0, 0, 0.035);
             }
             border-bottom: 1px dashed salmon;
+            padding-top: $tds-space-xxl;
             padding-bottom: $tds-space-m;
             margin-block-end: $tds-space-m;
+            margin-left: -30%;
         }
         &__body-text {}
         &__footer {}
