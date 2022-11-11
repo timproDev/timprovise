@@ -78,6 +78,16 @@ $slimWidth: 768px;
             }
         }
     }
+    @if $layout == 'four-across' {
+        $numPerRow: 4;
+        $gutter: 2.65%;
+        @media (min-width: 768px) {
+            > * {
+                flex-basis: ((100% - (($numPerRow - 1) * $gutter)) / $numPerRow);
+                min-width: 0;
+            }
+        }
+    }
     @if $layout == 'half-and-half' {
         $numPerRow:2;
         $gutter: 2.55%;
@@ -120,6 +130,9 @@ $slimWidth: 768px;
     }
     &.tds-staff-slim-centered {
         @include tds-staff-col(slim-centered);
+    }
+    &.tds-staff-four-across {
+        @include tds-staff-col(four-across);
     }
     &.tds-staff-hald-and-half {
         @include tds-staff-col(half-and-half);

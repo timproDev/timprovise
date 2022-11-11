@@ -6,9 +6,9 @@
 }
 
 .l-padding--top-l {
-    padding-top: 6vh;
+    padding-top: $tds-space-m;
     @include break('tablet') {
-        padding-top: $tds-space-xxl;
+        padding-top: $tds-space-l;
     }
 }
 
