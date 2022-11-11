@@ -2,20 +2,20 @@ nav:
   -
     link: 'index.html'
     page: 'home'
-    text: Home
+    text: home
   -
     link: 'video.html'
-    page: 'video'
-    text: Video
+    page: 'videos'
+    text: videos
   -
     link: 'music.html'
     page: 'music'
-    text: Music
+    text: music
   -
-    link: 'sketches.html'
-    page: 'sketches'
-    text: Sketches
+    link: 'art.html'
+    page: 'art'
+    text: art
   -
     link: 'portfolio.html'
-    page: 'portfolio'
-    text: Design
+    page: 'design'
+    text: design

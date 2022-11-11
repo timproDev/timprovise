@@ -55,12 +55,13 @@
                 }
             }
             // border-bottom: 1.5px dashed salmon;
-            padding-bottom: $tds-space-l;
-            margin-block-end: $tds-space-l;            
+            padding-bottom: $tds-space-m;
+            margin-block-end: $tds-space-m;            
             margin-top: -15vw;
             padding-top: 0;
             position: relative;
             &:after {
+                display: none;
                 content: '';
                 width: 100%;
                 height: 1.5px;
@@ -74,8 +75,8 @@
                 margin-top: 0;
                 margin-left: -18%;
                 padding-top: $tds-space-xxl;
-                padding-bottom: $tds-space-l;
-                margin-block-end: $tds-space-l;
+                padding-bottom: $tds-space-ms;
+                margin-block-end: $tds-space-ms;
             }            
         }
         &__body-text {

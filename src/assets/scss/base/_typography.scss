@@ -1,4 +1,16 @@
-@mixin tds--typo($type) {
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: local('Material Icons'),
+      local('MaterialIcons-Regular'),
+      url(https://example.com/MaterialIcons-Regular.woff2) format('woff2'),
+      url(https://example.com/MaterialIcons-Regular.woff) format('woff'),
+      url(https://example.com/MaterialIcons-Regular.ttf) format('truetype');
+  }
+  
+  @mixin tds--typo($type) {
     @if $type == 'display' {
         font-family: $font-family-brand;
         font-weight: 700;
@@ -169,23 +181,32 @@ body {
             }
         }
         &.active {}
-        &[target=_blank] {
-            display: inline;
-            &:after {
-                content: '';
-                height: 10px;
-                width: 0px;
-                display: inline-block;
-                background-color: salmon;
-                margin-left: 0;
-                @include transition(width $transition-speed-medium);
-            }
-            &:hover {
-                &:after {
-                    width: 10px;
-                    margin-left: 2px;
-                }
-            }
-        }
+        // &[target=_blank] {
+        //     display: inline-block;
+        //     word-wrap: break-word;
+        //     white-space: pre;
+        //     &:after {
+        //         line-height: 0px;
+        //         font-size: 16px;
+        //         width: 0;
+        //         opacity: 0;
+        //         transform: translateX(-8px);
+        //         display: inline-block;
+        //         color: $color-accent;
+        //         margin-left: 3px;
+        //         margin-right: 3px;
+        //         content: "open_in_new";
+        //         font-family: 'Material Icons';
+        //         @include transition(width $transition-speed-medium, opacity $transition-speed-medium, transform $transition-speed-medium);
+        //     }
+        //     &:hover {
+        //         &:after {
+        //             width: 11px;
+        //             opacity: 1;
+        //             transform: translateX(0);
+        //         }
+        //     }
+        // }
     }
 }
+

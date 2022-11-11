@@ -1,31 +1,38 @@
 nav {
     background-color: rgba(255, 255, 255, .25);
-    padding: $tds-space-m 0;
+    padding: $tds-space-m 0 18px 0;
     ul {
         list-style-type: none;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
+        display: block;
+        text-align: center;
         @include break('tablet') {
         }
         li {
+            display: inline-block;
             padding: 0 $tds-space-ml;
             @include break('tablet') {}
             margin-block-start: 0;
         }
     }
     a {
-        // display: flex;
-        font-size: $tds-font-size-m;
+        font-family: $font-family-brand;
         text-decoration: none;
-        color: $color-text-onlight;        
-        padding: $tds-space-xxs 0;
-        font-weight: 200;
+        color: $color-text-onlight;
+        font-size: $tds-font-size-ml;
+        padding: 0;
+        font-weight: 300;
         border-bottom: 1px dashed transparent;
         @include transition(color $transition-speed-medium);
         margin-block-start: 0;
-        &:hover {
-            color: black;
+        // &:hover {
+        //     color: black;
+        // }
+        span {
+            font-weight: 800;
+        }
+        &.active {
+            opacity: .5;
+            pointer-events: none;
         }
     }
 }
