@@ -70,7 +70,7 @@ $slimWidth: 784px;
         }        
     }
     @if $layout == 'slim-centered' {
-        width: 100%;        
+        max-width: 100%;
         @media (min-width: 768px) {
             > * {                
                 width: $slimWidth;

@@ -1,21 +1,17 @@
 nav:
   -
     link: 'index.html'
-    page: 'home'
+    page: 'index'
     text: home
   -
-    link: 'video.html'
-    page: 'videos'
-    text: videos
+    link: 'design.html'
+    page: 'design'
+    text: design
+  -
+    link: 'motion.html'
+    page: 'motion'
+    text: motion
   -
     link: 'music.html'
     page: 'music'
     text: music
-  -
-    link: 'art.html'
-    page: 'art'
-    text: art
-  -
-    link: 'portfolio.html'
-    page: 'design'
-    text: design

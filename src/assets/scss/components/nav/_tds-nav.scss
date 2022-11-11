@@ -9,9 +9,12 @@ nav {
         }
         li {
             display: inline-block;
-            padding: 0 $tds-space-ml;
             @include break('tablet') {}
             margin-block-start: 0;
+            padding: 0 2%;
+            @include break('tablet') {
+                padding: 0 $tds-space-ml;
+            }
         }
     }
     a {
@@ -27,12 +30,68 @@ nav {
         // &:hover {
         //     color: black;
         // }
+        display: inline-block;        
         span {
             font-weight: 800;
+            display: inline-block;            
+            @include transition(color $transition-speed-slow);            
+        }
+        &:hover {
+            @media screen and (prefers-reduced-motion: no-preference) {
+                animation: textAnim;
+                animation-timing-function:cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                animation-fill-mode: forwards;
+                animation-direction: normal;
+                animation-iteration-count: 1;
+                animation-duration: 250ms;
+                animation-delay: 350ms;
+              }
+            span {
+                @media screen and (prefers-reduced-motion: no-preference) {
+                    animation: dotAnim;
+                    animation-timing-function:cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    animation-fill-mode: forwards;
+                    animation-direction: normal;
+                    animation-iteration-count: 1;
+                    animation-duration: 500ms;
+                    animation-delay: 50ms;
+                  }
+                color: black;
+            }
         }
         &.active {
-            opacity: .5;
+            color: $color-accent;
             pointer-events: none;
+            span {
+                color: black;
+            }
         }
+    }
+}
+
+
+
+
+@keyframes dotAnim {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-8px);
+    }
+    100% {
+        transform: translateX(0px);
+    }
+} 
+
+@keyframes textAnim {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(2px);
+    }
+    100% {
+        transform: translateX(0px);
     }
 }

@@ -5,6 +5,13 @@
     }
 }
 
+.l-padding--top-l {
+    padding-top: 1.5vh;
+    @include break('tablet') {
+        padding-top: 3vh;
+    }
+}
+
 .tds-color--accent {
     color: $color-accent;
 }

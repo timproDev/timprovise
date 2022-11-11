@@ -11,11 +11,17 @@ footer {
         display: flex;
         flex-direction: row;
         justify-content: center;
+        flex-wrap: wrap;
+        padding-left: $tds-space-l;
+        padding-right: $tds-space-l;
         @include break('tablet') {
+            flex-wrap: nowrap;
         }
         li {
-            padding: 0 $tds-space-ml;
-            @include break('tablet') {}
+            padding: 0 2%;
+            @include break('tablet') {
+                padding: 0 $tds-space-ml;
+            }
             margin-block-start: 0;
         }
     }
@@ -29,9 +35,6 @@ footer {
         border-bottom: 1px dashed transparent;
         @include transition(color $transition-speed-medium);
         margin-block-start: 0;
-        &:hover {
-            color: black;
-        }
     }
     
     &:after {
@@ -55,3 +58,4 @@ footer {
     //     background: linear-gradient(90deg, rgba(250,128,114,0) 0%, $color-accent-2 50%, $color-accent-2 50%, rgba(250,128,114,0) 100%);
     // }
 }
+

@@ -47,8 +47,8 @@
     } @else if $type == 'h3' {
         font-family: $font-family-brand;
         font-weight: 700;
-        // font-size: $heading-h3-size-mobile;
-        // line-height: $heading-h3-lineheight-mobile;
+        font-size: 32px;
+        line-height: 40px;
         @include break('tablet') {
             font-size: 32px;
             line-height: 40px;
@@ -165,12 +165,12 @@ body {
     a {
         color: black;
         @include transition(color $transition-speed-medium);
-        &:link {
-            color: black;
-        }
-        &:active {
-            color: black;
-        }
+        // &:link {
+        //     color: black;
+        // }
+        // &:active {
+        //     color: black;
+        // }
         &:hover {
             color: $color-accent;
         }

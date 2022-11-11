@@ -25,6 +25,10 @@
     &__title {
         @include tds--typo('h3');
     }
-    &__description {}
+    &__description {
+        p {
+            margin-block-start: $tds-space-s;
+        }
+    }
 
 }
