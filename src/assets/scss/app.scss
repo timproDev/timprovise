@@ -2,7 +2,7 @@
 
 // tools
 @import "abstracts/media-queries";
-@import "tools/index"; 
+
 
 // abstracts
 @import "abstracts/color";
@@ -10,17 +10,11 @@
 @import "abstracts/type-scale";
 @import "abstracts/abstracts";
 
+@import "tools/index"; 
+
 // base
 @import "base/reset";
 @import "base/typography";
 
 // components
 @import "components/index"; 
-
-// components
-@import "components/index"; 
-
-// scaffolding
-@import "tools/tds-scaffolding"; 
-
-

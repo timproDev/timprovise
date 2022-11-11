@@ -5,7 +5,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 0;
-    padding-bottom: $tds-space-l;
+    padding-bottom: $tds-space-xl;
+    @include break('tablet') {
+        padding-bottom: $tds-space-xxl;
+    }
     margin-block-end: 0;
     .tds-content-block {
         &__img-container {
@@ -31,8 +34,18 @@
         &__eyebrow {}
         &__eyebrow-text {}
         &__body {
-            order: 1;            
+            order: 1;
             width: 100%;
+            opacity: 0;
+            @media screen and (prefers-reduced-motion: no-preference) {
+                animation: fadeIn;
+                animation-timing-function: linear;
+                animation-fill-mode: forwards;
+                animation-direction: normal;
+                animation-iteration-count: 1;
+                animation-duration: .5s;
+                animation-delay: 0;
+            }
         }
         &__body-title {
             width: 100%;
@@ -49,15 +62,13 @@
                     padding: 0;
                     display: initial;
                 }
-            }
+            }            
         }
         &__body-text {
             p {
                 @include tds--typo('para m');
                 font-style: italic;
             }
-            padding-bottom: $tds-space-l;
-            border-bottom: 2px dashed #ffffff;
         }
         &__footer {}
         &__footer-action-container {}

@@ -8,9 +8,9 @@ nav:
     page: 'design'
     text: design
   -
-    link: 'motion.html'
-    page: 'motion'
-    text: motion
+    link: 'animation.html'
+    page: 'animation'
+    text: animation
   -
     link: 'music.html'
     page: 'music'

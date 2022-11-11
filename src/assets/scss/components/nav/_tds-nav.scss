@@ -1,6 +1,9 @@
 nav {
     background-color: rgba(255, 255, 255, .25);
-    padding: $tds-space-m 0 18px 0;
+    padding: $tds-space-s 0;
+    @include break('tablet') {
+        padding: $tds-space-m 0 18px 0;
+    }
     ul {
         list-style-type: none;
         display: block;
@@ -21,16 +24,16 @@ nav {
         font-family: $font-family-brand;
         text-decoration: none;
         color: $color-text-onlight;
-        font-size: $tds-font-size-ml;
+        font-size: $tds-font-size-m;
         padding: 0;
         font-weight: 300;
         border-bottom: 1px dashed transparent;
-        @include transition(color $transition-speed-medium);
         margin-block-start: 0;
-        // &:hover {
-        //     color: black;
-        // }
         display: inline-block;        
+        @include transition(color $transition-speed-medium);
+        @include break('tablet') {
+            font-size: $tds-font-size-ml;
+        }
         span {
             font-weight: 800;
             display: inline-block;            
@@ -49,7 +52,7 @@ nav {
             span {
                 @media screen and (prefers-reduced-motion: no-preference) {
                     animation: dotAnim;
-                    animation-timing-function:cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    animation-timing-function:cubic-bezier(0.175, 0.885, 0.32, 1.75);
                     animation-fill-mode: forwards;
                     animation-direction: normal;
                     animation-iteration-count: 1;
@@ -66,32 +69,5 @@ nav {
                 color: black;
             }
         }
-    }
-}
-
-
-
-
-@keyframes dotAnim {
-    0% {
-        transform: translateX(0);
-    }
-    50% {
-        transform: translateX(-8px);
-    }
-    100% {
-        transform: translateX(0px);
-    }
-} 
-
-@keyframes textAnim {
-    0% {
-        transform: translateX(0);
-    }
-    50% {
-        transform: translateX(2px);
-    }
-    100% {
-        transform: translateX(0px);
-    }
+    }    
 }

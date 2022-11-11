@@ -1,14 +1,14 @@
 .l-padding--top-xl {
-    padding-top: 4vh;
+    padding-top: $tds-space-ml;
     @include break('tablet') {
-        padding-top: 8vh;
+        padding-top: $tds-space-xxl;
     }
 }
 
 .l-padding--top-l {
-    padding-top: 1.5vh;
+    padding-top: 6vh;
     @include break('tablet') {
-        padding-top: 3vh;
+        padding-top: $tds-space-xxl;
     }
 }
 

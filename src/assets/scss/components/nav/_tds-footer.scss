@@ -1,10 +1,18 @@
+body {
+    @include break('tablet') {
+        padding-bottom: 9vh;
+    }
+}
 footer {
     padding: 1vh 0;
-    margin-block-start: 8vh;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    margin-block-start: 8vh;    
+    position: relative;
+    @include break('tablet') {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
     background-color: $color-background-light;
     ul {
         list-style-type: none;

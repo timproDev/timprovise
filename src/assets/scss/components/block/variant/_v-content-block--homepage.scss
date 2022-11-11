@@ -32,8 +32,8 @@
         &__eyebrow {}
         &__eyebrow-text {}
         &__body {
-            padding-left: $tds-space-m;
-            padding-right: $tds-space-m;
+            padding-left: $tds-space-ms;
+            padding-right: $tds-space-ms;
             @include break('tablet') {
                 padding: 0;
                 width: 60%;
@@ -43,18 +43,25 @@
             h1 {
                 @include tds--typo('display');
                 background-color: white;
-                padding: $tds-space-m;
-                display: inline-block;
-                border-radius: 4px;                
-                // text-shadow: 1px 1px 0 salmon;
+                padding: $tds-space-m;                
+                border-radius: 4px;
                 word-break: break-all;
+                display: block;
                 @include break('tablet') {
+                    display: inline-block;
                     text-shadow: 2px 2px 2px rgba(0,0,0,0.1);
                     background-color: transparent;
                     padding: 0;
                     display: initial;
                     word-break: break-all;
                 }
+            }
+            br {
+                &:nth-of-type(2) {
+                    @include break('tablet') {
+                        display: none;
+                    }
+                }                
             }
             // border-bottom: 1.5px dashed salmon;
             padding-bottom: $tds-space-m;
@@ -65,8 +72,8 @@
                 margin-top: 0;
                 margin-left: -18%;
                 padding-top: $tds-space-xxl;
-                padding-bottom: $tds-space-l;
-                margin-block-end: $tds-space-l;
+                padding-bottom: $tds-space-m;
+                margin-block-end: $tds-space-m;
             }            
         }
         &__body-text {
@@ -74,20 +81,20 @@
                 @include tds--typo('para ml');
             }
             position: relative;            
-            &:after {
-                content: '';
-                width: 20%;
-                height: 1px;
-                position: absolute;
-                top: -($tds-space-xxl + 6);
-                left: 0;
-                padding-bottom: $tds-space-l;
-                border-bottom: 1.5px dashed #ffffff;
-                display: none;
-                @include break('tablet') {
-                    display: initial;
-                }
-            }
+            // &:after {
+            //     content: '';
+            //     width: 20%;
+            //     height: 1px;
+            //     position: absolute;
+            //     top: -($tds-space-xxl + 6);
+            //     left: 0;
+            //     padding-bottom: $tds-space-l;
+            //     border-bottom: 1.5px dashed #ffffff;
+            //     display: none;
+            //     @include break('tablet') {
+            //         display: initial;
+            //     }
+            // }
         }
         &__footer {}
         &__footer-action-container {}
