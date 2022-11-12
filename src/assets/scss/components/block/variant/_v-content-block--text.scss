@@ -8,21 +8,28 @@
         &__eyebrow-text {}
         &__body {}
         &__body-title {
-            span, h3 {
+            span, h2,h3,h4,h5,h6 {
                 @include transition(color $transition-speed-medium);
             }
         }
-        &__body-text {}
+        &__body-text {
+            p {
+                @include transition(color $transition-speed-medium);
+            }
+        }
         &__footer {}
         &__footer-action-container {}
         &__footer-action {}        
     }
     &:hover {
+        p {
+            color: black;
+        }
         .tds-content-block__body-title {
             span {
                 color: black;
             }
-            h3 {
+            h2,h3,h4,h5,h6 {
                 color: $color-accent;
             }
         }    

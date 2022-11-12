@@ -80,14 +80,15 @@ $color-tertiary-900:map-deep-get($color-palette,"tertiary", "900");
 $color-white:map-deep-get($color-palette,"white");
 $color-black:map-deep-get($color-palette,"black");
 // $color-grey: $color-grey-600;
-$color-background-light: #ebedf3;
+// $color-background-light: #ebedf3;
+$color-background-light: #EBEDF2;
 $color-light-grey: #fcfcfc;
 
 
 // $color-accent: rgb(250,128,114);
 $color-accent: #ff3f59;
 $color-accent-2: #e967ff;
-$color-text-onlight: #3f3838;
+$color-text-onlight: #5d4e4e;
 // system
 // $color-success: $color-green-600; 
 // $color-info: $color-blue-600;
