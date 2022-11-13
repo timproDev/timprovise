@@ -88,6 +88,14 @@ $slimWidth: 768px;
             }
         }
     }
+    @if $layout == 'thirds' {
+        @media (min-width: 768px) {
+            > * {
+                flex-basis: calc(33.3333333% - (21.715px));
+                min-width: 0;
+            }
+        }
+    }
     @if $layout == 'half-and-half' {
         $numPerRow:2;
         $gutter: 2.55%;
@@ -122,6 +130,9 @@ $slimWidth: 768px;
     &.tds-staff-2-col-wide-left {
         @include tds-staff-col(2-col-wide-left);
     }
+    &.tds-staff-thirds {
+        @include tds-staff-col(thirds);
+    }
     &.tds-staff-full-content-width {
         @include tds-staff-col(full-content-width);
     }
@@ -134,7 +145,7 @@ $slimWidth: 768px;
     &.tds-staff-four-across {
         @include tds-staff-col(four-across);
     }
-    &.tds-staff-hald-and-half {
+    &.tds-staff-half-and-half {
         @include tds-staff-col(half-and-half);
     }
 }

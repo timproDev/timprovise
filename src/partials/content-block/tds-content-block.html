@@ -1,7 +1,12 @@
 <div class="tds-content-block {{variant-class}}">
   {{#if header-img-src}}
   <div class="tds-content-block__img-container">
-    <img src={{header-img-src}} alt={{header-img-alt}} class="tds-content-block__header-img">
+    <figure>
+    <img src="{{header-img-src}}" alt="{{header-img-alt}}" class="tds-content-block__header-img">
+    {{#if fig-caption}}
+    <figcaption>{{fig-caption}}</figcaption>
+    {{/if}}
+    </figure>
   </div>
   {{/if}}
   {{#if eyebrow-text}}
@@ -16,7 +21,7 @@
   {{#if action-text}}
   <div class="tds-content-block__footer">
     <div class="tds-content-block__footer-action-container">
-      <a class="tds-content-block__footer-action" href={{action-url}} target={{action-target}}>{{action-text}}</a>
+      <a class="tds-content-block__footer-action" href="{{action-url}}" target="{{action-target}}">{{action-text}}</a>
     </div>
   </div>
   {{/if}}

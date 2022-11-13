@@ -10,7 +10,7 @@
 }
 
 html, body {
-    background-color: #f2f5fa;
+    background-color: $color-background-really-light;
     @include break('dark mode') {
         // background-color:$color-grey-900;
     }

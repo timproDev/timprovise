@@ -90,6 +90,14 @@
 
 
 // padding y
+.l-padding--y-l {
+    padding-top: $tds-space-m;
+    padding-bottom: $tds-space-m;
+    @include break('tablet') {
+        padding-top: $tds-space-l;
+        padding-bottom: $tds-space-l;
+    }
+}
 
 // margin y
 
@@ -134,4 +142,12 @@
 
 .tds-color--background-white {
     background-color: white;
+}
+
+.tds-color--background-accent {
+    background-color: $color-accent;
+}
+
+.tds-color--background-black {
+    background-color: black;
 }
