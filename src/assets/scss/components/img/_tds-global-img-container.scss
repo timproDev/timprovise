@@ -21,4 +21,11 @@
         padding: $tds-space-s 0 0 0;
         color: white;
     }
+    margin-top: $tds-space-m;
+    &:first-of-type {
+        margin-top: 0;
+    }    
+    @include break('tablet') {
+        margin-top: 0;
+    }
 }
