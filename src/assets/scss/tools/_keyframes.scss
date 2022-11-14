@@ -41,3 +41,25 @@
         transform: translateX(-18%);
     }
 }
+
+@keyframes figcaptionBounce {
+    0% {
+        opacity: 0;
+        transform: translateY(0,0);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(10deg) translate(2px, -32px);
+    }
+}
+
+@keyframes figcaptionBounce2 {
+    0% {
+        opacity: 0;
+        transform: translateY(0,0);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(-8deg) translate(-4px, -50px);
+    }
+}

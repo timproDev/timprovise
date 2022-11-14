@@ -57,7 +57,7 @@
                 background-color: white;
                 padding: $tds-space-m;                
                 border-radius: 4px;
-                word-break: break-all;
+                // word-break: break-all;
                 display: block;
                 @include break('tablet') {
                     display: inline-block;
@@ -65,7 +65,7 @@
                     background-color: transparent;
                     padding: 0;
                     display: initial;
-                    word-break: break-all;
+                    // word-break: break-all;
                 }
             }
             br {
@@ -97,7 +97,9 @@
                     animation-duration: 1.5s;
                     animation-delay: .35s;
                 }
-            }            
+            }
+            .tds-color--accent {
+            }
         }
         &__body-text {
             p, p a {

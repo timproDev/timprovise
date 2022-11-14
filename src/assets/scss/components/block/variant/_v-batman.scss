@@ -2,13 +2,14 @@
     position: relative;
     text-align: center;
     padding: $tds-space-m;
-    margin: 0 $tds-space-m;
-    @include transition(background-color $transition-speed-medium);
+    margin: $tds-space-s $tds-space-m 0 $tds-space-m;
+    @include transition(background-color $transition-speed-medium, border $transition-speed-medium);
     @include break('tablet') {
         padding: $tds-space-l;
         margin: 0 $tds-space-l;
     }
-    border-radius: 8px;
+    border-radius: 16px;
+    border: 8px solid $color-background-light;
     .tds-content-block {        
         &__img-container {}
         &__header-img {}
@@ -47,5 +48,6 @@
             }            
         }
         background-color: $color-accent;
+        border: 8px solid white;
     }
 }

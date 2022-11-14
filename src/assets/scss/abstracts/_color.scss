@@ -1,125 +1,21 @@
 $color-palette: (
-    "primary": ( // blue
-        "900":#001538,
-        "800":#001f52,
-        "700":#002C77,
-        "600":#0065ac,
-        "500":#009DE0, // base
-        "400":#3bb8f0,
-        "300":#76D3FF,
-        "200":#9fe0ff,
-        "100":#c7edff,
-        "50":#f0faff
-    ),  
-    "secondary":( // turquoise
-        "900":#002423,
-        "800":#004140,
-        "700":#005e5d,
-        "600":#007A76,
-        "500":#00968F,
-        "400": #4CB9AF,
-        "300":#98bdce,
-        "200": #B7E7DE,
-        "100": #D6F3ED,
-        "50": #F5FFFD        
-    ),
-    "tertiary":( // blue grey
-        "900":#1b222f,
-        "800":#35425b,
-        "700":#4e6287,
-        "600":#627798,
-        "500":#8096B2,
-        "400":#a2b7cd,
-        "300":#bed3e4,
-        "200":#d1e0ec,
-        "100":#e5edf4,
-        "75":#F2F6F9,
-        "50":#f8fafc
-    ),
     "white": #fff,
     "black": #000
 );
 
-// primary
-$color-primary-50:map-deep-get($color-palette,"primary", "50");
-$color-primary-100:map-deep-get($color-palette,"primary", "100");
-$color-primary-200:map-deep-get($color-palette,"primary", "200");
-$color-primary-300:map-deep-get($color-palette,"primary", "300");
-$color-primary-400:map-deep-get($color-palette,"primary", "400");
-$color-primary-500:map-deep-get($color-palette,"primary", "500");
-$color-primary-600:map-deep-get($color-palette,"primary", "600");
-$color-primary-700:map-deep-get($color-palette,"primary", "700");
-$color-primary-800:map-deep-get($color-palette,"primary", "800");
-$color-primary-900:map-deep-get($color-palette,"primary", "900");
-
-$color-secondary-50:map-deep-get($color-palette,"secondary", "50");
-$color-secondary-100:map-deep-get($color-palette,"secondary", "100");
-$color-secondary-200:map-deep-get($color-palette,"secondary", "200");
-$color-secondary-300:map-deep-get($color-palette,"secondary", "300");
-$color-secondary-400:map-deep-get($color-palette,"secondary", "400");
-$color-secondary-500:map-deep-get($color-palette,"secondary", "500");
-$color-secondary-600:map-deep-get($color-palette,"secondary", "600");
-$color-secondary-700:map-deep-get($color-palette,"secondary", "700");
-$color-secondary-800:map-deep-get($color-palette,"secondary", "800");
-$color-secondary-900:map-deep-get($color-palette,"secondary", "900");
-
-$color-tertiary:map-deep-get($color-palette,"tertiary", "500");
-$color-tertiary-50:map-deep-get($color-palette,"tertiary", "50");
-$color-tertiary-75:map-deep-get($color-palette,"tertiary", "75");
-$color-tertiary-100:map-deep-get($color-palette,"tertiary", "100");
-$color-tertiary-200:map-deep-get($color-palette,"tertiary", "200");
-$color-tertiary-400:map-deep-get($color-palette,"tertiary", "400");
-$color-tertiary-500:map-deep-get($color-palette,"tertiary", "500");
-$color-tertiary-600:map-deep-get($color-palette,"tertiary", "600");
-$color-tertiary-300:map-deep-get($color-palette,"tertiary", "300");
-$color-tertiary-700:map-deep-get($color-palette,"tertiary", "700");
-$color-tertiary-800:map-deep-get($color-palette,"tertiary", "800");
-$color-tertiary-900:map-deep-get($color-palette,"tertiary", "900");
-
 // base
 $color-white:map-deep-get($color-palette,"white");
 $color-black:map-deep-get($color-palette,"black");
-// $color-grey: $color-grey-600;
-// $color-background-light: #ebedf3;
 $color-background-really-light: #f2f5fa;
 $color-background-light: #EBEDF2;
 $color-light-grey: #fcfcfc;
 
 
 // $color-accent: rgb(250,128,114);
-$color-accent: #ff3f59;
-$color-accent-2: #e967ff;
+:root {
+    --color-accent: #ff3f59;
+    --color-accent-secondary: #e967ff;
+}
+$color-accent: var(--color-accent);
+$color-accent-2: var(--color-accent-secondary);
 $color-text-onlight: #5d4e4e;
-// system
-// $color-success: $color-green-600; 
-// $color-info: $color-blue-600;
-// $color-warning: $color-orange-500;
-// $color-error: $color-crimson-800;
-// $color-danger: $color-crimson-800;
-// $color-disabled: $color-grey-400;
-
-// text
-// $color-text:$color-tertiary-900;
-// $color-text-light:$color-grey-800;
-// $color-text-ondark:$color-grey-200;
-
-// interactive
-// $color-link: $color-primary-600;
-// $color-hover: $color-primary-600;
-// $color-active: $color-black;
-// $color-visited: $color-purple-700;
-// $color-disabled: $color-grey-100;
-
-// $color-link-onlight: $color-primary-600;
-// $color-hover-onlight: $color-primary-600;
-// $color-active-onlight: $color-black;
-// $color-visited-onlight: $color-purple-700;
-// $color-disabled-onlight: $color-grey-100;
-
-// $color-link-ondark: $color-text-ondark;
-// $color-hover-ondark: $color-primary-300;
-// $color-active-ondark: $color-primary-600;
-// $color-visited-ondark: $color-text-ondark;
-// $color-disabled-ondark: $color-grey-200;
-
-
