@@ -1,0 +1,51 @@
+.batman {
+    position: relative;
+    text-align: center;
+    padding: $tds-space-m;
+    margin: 0 $tds-space-m;
+    @include transition(background-color $transition-speed-medium);
+    @include break('tablet') {
+        padding: $tds-space-l;
+        margin: 0 $tds-space-l;
+    }
+    border-radius: 8px;
+    .tds-content-block {        
+        &__img-container {}
+        &__header-img {}
+        &__eyebrow {}
+        &__eyebrow-text {}
+        &__body {}
+        &__body-title {
+            span, h2,h3,h4,h5,h6 {
+                font-family: $font-family-brand;
+                font-weight: 700;
+                font-size: $tds-font-size-ml;
+                @include transition(color $transition-speed-medium);
+            }
+        }
+        &__body-text {
+            p {}
+        }
+        &__footer {}
+        &__footer-action-container {}        
+        &__footer-action {            
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            text-indent: -9999px;
+        }
+    }
+    &:hover {
+        .tds-content-block__body-title {
+            * {
+                color: white;
+            }            
+        }
+        background-color: $color-accent;
+    }
+}

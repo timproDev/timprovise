@@ -103,6 +103,12 @@
             p, p a {
                 @include tds--typo('para ml');
             }
+            h2 {
+                font-size: $tds-font-size-l + 12;
+                line-height: 1.15;
+                color: $color-accent;
+                font-weight: 200;
+            }
             position: relative;            
             a {
                 text-decoration: none;

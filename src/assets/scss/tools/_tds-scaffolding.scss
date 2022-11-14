@@ -99,6 +99,24 @@
     }
 }
 
+.l-padding--y-xl {
+    padding-top: $tds-space-ml;
+    padding-bottom: $tds-space-ml;
+    @include break('tablet') {
+        padding-top: $tds-space-xl;
+        padding-bottom: $tds-space-xl;
+    }
+}
+
+.l-padding--y-xxl {
+    padding-top: $tds-space-l;
+    padding-bottom: $tds-space-l;
+    @include break('tablet') {
+        padding-top: $tds-space-xxl;
+        padding-bottom: $tds-space-xxl;
+    }
+}
+
 // margin y
 
 .l-margin--y-xxxl {
