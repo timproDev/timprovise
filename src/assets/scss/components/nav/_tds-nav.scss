@@ -1,0 +1,73 @@
+nav {
+    background-color: $color-background-light;
+    padding: $tds-space-s 0;
+    @include break('tablet') {
+        padding: $tds-space-m 0 18px 0;
+    }
+    ul {
+        list-style-type: none;
+        display: block;
+        text-align: center;
+        @include break('tablet') {
+        }
+        li {
+            display: inline-block;
+            @include break('tablet') {}
+            margin-block-start: 0;
+            padding: 0 2%;
+            @include break('tablet') {
+                padding: 0 $tds-space-ml;
+            }
+        }
+    }
+    a {
+        font-family: $font-family-brand;
+        text-decoration: none;
+        color: $color-text-onlight;
+        font-size: $tds-font-size-m;
+        padding: 0;
+        font-weight: 300;
+        border-bottom: 1px dashed transparent;
+        margin-block-start: 0;
+        display: inline-block;        
+        @include transition(color $transition-speed-medium);
+        @include break('tablet') {
+            font-size: $tds-font-size-ml;
+        }
+        span {
+            font-weight: 800;
+            display: inline-block;            
+            @include transition(color $transition-speed-slow);            
+        }
+        &:hover {
+            @media screen and (prefers-reduced-motion: no-preference) {
+                animation: textAnim;
+                animation-timing-function:cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                animation-fill-mode: forwards;
+                animation-direction: normal;
+                animation-iteration-count: 1;
+                animation-duration: 250ms;
+                animation-delay: 350ms;
+              }
+            span {
+                @media screen and (prefers-reduced-motion: no-preference) {
+                    animation: dotAnim;
+                    animation-timing-function:cubic-bezier(0.175, 0.885, 0.32, 1.75);
+                    animation-fill-mode: forwards;
+                    animation-direction: normal;
+                    animation-iteration-count: 1;
+                    animation-duration: 500ms;
+                    animation-delay: 50ms;
+                  }
+                color: black;
+            }
+        }
+        &.active {
+            color: $color-accent;
+            pointer-events: none;
+            span {
+                color: black;
+            }
+        }
+    }    
+}

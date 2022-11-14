@@ -1,0 +1,45 @@
+$global-content-width: 1190px;
+
+$max-width: $global-content-width;
+
+
+@mixin break($breakpoint) {
+    @if $breakpoint == "iphone" {
+      @media (min-width: 320px) {
+        @content;
+      }
+    }
+
+    @else if $breakpoint == "tablet" {
+      @media (min-width: 768px) {
+        @content;
+      }
+    }
+
+    @else if $breakpoint == "desktop" {
+      @media (min-width: 1024px) {
+        @content;
+      }
+    }
+
+    @else if $breakpoint == "content-width" {
+      @media (min-width: $global-content-width) {
+        @content;
+      }
+    }
+
+    @else if $breakpoint == "large" {
+        @media (min-width: 1440px) {
+          @content;
+        }
+    }
+
+    @else if $breakpoint == "dark mode" {
+      @media (prefers-color-scheme: dark) {
+        @content;
+      }
+      .dark-mode & {
+        @content;
+      }
+    }
+}

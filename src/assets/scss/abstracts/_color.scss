@@ -1,0 +1,21 @@
+$color-palette: (
+    "white": #fff,
+    "black": #000
+);
+
+// base
+$color-white:map-deep-get($color-palette,"white");
+$color-black:map-deep-get($color-palette,"black");
+$color-background-really-light: #f2f5fa;
+$color-background-light: #EBEDF2;
+$color-light-grey: #fcfcfc;
+
+
+// $color-accent: rgb(250,128,114);
+:root {
+    --color-accent: #ff3f59;
+    --color-accent-secondary: #e967ff;
+}
+$color-accent: var(--color-accent);
+$color-accent-2: var(--color-accent-secondary);
+$color-text-onlight: #5d4e4e;

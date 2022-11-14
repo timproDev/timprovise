@@ -1,0 +1,214 @@
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: local('Material Icons'),
+      local('MaterialIcons-Regular'),
+      url(https://example.com/MaterialIcons-Regular.woff2) format('woff2'),
+      url(https://example.com/MaterialIcons-Regular.woff) format('woff'),
+      url(https://example.com/MaterialIcons-Regular.ttf) format('truetype');
+  }
+  
+  @mixin tds--typo($type) {
+    @if $type == 'display' {
+        font-family: $font-family-brand;
+        font-weight: 700;
+        font-size: 8vw;
+        line-height: 8vw;
+        @include break('tablet') {
+            font-size: $tds-font-size-xxl;
+            line-height: $tds-font-size-xxl;
+            font-size: 6vw;
+            line-height: 5.5vw
+        }
+        @include break('large') {
+            font-size: $tds-font-size-xxl;
+            line-height: $tds-font-size-xxl;
+        }
+    } @else if $type == 'h1' {
+            font-family: $font-family-brand;
+            font-weight: 700;
+            font-size: 60px;
+            line-height: 52px;
+            font-size: 12vw;
+            line-height: 12vw;
+            @include break('tablet') {
+                font-size: 52px;
+                line-height: 62px;                
+            }
+    } @else if $type == 'h2' {
+        font-family: $font-family-brand;
+        font-weight: 700;
+        // font-size: $heading-h2-size-mobile;
+        // line-height: $heading-h2-lineheight-mobile;
+        @include break('tablet') {
+            font-size: 38px;
+            line-height: 48px;
+        }        
+    } @else if $type == 'h3' {
+        font-family: $font-family-brand;
+        font-weight: 700;
+        font-size: 32px;
+        line-height: 40px;
+        @include break('tablet') {
+            font-size: 32px;
+            line-height: 40px;
+        }        
+    } @else if $type == 'h4' {
+        font-family: $font-family-brand;
+        font-weight: 700;
+        // font-size: $heading-h4-size-mobile;
+        // line-height: $heading-h4-lineheight-mobile;
+        @include break('tablet') {
+            font-size: 24px;
+            line-height: 32px;
+        }        
+    } @else if $type == 'h5' {
+        font-family: $font-family-brand;
+        font-weight: 700;
+        // font-size: $heading-h5-size-mobile;
+        // line-height: $heading-h5-lineheight-mobile;
+        @include break('tablet') {
+            font-size: 18px;
+            line-height: 26px;
+        }        
+    } @else if $type == 'h6' {
+        font-family: $font-family-brand;
+        font-weight: 700;
+        // font-size: $heading-h6-size-mobile;
+        // line-height: $heading-h6-lineheight-mobile;
+        @include break('tablet') {
+            font-size: 16px;
+            line-height: 24px;
+        }        
+    } @else if $type == 'para s' {
+        // font-size: $para-size-s-mobile;
+        // line-height: $para-lineheight-s-mobile;
+        @include break('tablet') {
+            font-size: 12px;
+            line-height: 18px;
+        }
+    } @else if $type == 'para ms' {
+        // font-size: $para-size-ms-mobile;
+        // line-height: $para-lineheight-ms-mobile;
+        @include break('tablet') {
+            font-size: 14px;
+            line-height: 22px;
+        }
+    } @else if $type == 'para m' {
+        font-size: $tds-font-size-m;
+        line-height: 26px;
+        @include break('tablet') {
+            font-size: $tds-font-size-m;
+            line-height: 26px;
+        }        
+    } @else if $type == 'para ml' {
+        font-size: $tds-font-size-ml;
+        line-height: 32px;
+        @include break('tablet') {
+            font-size: $tds-font-size-ml;
+            line-height: 32px;
+        }        
+    } @else if $type == 'para l' {
+            // font-size: 22px;
+            // line-height: 30px;
+        @include break('tablet') {
+            font-size: $tds-font-size-l;
+            line-height: 38px;
+        }        
+    } @else if $type == 'para xl' {
+        // font-size: $para-size-l-mobile;
+        // line-height: $para-lineheight-l-mobile;
+        @include break('tablet') {
+            font-size: $tds-font-size-xl;
+            line-height: 44px;
+        }        
+    }
+}
+
+html {
+    font-size: 1rem; // 16px
+}
+
+body {    
+    font-family: $font-family-body;
+    color: $color-text-onlight;
+    @include break('dark mode') {
+        // color: $color-text-ondark;
+    }
+    h1,h2,h3,h4,h5,h6 {
+        color: black;
+    }
+    h1 {
+        @include tds--typo('h1');
+    }
+    h2 {
+        @include tds--typo('h2');
+    }
+    h3 {
+        @include tds--typo('h3');
+    }
+    h4 {
+        @include tds--typo('h4');
+    }
+    h5 {
+        @include tds--typo('h5');
+    }
+    h6 {
+        @include tds--typo('h6');
+    }
+    p, p a, p span a, li {
+        @include tds--typo('para ml');                
+    }
+    p {
+        margin-block-start: $tds-space-m;
+    }
+    a {
+        color: black;
+        @include transition(color $transition-speed-medium);
+        // &:link {
+        //     color: black;
+        // }
+        // &:active {
+        //     color: black;
+        // }
+        &:hover {
+            color: $color-accent;
+        }
+        &:visited {
+            color: black;
+            &:hover {
+                color: $color-accent;
+            }
+        }
+        &.active {}
+        // &[target=_blank] {
+        //     display: inline-block;
+        //     word-wrap: break-word;
+        //     white-space: pre;
+        //     &:after {
+        //         line-height: 0px;
+        //         font-size: 16px;
+        //         width: 0;
+        //         opacity: 0;
+        //         transform: translateX(-8px);
+        //         display: inline-block;
+        //         color: $color-accent;
+        //         margin-left: 3px;
+        //         margin-right: 3px;
+        //         content: "open_in_new";
+        //         font-family: 'Material Icons';
+        //         @include transition(width $transition-speed-medium, opacity $transition-speed-medium, transform $transition-speed-medium);
+        //     }
+        //     &:hover {
+        //         &:after {
+        //             width: 11px;
+        //             opacity: 1;
+        //             transform: translateX(0);
+        //         }
+        //     }
+        // }
+    }
+}
+

@@ -1,0 +1,47 @@
+//fonts
+// $font-family-brand: 'Archivo Black', sans-serif;
+$font-family-brand: 'Crimson Pro', serif;
+$font-family-body: 'Tajawal', serif;
+// 'Big Shoulders Inline Text', cursive;
+$header-font-family: $font-family-brand;
+$monospace-font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Courier New", Courier, monospace;
+$font-weight-normal:400;
+$font-weight-medium:500;
+$font-weight-semibold:600;
+$font-weight-bold:700;
+$font-antialiased: true;
+$font-size-base: 16px;
+
+// body text
+$font-weight-normal:400;
+$font-weight-bold:700;
+$font-antialiased: true;
+
+// transitions
+$transition-speed-fast: 100ms;
+$transition-speed-medium: 250ms;
+$transition-speed-slow: 450ms;
+
+// radii
+$border-radius-xs: 1px;
+$border-radius-s: 3px;
+$border-radius-m: 8px;
+
+// box shadows
+$box-shadow-none: 0 0 0 0 rgba(0,0,0,0);
+$box-shadow-close: 0 2px 2px -1px rgba(0,0,0,.25);
+$box-shadow-medium: 0 3px 8px -4px rgba(0,0,0,.75);
+$box-shadow-down-medium: 0 4px 4px -2px rgba(0,0,0,.5); // direction pointing down
+$box-shadow-far: 0 6px 10px -4px rgba(0,0,0,.3);
+$box-shadow-soft-blue: 0 10px 64px -5px rgba(0, 44, 119, .20);
+
+
+:root { // mobile first
+}
+
+@include break('tablet') {
+    :root {}
+}
+@include break('desktop') {
+    :root {}
+}

@@ -1,0 +1,23 @@
+.tds-audio-block {
+    padding: $tds-space-s 0 8vh 0;
+    &__container {}
+    &__embed-container {}
+    iframe {}
+    &__body-container {
+        padding: $tds-space-s 0;
+    }
+    &__label {
+        display: none;
+        color: $color-accent;
+        font-weight: 600;
+    }
+    &__title {
+        @include tds--typo('h3');
+    }
+    &__description {
+        p {
+            margin-block-start: $tds-space-s;
+        }
+    }
+
+}

@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+}
+
+html, body {
+    background-color: $color-background-really-light;
+    @include break('dark mode') {
+        // background-color:$color-grey-900;
+    }
+}
+:focus,
+:focus-visible {
+
+}
+select, input, textarea {
+    @include transition(box-shadow, $transition-speed-fast);
+}
+
+hr {
+    border: 0;
+    height: 8px;
+    background: $color-background-light;
+}

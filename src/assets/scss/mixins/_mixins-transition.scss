@@ -1,7 +1,0 @@
-@mixin transition-mixin($transition-props...) {
-	-webkit-transition:$transition-props;
-	-moz-transition:$transition-props;
-	-o-transition:$transition-props;
-	-ms-transition:$transition-props;
-	transition:$transition-props;
-}

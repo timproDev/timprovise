@@ -1,0 +1,25 @@
+// Perfect fifth
+$tds-space-xxxs: 2px;
+$tds-space-xxs: 4px;
+$tds-space-xs: 8px;
+$tds-space-s: 10px;
+$tds-space-ms: 16px;
+$tds-space-m: 20px;
+$tds-space-ml: 28px;
+$tds-space-l: 42px;
+$tds-space-xl: 60px;
+$tds-space-xxl: 80px;
+$tds-space-xxxl: 200px;
+
+$tds-space-map: (
+    xxxs: $tds-space-xxxs,
+    xxs: $tds-space-xxs,
+    xs: $tds-space-xs,
+    s: $tds-space-s,
+    m: $tds-space-m,
+    ml: $tds-space-ml,
+    l: $tds-space-l,
+    xl: $tds-space-xl,
+    xxl: $tds-space-xxl,
+    xxxl: $tds-space-xxxl
+);

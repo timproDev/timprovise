@@ -1,0 +1,28 @@
+<div class="tds-content-block {{variant-class}}">
+  {{#if header-img-src}}
+  <div class="tds-content-block__img-container">
+    <figure>
+    <img src="{{header-img-src}}" alt="{{header-img-alt}}" class="tds-content-block__header-img">
+    {{#if fig-caption}}
+    <figcaption>{{fig-caption}}</figcaption>
+    {{/if}}
+    </figure>
+  </div>
+  {{/if}}
+  {{#if eyebrow-text}}
+  <div class="tds-content-block__eyebrow">
+    <span class="tds-content-block__eyebrow-text">{{eyebrow-text}}</span>
+  </div>
+  {{/if}}
+  <div class="tds-content-block__body">
+    <div class="tds-content-block__body-title">{{{title}}}</div>
+    <div class="tds-content-block__body-text">{{{text}}}</div>
+  </div>
+  {{#if action-text}}
+  <div class="tds-content-block__footer">
+    <div class="tds-content-block__footer-action-container">
+      <a class="tds-content-block__footer-action" href="{{action-url}}" target="{{action-target}}">{{action-text}}</a>
+    </div>
+  </div>
+  {{/if}}
+</div>
