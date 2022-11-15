@@ -169,3 +169,17 @@
 .tds-color--background-black {
     background-color: black;
 }
+
+.tds-visible-desktop-only {
+    display: none;
+    @include break('tablet') {
+        display: initial;
+    }
+}
+
+.tds-visible-mobile-only {
+    display: initial;
+    @include break('tablet') {
+        display: none;
+    }
+}
