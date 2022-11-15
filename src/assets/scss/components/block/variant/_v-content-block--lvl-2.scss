@@ -5,9 +5,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0;
-    padding-bottom: $tds-space-xl;
+    // padding-bottom: $tds-space-xl;
     @include break('tablet') {
-        padding-bottom: $tds-space-xxl;
+        // padding-bottom: $tds-space-xxl;
     }
     margin-block-end: 0;
     .tds-content-block {

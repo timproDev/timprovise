@@ -24,12 +24,12 @@ nav {
         font-family: $font-family-brand;
         text-decoration: none;
         color: $color-text-onlight;
-        font-size: $tds-font-size-m;
         padding: 0;
         font-weight: 300;
         border-bottom: 1px dashed transparent;
         margin-block-start: 0;
         display: inline-block;        
+        font-size: $tds-font-size-m + 4;
         @include transition(color $transition-speed-medium);
         @include break('tablet') {
             font-size: $tds-font-size-ml;
