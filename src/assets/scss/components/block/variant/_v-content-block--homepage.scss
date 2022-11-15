@@ -29,6 +29,15 @@
                     border-radius: 6px;
                     width: 100%;
                 }
+                @media screen and (prefers-reduced-motion: no-preference) {
+                    animation: fadeIn;
+                    animation-timing-function: linear;
+                    animation-fill-mode: forwards;
+                    animation-direction: normal;
+                    animation-iteration-count: 1;
+                    animation-duration: .5s;
+                    animation-delay: 0;
+                }
         }
         &__eyebrow {}
         &__eyebrow-text {}
