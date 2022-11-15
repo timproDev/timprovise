@@ -104,7 +104,7 @@
             line-height: 26px;
         }        
     } @else if $type == 'para ml' {
-        font-size: $tds-font-size-ml;
+        font-size: $tds-font-size-ml + 2;
         line-height: 32px;
         @include break('tablet') {
             font-size: $tds-font-size-ml;
