@@ -50,12 +50,35 @@
             }
         }
         &__body-title {
+            // border-bottom: 1.5px dashed salmon;
+            padding-bottom: $tds-space-m;
+            margin-block-end: 0;
+            margin-top: -15vw;
+            padding-top: 0;
+            @include break('tablet') {
+                margin-top: 0;
+                margin-left: initial;
+                transform: translateX(-18%);
+                padding-top: $tds-space-xxl;
+                padding-bottom: $tds-space-m;
+                margin-block-end: $tds-space-m;
+                @media screen and (prefers-reduced-motion: no-preference) {
+                    opacity: 0;
+                    animation: homeTextAnim, fadeIn;
+                    animation-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
+                    animation-fill-mode: forwards;
+                    animation-direction: normal;
+                    animation-iteration-count: 1;
+                    animation-duration: 1.5s;
+                    animation-delay: .35s;
+                }
+            }
             h1 {
                 position: relative;
                 z-index: 5;
                 @include tds--typo('display');
                 background-color: white;
-                padding: $tds-space-m;                
+                padding: $tds-space-m;
                 border-radius: 4px;
                 // word-break: break-all;
                 display: block;
@@ -74,31 +97,6 @@
                         display: none;
                     }
                 }                
-            }
-            // border-bottom: 1.5px dashed salmon;
-            padding-bottom: $tds-space-m;
-            margin-block-end: $tds-space-m;            
-            margin-top: -15vw;
-            padding-top: 0;            
-            @include break('tablet') {                
-                margin-top: 0;
-                margin-left: initial;
-                transform: translateX(-18%);
-                padding-top: $tds-space-xxl;
-                padding-bottom: $tds-space-m;
-                margin-block-end: $tds-space-m;
-                @media screen and (prefers-reduced-motion: no-preference) {
-                    opacity: 0;
-                    animation: homeTextAnim, fadeIn;
-                    animation-timing-function: cubic-bezier(0.23, 1, 0.320, 1);
-                    animation-fill-mode: forwards;
-                    animation-direction: normal;
-                    animation-iteration-count: 1;
-                    animation-duration: 1.5s;
-                    animation-delay: .35s;
-                }
-            }
-            .tds-color--accent {
             }
         }
         &__body-text {

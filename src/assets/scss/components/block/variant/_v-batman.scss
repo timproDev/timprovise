@@ -50,4 +50,10 @@
         background-color: $color-accent;
         border: 8px solid white;
     }
+    &:nth-of-type(3) {
+        display: block;
+        @include break('tablet') {            
+            display: none;
+        }        
+    }
 }

@@ -16,15 +16,15 @@
                 border-radius: 6px;
                 width: 100%;
             }        
-        @media screen and (prefers-reduced-motion: no-preference) {
-            animation: fadeIn;
-            animation-timing-function: linear;
-            animation-fill-mode: forwards;
-            animation-direction: normal;
-            animation-iteration-count: 1;
-            animation-duration: .5s;
-            animation-delay: .5s;
-        }
+        // @media screen and (prefers-reduced-motion: no-preference) {
+        //     animation: fadeIn;
+        //     animation-timing-function: linear;
+        //     animation-fill-mode: forwards;
+        //     animation-direction: normal;
+        //     animation-iteration-count: 1;
+        //     animation-duration: .5s;
+        //     animation-delay: .5s;
+        // }
     }
     iframe {
         position: absolute;
@@ -56,10 +56,17 @@
     }
     &__title {
         @include tds--typo('h3');
+        margin-block-start: $tds-space-xxs;
+        @include break('tablet') {
+            margin-block-start: $tds-space-xxxs;
+        }
     }
     &__description {
         p {
             margin-block-start: $tds-space-s;
+            @include break('tablet') {
+                margin-block-start: $tds-space-s;
+            }
         }
     }
 }

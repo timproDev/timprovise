@@ -1,5 +1,5 @@
 .tds-audio-block {
-    padding: $tds-space-s 0 8vh 0;
+    padding: $tds-space-s 0 4vh 0;
     &__container {}
     &__embed-container {}
     iframe {}
@@ -17,6 +17,9 @@
     &__description {
         p {
             margin-block-start: $tds-space-s;
+            @include break('tablet') {
+                margin-block-start: $tds-space-s;
+            }
         }
     }
 
